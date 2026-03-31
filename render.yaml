@@ -6,4 +6,4 @@ services:
     routes:
       - type: rewrite
         source: /*
-        destination: /portal.html
+        destination: /index.html
