@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: meridmail
+    runtime: static
+    staticPublishPath: .
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /portal.html

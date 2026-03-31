@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>No Known Loss Letter — Meridian Insurance</title>
+
+<link href=https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap rel="stylesheet">
+
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js></script>
+
+<style>
+
+  :root {
+
+    --navy: #2c4a6e;
+
+    --navy-light: #3a5f8a;
+
+    --bg: #f7f5f2;
+
+    --border: #d4cfc9;
+
+    --text: #1a1a1a;
+
+    --muted: #6b6560;
+
+    --accent-line: #a8c0d8;
+
+    --white:     #ffffff;
+
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+ 
+
+  header { background: var(--navy); padding: 18px 0 14px; text-align: center; border-bottom: 3px solid var(--accent-line); }
+
+  header h1 { font-family: 'EB Garamond', serif; font-size: 1.55rem; font-weight: 400; color: #fff; letter-spacing: 0.02em; }
+
+  header p { font-size: 0.72rem; color: var(--accent-line); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+
+ 
+
+  .page-wrap { max-width: 720px; margin: 36px auto 60px; padding: 0 16px; }
+
+  .form-title { font-family: 'EB Garamond', serif; font-size: 1.4rem; color: var(--navy); margin-bottom: 6px; text-align: center; }
+
+  .form-subtitle { font-size: 0.78rem; color: var(--muted); text-align: center; margin-bottom: 28px; }
+
+ 
+
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 28px 32px; margin-bottom: 18px; }
+
+  .card-title { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--navy); margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+ 
+
+  .field-row { display: grid; gap: 14px; margin-bottom: 14px; }
+
+  .field-row.cols-2 { grid-template-columns: 1fr 1fr; }
+
+  .field-row.cols-1 { grid-template-columns: 1fr; }
+
+ 
+
+  .field label { display: block; font-size: 0.72rem; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 5px; }
+
+  .field input, .field select {
+
+    width: 100%; height: 36px; padding: 0 10px;
+
+    border: 1px solid var(--border); border-radius: 4px;
+
+    font-family: 'Inter', sans-serif; font-size: 0.85rem;
+
+    color: var(--text); background: var(--bg); outline: none;
+
+    transition: border-color 0.15s;
+
+  }
+
+  .field select {
+
+    appearance: none; -webkit-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6560' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+
+    background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
+
+  }
+
+  .field input:focus, .field select:focus { border-color: var(--navy); background: #fff; }
+
+ 
+
+  .letter-preview { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 28px 32px; margin-bottom: 18px; }
+
+  .lp-title { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--navy); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  .body-text { font-family: 'EB Garamond', serif; font-size: 1rem; line-height: 1.75; color: #222; white-space: pre-wrap; }
+
+  .placeholder { color: var(--navy-light); font-style: italic; text-decoration: underline; text-decoration-style: dotted; }
+
+ 
+
+  .actions { display: flex; gap: 12px; justify-content: flex-end; }
+
+  .btn { padding: 10px 22px; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; letter-spacing: 0.03em; border: 1px solid transparent; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+
+  .btn-outline { background: transparent; border-color: var(--border); color: var(--muted); }
+
+  .btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+
+  .btn-primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+  .btn-primary:hover { background: var(--navy-light); }
+
+     /* ── Top nav ── */
+
+    .topbar {
+
+      background: var(--white);
+
+      border-bottom: 1px solid var(--rule);
+
+      padding: 10px 24px;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      font-size: 13px;
+
+    }
+
+    .topbar a { color: var(--accent); text-decoration: none; }
+
+    .topbar a:hover { text-decoration: underline; }
+
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+
+  @media (max-width: 560px) {
+
+    .field-row.cols-2 { grid-template-columns: 1fr; }
+
+    .card { padding: 20px 18px; }
+
+    .actions { flex-direction: column; }
+
+    .btn { width: 100%; text-align: center; }
+
+  }
+
+</style>
+
+</head>
+
+<body>
+  <!-- Top nav -->
+
+  <div class="topbar">
+
+    <span class="chevron">‹</span>
+
+    <a href="portal.html">Back to Home</a>
+
+  </div>
+ 
+
+<header>
+
+  <h1>Meridian Insurance</h1>
+
+  <p>Policy Services Department</p>
+
+</header>
+
+ 
+
+<div class="page-wrap">
+
+  <h2 class="form-title">No Known Loss Letter</h2>
+
+  <p class="form-subtitle">Complete all fields below, then click Generate PDF.</p>
+
+ 
+
+  <div class="card">
+
+    <div class="card-title">Policy Information</div>
+
+ 
+
+    <div class="field-row cols-2">
+
+      <div class="field">
+
+        <label>As of Date</label>
+
+        <input type="date" id="letter-date">
+
+      </div>
+
+      <div class="field">
+
+        <label>Insurance Carrier</label>
+
+        <select id="carrier" onchange="toggleOther('carrier','carrier-other-wrap')">
+
+          <option value="">— Select —</option>
+
+          <option>Auto Owners</option>
+
+          <option>Progressive</option>
+
+          <option>Nationwide</option>
+
+          <option>Hartford</option>
+
+          <option>Cincinnati</option>
+
+          <option>Other...</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="field-row cols-1" id="carrier-other-wrap" style="display:none;">
+
+      <div class="field">
+
+        <label>Carrier — Please Specify</label>
+
+        <input type="text" id="carrier-other" placeholder="Enter carrier name">
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="field-row cols-2">
+
+      <div class="field">
+
+        <label>Named Insured</label>
+
+        <input type="text" id="insured-name" placeholder="Full legal name or business name">
+
+      </div>
+
+      <div class="field">
+
+        <label>Insured Type</label>
+
+        <select id="insured-type">
+
+          <option value="">— Select —</option>
+
+          <option>Personal</option>
+
+          <option>Commercial</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="field-row cols-2">
+
+      <div class="field">
+
+        <label>Policy Number</label>
+
+        <input type="text" id="policy-number" placeholder="e.g. CPP-123456">
+
+      </div>
+
+      <div class="field">
+
+        <label>Policy Type</label>
+
+        <select id="policy-type" onchange="toggleOther('policy-type','policy-type-other-wrap')">
+
+          <option value="">— Select —</option>
+
+          <option>Home</option>
+
+          <option>Auto</option>
+
+          <option>Dwelling Fire</option>
+
+          <option>Motorcycle/UTV/ATV</option>
+
+          <option>RV</option>
+
+          <option>Boat</option>
+
+          <option>Annuity</option>
+
+          <option>Life Insurance</option>
+
+          <option>Health</option>
+
+          <option>Umbrella</option>
+
+          <option>Workers Comp</option>
+
+          <option>General Liability</option>
+
+          <option>Property</option>
+
+          <option>Commercial Package</option>
+
+          <option>Builders Risk</option>
+
+          <option>Cyber</option>
+
+          <option>Pollution</option>
+
+          <option>EPLI</option>
+
+          <option>Other</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="field-row cols-1" id="policy-type-other-wrap" style="display:none;">
+
+      <div class="field">
+
+        <label>Policy Type — Please Specify</label>
+
+        <input type="text" id="policy-type-other" placeholder="Enter policy type">
+
+      </div>
+
+    </div>
+
+  </div>
+
+ 
+
+  <div class="card">
+
+    <div class="card-title">Insured Signer</div>
+
+    <div class="field-row cols-2">
+
+      <div class="field">
+
+        <label>Authorized Signer Name</label>
+
+        <input type="text" id="signer-name" placeholder="Printed name">
+
+      </div>
+
+      <div class="field" id="signer-title-wrap" style="display:none;">
+
+        <label>Title / Position</label>
+
+        <input type="text" id="signer-title" placeholder="e.g. Owner, CFO">
+
+      </div>
+
+    </div>
+
+  </div>
+
+ 
+
+  <div class="letter-preview">
+
+    <div class="lp-title">Letter Preview</div>
+
+    <div class="body-text" id="preview-body">Fill in the fields above to see the letter preview.</div>
+
+  </div>
+
+ 
+
+  <div class="actions">
+
+    <button class="btn btn-outline" onclick="clearForm()">Clear Form</button>
+
+    <button class="btn btn-primary" onclick="generatePDF()">&#8595; Generate PDF</button>
+
+  </div>
+
+</div>
+
+ 
+
+<script>
+
+  function v(id) {
+
+    var el = document.getElementById(id);
+
+    return el ? el.value.trim() : '';
+
+  }
+
+ 
+
+  function fmtDate(s) {
+
+    if (!s) return null;
+
+    var p = s.split('-');
+
+    var mo = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    return mo[parseInt(p[1])-1] + ' ' + parseInt(p[2]) + ', ' + p[0];
+
+  }
+
+ 
+
+  function rval(selId, othId) {
+
+    var val = v(selId);
+
+    return (val === 'Other...' || val === 'Other') ? (v(othId) || 'Other') : val;
+
+  }
+
+ 
+
+  function sp(lbl) { return '<span class="placeholder">' + lbl + '</span>'; }
+
+ 
+
+  function toggleOther(selId, wrapId) {
+
+    var val = v(selId);
+
+    var show = (val === 'Other...' || val === 'Other');
+
+    var wrap = document.getElementById(wrapId);
+
+    wrap.style.display = show ? '' : 'none';
+
+    if (!show) { var inp = wrap.querySelector('input'); if (inp) inp.value = ''; }
+
+    updatePreview();
+
+  }
+
+ 
+
+  function toggleTitleField() {
+
+    var commercial = v('insured-type') === 'Commercial';
+
+    document.getElementById('signer-title-wrap').style.display = commercial ? '' : 'none';
+
+    if (!commercial) document.getElementById('signer-title').value = '';
+
+    updatePreview();
+
+  }
+
+ 
+
+  function updatePreview() {
+
+    var date      = v('letter-date');
+
+    var insured   = v('insured-name');
+
+    var insType   = v('insured-type');
+
+    var polNum    = v('policy-number');
+
+    var polType   = rval('policy-type','policy-type-other');
+
+    var carrier   = rval('carrier','carrier-other');
+
+    var signer    = v('signer-name');
+
+    var sigTitle  = v('signer-title');
+
+ 
+
+    var D  = function(val, lbl) { return val ? val : sp(lbl); };
+
+    var Df = function(val, lbl) { var f = fmtDate(val); return f ? f : sp(lbl); };
+
+ 
+
+    var body = 'To Whom It May Concern,\n\n'
+
+      + 'Re: No Known Loss Statement\n'
+
+      + 'Named Insured: ' + D(insured,'[Named Insured]') + '\n'
+
+      + 'Insured Type: '  + D(insType, '[Insured Type]')  + '\n'
+
+      + 'Policy No.: '    + D(polNum,  '[Policy Number]') + '\n'
+
+      + 'Policy Type: '   + D(polType, '[Policy Type]')   + '\n'
+
+      + 'Carrier: '       + D(carrier, '[Carrier]')       + '\n\n'
+
+      + 'As of ' + Df(date,'[As of Date]') + ', the undersigned hereby certifies that, to the best of their knowledge and belief, there are no known or reported losses, claims, suits, or circumstances that might give rise to a claim under the above-referenced policy.\n\n'
+
+      + 'Sincerely,\n\n\n_________________________________\n'
+
+      + D(signer,'[Authorized Signer Name]');
+
+ 
+
+    if (v('insured-type') === 'Commercial') {
+
+      body += '\n' + D(sigTitle,'[Title / Position]');
+
+    }
+
+ 
+
+    document.getElementById('preview-body').innerHTML = body;
+
+  }
+
+ 
+
+  function generatePDF() {
+
+    var jsPDF = window.jspdf.jsPDF;
+
+    var doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+ 
+
+    var navy   = [44, 74, 110];
+
+    var white  = [255, 255, 255];
+
+    var ink    = [26, 26, 26];
+
+    var mid    = [107, 101, 96];
+
+    var rule   = [212, 207, 201];
+
+    var accent = [168, 192, 216];
+
+ 
+
+    var W = 612, H = 792, M = 54, CW = W - M*2;
+
+ 
+
+    // Header bar
+
+    doc.setFillColor(navy[0],navy[1],navy[2]);
+
+    doc.rect(0,0,W,60,'F');
+
+    doc.setTextColor(white[0],white[1],white[2]);
+
+    doc.setFont('times','bolditalic').setFontSize(18);
+
+    doc.text('Meridian Insurance', W/2, 26, {align:'center'});
+
+    doc.setFont('helvetica','normal').setFontSize(7.5);
+
+    doc.setCharSpace(1.5);
+
+    doc.text('POLICY SERVICES DEPARTMENT', W/2, 42, {align:'center'});
+
+    doc.setCharSpace(0);
+
+ 
+
+    // Accent line
+
+    doc.setDrawColor(accent[0],accent[1],accent[2]);
+
+    doc.setLineWidth(1.5);
+
+    doc.line(M, 64, W-M, 64);
+
+ 
+
+    // Document title
+
+    doc.setFont('times','bold').setFontSize(14).setTextColor(navy[0],navy[1],navy[2]);
+
+    doc.text('No Known Loss Letter', W/2, 88, {align:'center'});
+
+    var tw = doc.getTextWidth('No Known Loss Letter');
+
+    doc.setDrawColor(navy[0],navy[1],navy[2]).setLineWidth(0.75);
+
+    doc.line(W/2-tw/2, 92, W/2+tw/2, 92);
+
+ 
+
+    // Meta fields
+
+    var y = 112;
+
+    var lineH = 17;
+
+ 
+
+    function lv(label, val) {
+
+      doc.setFont('helvetica','bold').setFontSize(8).setTextColor(mid[0],mid[1],mid[2]);
+
+      doc.text(label, M, y);
+
+      var lw = doc.getTextWidth(label) + 5;
+
+      doc.setFont('helvetica','normal').setFontSize(9.5).setTextColor(ink[0],ink[1],ink[2]);
+
+      doc.text(val || '\u2014', M+lw, y);
+
+      y += lineH;
+
+    }
+
+ 
+
+    lv('Named Insured:', v('insured-name')  || '');
+
+    lv('Insured Type:', v('insured-type')   || '');
+
+    lv('Policy No.:',  v('policy-number')  || '');
+
+    lv('Policy Type:', rval('policy-type','policy-type-other') || '');
+
+    lv('Carrier:',     rval('carrier','carrier-other')         || '');
+
+ 
+
+    // Divider
+
+    y += 4;
+
+    doc.setDrawColor(rule[0],rule[1],rule[2]).setLineWidth(0.4);
+
+    doc.line(M, y, W-M, y);
+
+    y += 12;
+
+ 
+
+    // Salutation
+
+    doc.setFont('times','italic').setFontSize(10).setTextColor(mid[0],mid[1],mid[2]);
+
+    doc.text('To Whom It May Concern,', M, y);
+
+    y += 20;
+
+ 
+
+    // Body paragraph
+
+    var asOf = fmtDate(v('letter-date')) || '_______________';
+
+    var bodyText = 'As of ' + asOf + ', the undersigned hereby certifies that, to the best of their knowledge and belief, there are no known or reported losses, claims, suits, or circumstances that might give rise to a claim under the above-referenced policy.';
+
+    doc.setFont('times','normal').setFontSize(10.5).setTextColor(ink[0],ink[1],ink[2]);
+
+    var lines = doc.splitTextToSize(bodyText, CW);
+
+    doc.text(lines, M, y);
+
+    y += lines.length * 16 + 18;
+
+ 
+
+    // Sincerely
+
+    doc.setFont('times','italic').setFontSize(10).setTextColor(mid[0],mid[1],mid[2]);
+
+    doc.text('Sincerely,', M, y);
+
+    y += 40;
+
+ 
+
+    // Divider above signature
+
+    doc.setDrawColor(rule[0],rule[1],rule[2]).setLineWidth(0.4);
+
+    doc.line(M, y, W-M, y);
+
+    y += 12;
+
+ 
+
+    // Signature grid
+
+    var col1 = M, col2 = W/2 + 8, hw = CW/2 - 8;
+
+ 
+
+    function sigField(label, val, x) {
+
+      doc.setFont('helvetica','normal').setFontSize(8).setTextColor(mid[0],mid[1],mid[2]);
+
+      doc.text(label, x, y);
+
+      if (val) {
+
+        doc.setFontSize(9).setTextColor(ink[0],ink[1],ink[2]);
+
+        doc.text(val, x, y+14);
+
+      }
+
+      doc.setDrawColor(160,160,160).setLineWidth(0.4);
+
+      doc.line(x, y+20, x+hw, y+20);
+
+    }
+
+ 
+
+    sigField('Authorized Signature:', '', col1);
+
+    sigField('Printed Name:', v('signer-name'), col2);
+
+    y += 34;
+
+ 
+
+    if (v('insured-type') === 'Commercial') {
+
+      sigField('Title / Position:', v('signer-title'), col1);
+
+    }
+
+    sigField('Date Signed:', '', col2);
+
+    y += 34;
+
+ 
+
+    // Footer
+
+    doc.setDrawColor(rule[0],rule[1],rule[2]).setLineWidth(0.5);
+
+    doc.line(M, H-28, W-M, H-28);
+
+    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(mid[0],mid[1],mid[2]);
+
+    doc.text('Meridian Insurance  \u00b7  Policy Services Department', W/2, H-14, {align:'center'});
+
+ 
+
+    var fname = (v('insured-name').replace(/\s+/g,'_') || 'Insured') + '_NKL_' + (v('letter-date') || 'Date');
+
+    doc.save(fname + '.pdf');
+
+  }
+
+ 
+
+  function clearForm() {
+
+    ['letter-date','carrier','carrier-other','insured-name','insured-type',
+
+     'policy-number','policy-type','policy-type-other','signer-name','signer-title'].forEach(function(id) {
+
+      var el = document.getElementById(id); if (el) el.value = '';
+
+    });
+
+    document.getElementById('carrier-other-wrap').style.display      = 'none';
+
+    document.getElementById('policy-type-other-wrap').style.display  = 'none';
+
+    document.getElementById('signer-title-wrap').style.display       = 'none';
+
+    updatePreview();
+
+  }
+
+ 
+
+  document.addEventListener('DOMContentLoaded', function() {
+
+    ['letter-date','carrier','carrier-other','insured-name','insured-type',
+
+     'policy-number','policy-type','policy-type-other','signer-name','signer-title'].forEach(function(id) {
+
+      var el = document.getElementById(id);
+
+      if (el) { el.addEventListener('input', updatePreview); el.addEventListener('change', updatePreview); }
+
+    });
+
+    document.getElementById('insured-type').addEventListener('change', toggleTitleField);
+
+    updatePreview();
+
+  });
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Payment Receipt | Meridian Insurance</title>
+
+  <link href=https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap rel="stylesheet" />
+
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+ 
+
+    :root {
+
+      --accent:  #2c4a6e;
+
+      --bg:      #f7f5f2;
+
+      --white:   #ffffff;
+
+      --rule:    #d4cfc9;
+
+      --ink:     #1a1a1a;
+
+      --mid:     #555;
+
+      --light:   #888;
+
+      --success: #2d6a4f;
+
+    }
+
+ 
+
+    body {
+
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      background: var(--bg);
+
+      color: var(--ink);
+
+      min-height: 100vh;
+
+      padding: 0 0 60px;
+
+      font-size: 14px;
+
+    }
+
+ 
+
+    .topbar {
+
+      background: var(--white);
+
+      border-bottom: 1px solid var(--rule);
+
+      padding: 10px 24px;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      font-size: 13px;
+
+    }
+
+    .topbar a { color: var(--accent); text-decoration: none; }
+
+    .topbar a:hover { text-decoration: underline; }
+
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+
+ 
+
+    .site-header {
+
+      max-width: 740px;
+
+      margin: 0 auto;
+
+      padding: 24px 16px 18px;
+
+      display: flex;
+
+      align-items: flex-end;
+
+      justify-content: space-between;
+
+      border-bottom: 2px solid var(--ink);
+
+      gap: 16px;
+
+      flex-wrap: wrap;
+
+    }
+
+    .logo-name {
+
+      font-family: 'EB Garamond', Georgia, serif;
+
+      font-size: 26px;
+
+      font-weight: 500;
+
+      color: var(--ink);
+
+      line-height: 1;
+
+    }
+
+    .logo-tag {
+
+      font-size: 11px;
+
+      letter-spacing: 0.13em;
+
+      text-transform: uppercase;
+
+      color: var(--light);
+
+      font-weight: 300;
+
+      margin-top: 3px;
+
+    }
+
+    .form-title-right {
+
+      font-family: 'EB Garamond', Georgia, serif;
+
+      font-size: 19px;
+
+      font-style: italic;
+
+      color: var(--accent);
+
+      text-align: right;
+
+    }
+
+ 
+
+    .form-wrap {
+
+      max-width: 740px;
+
+      margin: 24px auto 0;
+
+      padding: 0 16px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 16px;
+
+    }
+
+ 
+
+    .card {
+
+      background: var(--white);
+
+      border: 1px solid var(--rule);
+
+      border-radius: 8px;
+
+      padding: 24px 24px 20px;
+
+    }
+
+    .card-title {
+
+      font-size: 15px;
+
+      font-weight: 600;
+
+      color: var(--accent);
+
+      margin-bottom: 18px;
+
+    }
+
+ 
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px 12px; }
+
+ 
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+
+ 
+
+    input[type="text"],
+
+    input[type="date"],
+
+    input[type="number"],
+
+    select,
+
+    textarea {
+
+      width: 100%;
+
+      padding: 8px 10px;
+
+      border: 1px solid var(--rule);
+
+      border-radius: 6px;
+
+      font-family: inherit;
+
+      font-size: 13.5px;
+
+      color: var(--ink);
+
+      background: var(--white);
+
+      transition: border-color 0.15s, box-shadow 0.15s;
+
+      appearance: none;
+
+      -webkit-appearance: none;
+
+    }
+
+    input:focus, select:focus, textarea:focus {
+
+      outline: none;
+
+      border-color: var(--accent);
+
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+
+    }
+
+    select {
+
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+
+      background-repeat: no-repeat;
+
+      background-position: right 10px center;
+
+      padding-right: 30px;
+
+      cursor: pointer;
+
+    }
+
+ 
+
+    /* $ prefix */
+
+    .prefix-wrap { position: relative; }
+
+    .prefix-wrap span {
+
+      position: absolute; left: 10px; top: 50%;
+
+      transform: translateY(-50%);
+
+      color: var(--mid); font-size: 13.5px; pointer-events: none;
+
+    }
+
+    .prefix-wrap input { padding-left: 20px; }
+
+ 
+
+    /* Radio group — inline */
+
+    .radio-group { display: flex; flex-wrap: wrap; gap: 6px 18px; padding-top: 2px; }
+
+    .radio-opt {
+
+      display: flex; align-items: center; gap: 6px;
+
+      font-size: 13.5px; color: var(--ink); cursor: pointer; user-select: none;
+
+    }
+
+    .radio-opt input[type="radio"] {
+
+      width: 15px; height: 15px;
+
+      accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+
+    }
+
+ 
+
+    /* Checkbox group — stacked */
+
+    .check-group { display: flex; flex-direction: column; gap: 9px; padding-top: 2px; }
+
+    .check-opt {
+
+      display: flex; align-items: center; gap: 9px;
+
+      font-size: 13.5px; color: var(--ink); cursor: pointer; user-select: none;
+
+    }
+
+    .check-opt input[type="checkbox"] {
+
+      width: 15px; height: 15px;
+
+      accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+
+    }
+
+ 
+
+    textarea {
+
+      min-height: 110px;
+
+      resize: vertical;
+
+      line-height: 2;
+
+      background-image: repeating-linear-gradient(
+
+        to bottom, transparent, transparent calc(2em - 1px),
+
+        var(--rule) calc(2em - 1px), var(--rule) 2em
+
+      );
+
+      background-size: 100% 2em;
+
+      background-attachment: local;
+
+      padding-top: 6px;
+
+    }
+
+ 
+
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; }
+
+    .btn {
+
+      padding: 10px 22px; border-radius: 6px;
+
+      font-family: inherit; font-size: 14px; font-weight: 500;
+
+      cursor: pointer; border: none; transition: background 0.15s;
+
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+
+    .btn-primary:hover { background: #1e3650; }
+
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+
+    .btn-secondary:hover { background: var(--bg); }
+
+ 
+
+    .success {
+
+      display: none; background: #f0faf4; border: 1px solid #a8d5b8;
+
+      border-radius: 6px; padding: 14px 20px; color: var(--success); font-size: 13.5px;
+
+    }
+
+    .success.show { display: block; }
+
+ 
+
+    @media (max-width: 580px) {
+
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+
+      .site-header { flex-direction: column; align-items: flex-start; }
+
+      .form-title-right { text-align: left; }
+
+    }
+
+  </style>
+
+ 
+
+ 
+
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js></script>
+
+</head>
+
+<body>
+
+ 
+
+  <div class="topbar">
+
+    <span class="chevron">‹</span>
+
+    <a href="portal.html">Back to Home</a>
+
+  </div>
+
+ 
+
+  <div class="site-header">
+
+    <div>
+
+      <div class="logo-name">Meridian Insurance</div>
+
+      <div class="logo-tag">Policy Services Department</div>
+
+    </div>
+
+    <div class="form-title-right">Payment Receipt</div>
+
+  </div>
+
+ 
+
+  <div class="form-wrap">
+
+    <form id="prForm" novalidate>
+
+ 
+
+      <!-- Payment Information -->
+
+      <div class="card">
+
+        <div class="card-title">Payment Information</div>
+
+        <div class="grid-2" style="margin-bottom:14px;">
+
+          <div class="field">
+
+            <label>Client</label>
+
+            <input type="text" name="client" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Date</label>
+
+            <input type="date" name="date" id="pay_date" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Policy Number</label>
+
+            <input type="text" name="top_policy_number" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Carrier</label>
+
+            <select name="top_carrier" id="top_carrier" onchange="toggleCarrierOther('top_carrier','top_carrier_other')">
+
+              <option value="">Select...</option>
+
+              <option>Auto Owners</option>
+
+              <option>Progressive</option>
+
+              <option>Nationwide</option>
+
+              <option>Hartford</option>
+
+              <option>Cincinnati</option>
+
+              <option>Other...</option>
+
+            </select>
+
+            <input type="text" name="top_carrier_other" id="top_carrier_other" placeholder="Enter carrier name" style="display:none; margin-top:6px;" />
+
+          </div>
+
+        </div>
+
+        <div class="field" style="margin-bottom:14px;">
+
+          <label>Payment Method</label>
+
+          <div class="radio-group">
+
+            <label class="radio-opt"><input type="radio" name="payment_method" value="check" /> Check</label>
+
+            <label class="radio-opt"><input type="radio" name="payment_method" value="amx" /> AMX</label>
+
+            <label class="radio-opt"><input type="radio" name="payment_method" value="visa_mc" /> Visa/MC</label>
+
+            <label class="radio-opt"><input type="radio" name="payment_method" value="ach" /> ACH</label>
+
+            <label class="radio-opt"><input type="radio" name="payment_method" value="cash" /> Cash</label>
+
+          </div>
+
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px;">
+
+          <div class="field">
+
+            <label>Routing Number</label>
+
+            <input type="text" name="routing_number" maxlength="9" placeholder="9-digit routing number" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Account Number</label>
+
+            <input type="text" name="bank_account_number" />
+
+          </div>
+
+        </div>
+
+        <div class="field" style="margin-bottom:14px;">
+
+          <label>Billing Type</label>
+
+          <select name="billing_type">
+
+            <option value="">Select...</option>
+
+            <option>Direct Bill</option>
+
+            <option>Agency Bill</option>
+
+          </select>
+
+        </div>
+
+        <div class="grid-3">
+
+          <div class="field">
+
+            <label>Applied Payment</label>
+
+            <div class="prefix-wrap">
+
+              <span>$</span>
+
+              <input type="number" name="applied_payment" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Processing Fee</label>
+
+            <div class="prefix-wrap">
+
+              <span>$</span>
+
+              <input type="number" name="processing_fee" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Total Payment</label>
+
+            <div class="prefix-wrap">
+
+              <span>$</span>
+
+              <input type="number" name="total_payment" placeholder="0.00" step="0.01" min="0" id="total_payment" readonly style="background:var(--bg);" />
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Policy Details -->
+
+      <div class="card">
+
+        <div class="card-title">Policy Details</div>
+
+        <div class="grid-2">
+
+          <div class="field">
+
+            <label>Policy Type</label>
+
+            <select name="policy_type" id="policy_type" onchange="togglePolicyTypeOther()">
+
+              <option value="">Select...</option>
+
+              <option>Home</option>
+
+              <option>Auto</option>
+
+              <option>Dwelling Fire</option>
+
+              <option>Motorcycle/UTV/ATV</option>
+
+              <option>RV</option>
+
+              <option>Boat</option>
+
+              <option>Annuity</option>
+
+              <option>Life Insurance</option>
+
+              <option>Health</option>
+
+              <option>Umbrella</option>
+
+              <option>Workers Comp</option>
+
+              <option>General Liability</option>
+
+              <option>Property</option>
+
+              <option>Commercial Package</option>
+
+              <option>Builders Risk</option>
+
+              <option>Cyber</option>
+
+              <option>Pollution</option>
+
+              <option>EPLI</option>
+
+              <option>Other</option>
+
+            </select>
+
+            <input type="text" name="policy_type_other" id="policy_type_other" placeholder="Enter policy type" style="display:none; margin-top:6px;" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Carrier</label>
+
+            <select name="carrier" id="carrier" onchange="toggleCarrierOther('carrier','carrier_other')">
+
+              <option value="">Select...</option>
+
+              <option>Auto Owners</option>
+
+              <option>Progressive</option>
+
+              <option>Nationwide</option>
+
+              <option>Hartford</option>
+
+              <option>Cincinnati</option>
+
+              <option>Other...</option>
+
+            </select>
+
+            <input type="text" name="carrier_other" id="carrier_other" placeholder="Enter carrier name" style="display:none; margin-top:6px;" />
+
+          </div>
+
+          <div class="field">
+
+            <label>General Agent</label>
+
+            <input type="text" name="general_agent" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Payment Received By</label>
+
+            <select name="payment_received_by">
+
+              <option value="">Select...</option>
+
+              <option>Mike Hokanson</option>
+
+              <option>Mason Abbott</option>
+
+              <option>Kevin Jensen</option>
+
+              <option>Nathanael Cook</option>
+
+              <option>Jennette Roylance</option>
+
+              <option>Tiffany Taylor</option>
+
+              <option>Ashtyn Cook</option>
+
+              <option>Isabel Sanders</option>
+
+            </select>
+
+          </div>
+
+          <div class="field">
+
+            <label>Funds Received By (Accounting)</label>
+
+            <input type="text" name="funds_received_by" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Date Received By Accounting</label>
+
+            <input type="date" name="date_received_accounting" id="date_received" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Payment Purpose -->
+
+      <div class="card">
+
+        <div class="card-title">Payment Purpose</div>
+
+        <div class="field" style="margin-bottom:14px;">
+
+          <label>Purpose</label>
+
+          <div class="radio-group">
+
+            <label class="radio-opt">
+
+              <input type="radio" name="purpose" value="down_payment" checked /> Down Payment on New Policy
+
+            </label>
+
+            <label class="radio-opt">
+
+              <input type="radio" name="purpose" value="existing_policy" /> Payment on Existing Policy
+
+            </label>
+
+          </div>
+
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px;">
+
+          <div class="field">
+
+            <label>Policy Number</label>
+
+            <input type="text" name="policy_number" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Account Number</label>
+
+            <input type="text" name="account_number" />
+
+          </div>
+
+        </div>
+
+        <div class="field" style="max-width:360px;">
+
+          <label>Amount</label>
+
+          <div class="prefix-wrap">
+
+            <span>$</span>
+
+            <input type="number" name="amount" placeholder="0.00" step="0.01" min="0" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Disposition of Funds -->
+
+      <div class="card">
+
+        <div class="card-title">Disposition of Funds</div>
+
+        <div class="field">
+
+          <label>Fund Dispositions</label>
+
+          <div class="check-group" style="margin-top:6px;">
+
+            <label class="check-opt">
+
+              <input type="checkbox" name="disposition[]" value="deposited_trust" />
+
+              Funds Deposited in MI Trust Account
+
+            </label>
+
+            <label class="check-opt">
+
+              <input type="checkbox" name="disposition[]" value="trust_check" />
+
+              MI Trust Account Check Issued
+
+            </label>
+
+            <label class="check-opt">
+
+              <input type="checkbox" name="disposition[]" value="swept_from_trust" />
+
+              Funds Electronically Swept from MI Trust Account
+
+            </label>
+
+            <label class="check-opt">
+
+              <input type="checkbox" name="disposition[]" value="initiate_sweep" />
+
+              Initiate Electronic Sweep from MI Trust Account
+
+            </label>
+
+            <label class="check-opt">
+
+              <input type="checkbox" name="disposition[]" value="credit_card" />
+
+              Carrier Charged Customer Credit Card/Bank Acct
+
+            </label>
+
+            <label class="check-opt">
+
+              <input type="checkbox" name="disposition[]" value="billing_insured" />
+
+              Carrier Billing Insured Directly
+
+            </label>
+
+            <label class="check-opt">
+
+              <input type="checkbox" name="disposition[]" value="billing_mortgagee" />
+
+              Carrier Billing Mortgagee Directly
+
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+ 
+
+      <!-- Agency Bill Reconciliation (shown only when Billing Type = Agency Bill) -->
+
+      <div class="card" id="abrSection" style="display:none;">
+
+        <div class="card-title">Agency Bill Reconciliation</div>
+
+        <div class="grid-3" style="margin-bottom:14px;">
+
+          <div class="field">
+
+            <label>Premium Amount</label>
+
+            <div class="prefix-wrap"><span>$</span>
+
+              <input type="number" name="abr_premium" id="abr_premium" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Taxes &amp; Fees</label>
+
+            <div class="prefix-wrap"><span>$</span>
+
+              <input type="number" name="abr_taxes_fees" id="abr_taxes_fees" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Total</label>
+
+            <div class="prefix-wrap"><span>$</span>
+
+              <input type="number" name="abr_total" id="abr_total" placeholder="0.00" step="0.01" min="0" readonly style="background:var(--bg);" />
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px;">
+
+          <div class="field">
+
+            <label>Payment Received</label>
+
+            <div class="prefix-wrap"><span>$</span>
+
+              <input type="number" name="abr_payment_received" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Commission Retained</label>
+
+            <div class="prefix-wrap"><span>$</span>
+
+              <input type="number" name="abr_commission_retained" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Amount to Company</label>
+
+            <div class="prefix-wrap"><span>$</span>
+
+              <input type="number" name="abr_amount_to_company" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Amount Financed</label>
+
+            <input type="text" name="abr_amount_financed" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Financed By</label>
+
+            <input type="text" name="abr_financed_by" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Agency Bill Entered Date</label>
+
+            <input type="date" name="abr_entered_date" id="abr_entered_date" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Commission Paid Date</label>
+
+            <input type="date" name="abr_commission_paid_date" id="abr_commission_paid_date" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Commission Paid Check #</label>
+
+            <input type="text" name="abr_commission_check" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Special Instructions -->
+
+      <div class="card">
+
+        <div class="card-title">Special Instructions</div>
+
+        <div class="field">
+
+          <label>Special Instructions</label>
+
+          <textarea name="special_instructions"></textarea>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Actions -->
+
+      <div class="actions">
+
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+
+        <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
+
+      </div>
+
+ 
+
+      <div class="success" id="successMsg">
+
+        ✓ Payment receipt has been submitted successfully.
+
+      </div>
+
+ 
+
+    </form>
+
+  </div>
+
+ 
+
+  <script>
+
+    const today = new Date().toISOString().split('T')[0];
+
+    document.getElementById('pay_date').value = today;
+
+    document.getElementById('date_received').value = today;
+
+ 
+
+    // Auto-calculate total payment
+
+    function calcTotal() {
+
+      const applied = parseFloat(document.querySelector('[name="applied_payment"]').value) || 0;
+
+      const fee     = parseFloat(document.querySelector('[name="processing_fee"]').value) || 0;
+
+      document.getElementById('total_payment').value = (applied + fee).toFixed(2);
+
+    }
+
+    document.querySelector('[name="applied_payment"]').addEventListener('input', calcTotal);
+
+    document.querySelector('[name="processing_fee"]').addEventListener('input', calcTotal);
+
+ 
+
+    function resetForm() {
+
+      document.getElementById('prForm').reset();
+
+      document.getElementById('pay_date').value = today;
+
+      document.getElementById('date_received').value = today;
+
+      document.getElementById('total_payment').value = '';
+
+      document.getElementById('successMsg').classList.remove('show');
+
+      document.getElementById('abrSection').style.display = 'none';
+
+      document.getElementById('abr_entered_date').value = today;
+
+      document.getElementById('abr_commission_paid_date').value = today;
+
+    }
+
+ 
+
+ 
+
+    // Show/hide Agency Bill Reconciliation based on Billing Type
+
+    document.querySelector('[name="billing_type"]').addEventListener('change', function() {
+
+      const abr = document.getElementById('abrSection');
+
+      abr.style.display = this.value === 'Agency Bill' ? 'block' : 'none';
+
+    });
+
+ 
+
+    // Auto-calc ABR total (premium + taxes & fees)
+
+    function calcABRTotal() {
+
+      const p = parseFloat(document.querySelector('[name="abr_premium"]').value) || 0;
+
+      const t = parseFloat(document.querySelector('[name="abr_taxes_fees"]').value) || 0;
+
+      document.getElementById('abr_total').value = (p + t).toFixed(2);
+
+    }
+
+    document.querySelector('[name="abr_premium"]').addEventListener('input', calcABRTotal);
+
+    document.querySelector('[name="abr_taxes_fees"]').addEventListener('input', calcABRTotal);
+
+ 
+
+    // Set ABR dates to today on load
+
+    document.getElementById('abr_entered_date').value = today;
+
+    document.getElementById('abr_commission_paid_date').value = today;
+
+ 
+
+    document.getElementById('prForm').addEventListener('submit', function(e) {
+
+      e.preventDefault();
+
+      document.getElementById('successMsg').classList.add('show');
+
+      document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    });
+
+  </script>
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  <script>
+
+    function toggleCarrierOther(selId, inpId) {
+
+      var sel=document.getElementById(selId), inp=document.getElementById(inpId);
+
+      if(!sel||!inp) return;
+
+      if(sel.value==='Other...') { inp.style.display='block'; inp.focus(); }
+
+      else { inp.style.display='none'; inp.value=''; }
+
+    }
+
+    function togglePolicyTypeOther() {
+
+      var sel=document.getElementById('policy_type'), inp=document.getElementById('policy_type_other');
+
+      if(!sel||!inp) return;
+
+      if(sel.value==='Other') { inp.style.display='block'; inp.focus(); }
+
+      else { inp.style.display='none'; inp.value=''; }
+
+    }
+
+  </script>
+
+ 
+
+  <script>
+
+  document.getElementById('generateBtn').addEventListener('click', function() {
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+    const navy=[44,74,110], ink=[26,26,26], mid=[85,85,85], rule=[212,207,201], light=[136,136,136];
+
+    const W=612, M=32, CW=W-M*2, H=CW/2, T=CW/3;
+
+ 
+
+    function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+
+    function radio(n) { const e=document.querySelector('[name="'+n+'"]:checked'); return e?e.parentElement.textContent.trim():''; }
+
+    function checks(n) { return Array.from(document.querySelectorAll('[name="'+n+'"]:checked')).map(function(e){return e.parentElement.textContent.trim();}); }
+
+    function carrierVal(sn,on) { const x=v(sn); return x==='Other...'?(v(on)||'Other'):x; }
+
+    function policyTypeVal() { const x=v('policy_type'); return x==='Other'?(v('policy_type_other')||'Other'):x; }
+
+ 
+
+    let y=32;
+
+    doc.setFont('times','bold').setFontSize(16).setTextColor(...ink).text('Meridian Insurance',M,y);
+
+    doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+10);
+
+    doc.setFont('times','italic').setFontSize(12).setTextColor(...navy).text('Payment Receipt',W-M,y,{align:'right'});
+
+    y+=18; doc.setDrawColor(...ink).setLineWidth(1.2).line(M,y,W-M,y); y+=10;
+
+ 
+
+    function sec(t) {
+
+      var s=y;
+
+      doc.setFont('helvetica','bold').setFontSize(8).setTextColor(...navy).text(t,M+8,y+6);
+
+      y+=13; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=6;
+
+      return s;
+
+    }
+
+    function box(s) { doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-4); y+=4; }
+
+    function f2(l1,v1,l2,v2) {
+
+      [[l1,v1,M],[l2,v2,M+H]].forEach(function(a) {
+
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,H,26);
+
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+4,y+8);
+
+        doc.setFontSize(9).setTextColor(...ink).text(a[1]||'',a[2]+4,y+19);
+
+      }); y+=30;
+
+    }
+
+    function f3(l1,v1,l2,v2,l3,v3) {
+
+      [[l1,v1,M],[l2,v2,M+T],[l3,v3,M+T*2]].forEach(function(a) {
+
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,T,26);
+
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+4,y+8);
+
+        doc.setFontSize(9).setTextColor(...ink).text(a[1]||'',a[2]+4,y+19);
+
+      }); y+=30;
+
+    }
+
+    function ff(l,val) {
+
+      doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,26);
+
+      doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(l.toUpperCase(),M+4,y+8);
+
+      doc.setFontSize(9).setTextColor(...ink).text(val||'',M+4,y+19);
+
+      y+=30;
+
+    }
+
+ 
+
+    var s=sec('Payment Information');
+
+    f2('Client',v('client'),'Date',v('date'));
+
+    f2('Policy Number',v('top_policy_number'),'Carrier',carrierVal('top_carrier','top_carrier_other'));
+
+    ff('Payment Method',radio('payment_method'));
+
+    f2('Routing Number',v('routing_number'),'Account Number',v('bank_account_number'));
+
+    f2('Billing Type',v('billing_type'),'');
+
+    f3('Applied Payment','$'+v('applied_payment'),'Processing Fee','$'+v('processing_fee'),'Total Payment','$'+v('total_payment'));
+
+    box(s);
+
+ 
+
+    s=sec('Policy Details');
+
+    f2('Policy Type',policyTypeVal(),'Carrier',carrierVal('carrier','carrier_other'));
+
+    f2('General Agent',v('general_agent'),'Payment Received By',v('payment_received_by'));
+
+    f2('Funds Received By (Accounting)',v('funds_received_by'),'Date Received By Accounting',v('date_received_accounting'));
+
+    box(s);
+
+ 
+
+    s=sec('Payment Purpose');
+
+    ff('Purpose',radio('purpose'));
+
+    f2('Policy Number',v('policy_number'),'Account Number',v('account_number'));
+
+    f2('Amount','$'+v('amount'),'','');
+
+    box(s);
+
+ 
+
+    // Disposition of Funds
+
+    var allDisp=['Funds Deposited in MI Trust Account','MI Trust Account Check Issued','Funds Electronically Swept from MI Trust Account','Initiate Electronic Sweep from MI Trust Account','Carrier Charged Customer Credit Card/Bank Acct','Carrier Billing Insured Directly','Carrier Billing Mortgagee Directly'];
+
+    var selected=checks('disposition[]');
+
+    s=sec('Disposition of Funds');
+
+    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,allDisp.length*13+10);
+
+    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('FUND DISPOSITIONS',M+4,y+8);
+
+    y+=13;
+
+    allDisp.forEach(function(item) {
+
+      doc.setDrawColor(...ink).setLineWidth(0.5).rect(M+4,y,8,8);
+
+      if(selected.indexOf(item)>-1) { doc.setFont('helvetica','bold').setFontSize(9).setTextColor(...ink).text('x',M+5.5,y+7); }
+
+      doc.setFont('helvetica','normal').setFontSize(8).setTextColor(...ink).text(item,M+16,y+7);
+
+      y+=13;
+
+    });
+
+    y+=4; box(s);
+
+ 
+
+    // Agency Bill Reconciliation
+
+    var abr=document.getElementById('abrSection');
+
+    if(abr && abr.style.display!=='none') {
+
+      s=sec('Agency Bill Reconciliation');
+
+      f3('Premium Amount','$'+v('abr_premium'),'Taxes & Fees','$'+v('abr_taxes_fees'),'Total','$'+v('abr_total'));
+
+      f2('Payment Received','$'+v('abr_payment_received'),'Commission Retained','$'+v('abr_commission_retained'));
+
+      f2('Amount to Company','$'+v('abr_amount_to_company'),'Amount Financed',v('abr_amount_financed'));
+
+      f2('Financed By',v('abr_financed_by'),'Agency Bill Entered Date',v('abr_entered_date'));
+
+      f2('Commission Paid Date',v('abr_commission_paid_date'),'Commission Paid Check #',v('abr_commission_check'));
+
+      box(s);
+
+    }
+
+ 
+
+    s=sec('Special Instructions');
+
+    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,55);
+
+    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('SPECIAL INSTRUCTIONS',M+4,y+8);
+
+    doc.setFontSize(9).setTextColor(...ink).text(doc.splitTextToSize(v('special_instructions'),CW-10),M+4,y+19);
+
+    doc.setDrawColor(...rule).setLineWidth(0.3);
+
+    for(var i=1;i<=2;i++) doc.line(M+2,y+i*16+4,W-M-2,y+i*16+4);
+
+    y+=59; box(s);
+
+ 
+
+    y=748; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=7;
+
+    doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · Payment receipt documentation.',W/2,y,{align:'center'});
+
+    doc.save('payment-receipt-'+(v('client')||'form')+'.pdf');
+
+  });
+
+  </script>
+
+</body>
+
+</html>

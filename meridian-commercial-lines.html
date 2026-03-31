@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Spec Sheet — Commercial | Meridian Insurance</title>
+
+  <link href=https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap rel="stylesheet" />
+
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+ 
+
+    :root {
+
+      --accent:    #2c4a6e;
+
+      --accent-lt: #e8edf3;
+
+      --bg:        #f7f5f2;
+
+      --white:     #ffffff;
+
+      --rule:      #d4cfc9;
+
+      --ink:       #1a1a1a;
+
+      --mid:       #555;
+
+      --light:     #888;
+
+      --success:   #2d6a4f;
+
+    }
+
+ 
+
+    body {
+
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      background: var(--bg);
+
+      color: var(--ink);
+
+      min-height: 100vh;
+
+      padding: 0 0 60px;
+
+      font-size: 14px;
+
+    }
+
+ 
+
+    .topbar {
+
+      background: var(--white);
+
+      border-bottom: 1px solid var(--rule);
+
+      padding: 10px 24px;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      font-size: 13px;
+
+    }
+
+    .topbar a { color: var(--accent); text-decoration: none; }
+
+    .topbar a:hover { text-decoration: underline; }
+
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+
+ 
+
+    .site-header {
+
+      max-width: 740px;
+
+      margin: 0 auto;
+
+      padding: 24px 16px 18px;
+
+      display: flex;
+
+      align-items: flex-end;
+
+      justify-content: space-between;
+
+      border-bottom: 2px solid var(--ink);
+
+      gap: 16px;
+
+      flex-wrap: wrap;
+
+    }
+
+    .logo-name {
+
+      font-family: 'EB Garamond', Georgia, serif;
+
+      font-size: 26px;
+
+      font-weight: 500;
+
+      color: var(--ink);
+
+      line-height: 1;
+
+    }
+
+    .logo-tag {
+
+      font-size: 11px;
+
+      letter-spacing: 0.13em;
+
+      text-transform: uppercase;
+
+      color: var(--light);
+
+      font-weight: 300;
+
+      margin-top: 3px;
+
+    }
+
+    .form-title-right {
+
+      font-family: 'EB Garamond', Georgia, serif;
+
+      font-size: 19px;
+
+      font-style: italic;
+
+      color: var(--accent);
+
+      text-align: right;
+
+    }
+
+ 
+
+    .form-wrap {
+
+      max-width: 740px;
+
+      margin: 24px auto 0;
+
+      padding: 0 16px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 16px;
+
+    }
+
+ 
+
+    .card {
+
+      background: var(--white);
+
+      border: 1px solid var(--rule);
+
+      border-radius: 8px;
+
+      padding: 24px 24px 20px;
+
+    }
+
+    .card-title {
+
+      font-size: 15px;
+
+      font-weight: 600;
+
+      color: var(--accent);
+
+      margin-bottom: 18px;
+
+    }
+
+ 
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px 12px; }
+
+    .addr-row { display: grid; grid-template-columns: 1fr; gap: 14px; }
+
+    .city-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px 12px; }
+
+ 
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+
+ 
+
+    input[type="text"],
+
+    input[type="email"],
+
+    input[type="tel"],
+
+    input[type="date"],
+
+    input[type="number"],
+
+    select,
+
+    textarea {
+
+      width: 100%;
+
+      padding: 8px 10px;
+
+      border: 1px solid var(--rule);
+
+      border-radius: 6px;
+
+      font-family: inherit;
+
+      font-size: 13.5px;
+
+      color: var(--ink);
+
+      background: var(--white);
+
+      transition: border-color 0.15s, box-shadow 0.15s;
+
+      appearance: none;
+
+      -webkit-appearance: none;
+
+    }
+
+    input:focus, select:focus, textarea:focus {
+
+      outline: none;
+
+      border-color: var(--accent);
+
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+
+    }
+
+    input::placeholder { color: var(--light); }
+
+    select {
+
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+
+      background-repeat: no-repeat;
+
+      background-position: right 10px center;
+
+      padding-right: 30px;
+
+      cursor: pointer;
+
+    }
+
+ 
+
+    .prefix-wrap { position: relative; }
+
+    .prefix-wrap span {
+
+      position: absolute;
+
+      left: 10px;
+
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      color: var(--mid);
+
+      font-size: 13.5px;
+
+      pointer-events: none;
+
+    }
+
+    .prefix-wrap input { padding-left: 20px; }
+
+ 
+
+    .radio-group { display: flex; gap: 20px; padding-top: 2px; }
+
+    .radio-opt {
+
+      display: flex; align-items: center; gap: 7px;
+
+      font-size: 13.5px; color: var(--ink); cursor: pointer; user-select: none;
+
+    }
+
+    .radio-opt input[type="radio"] {
+
+      width: 15px; height: 15px;
+
+      accent-color: var(--accent);
+
+      cursor: pointer; flex-shrink: 0;
+
+    }
+
+ 
+
+    textarea {
+
+      min-height: 110px;
+
+      resize: vertical;
+
+      line-height: 2;
+
+      background-image: repeating-linear-gradient(
+
+        to bottom,
+
+        transparent,
+
+        transparent calc(2em - 1px),
+
+        var(--rule) calc(2em - 1px),
+
+        var(--rule) 2em
+
+      );
+
+      background-size: 100% 2em;
+
+      background-attachment: local;
+
+      padding-top: 6px;
+
+    }
+
+ 
+
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; }
+
+    .btn {
+
+      padding: 10px 22px;
+
+      border-radius: 6px;
+
+      font-family: inherit;
+
+      font-size: 14px;
+
+      font-weight: 500;
+
+      cursor: pointer;
+
+      border: none;
+
+      transition: background 0.15s;
+
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+
+    .btn-primary:hover { background: #1e3650; }
+
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+
+    .btn-secondary:hover { background: var(--bg); }
+
+ 
+
+    .success {
+
+      display: none;
+
+      background: #f0faf4;
+
+      border: 1px solid #a8d5b8;
+
+      border-radius: 6px;
+
+      padding: 14px 20px;
+
+      color: var(--success);
+
+      font-size: 13.5px;
+
+    }
+
+    .success.show { display: block; }
+
+ 
+
+    @media (max-width: 580px) {
+
+      .grid-2, .grid-3, .city-row { grid-template-columns: 1fr; }
+
+      .site-header { flex-direction: column; align-items: flex-start; }
+
+      .form-title-right { text-align: left; }
+
+    }
+
+  </style>
+
+ 
+
+ 
+
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js></script>
+
+</head>
+
+<body>
+
+ 
+
+  <div class="topbar">
+
+    <span class="chevron">‹</span>
+
+    <a href="portal.html">Back to Home</a>
+
+  </div>
+
+ 
+
+  <div class="site-header">
+
+    <div>
+
+      <div class="logo-name">Meridian Insurance</div>
+
+      <div class="logo-tag">Policy Services Department</div>
+
+    </div>
+
+    <div class="form-title-right">Spec Sheet — Commercial</div>
+
+  </div>
+
+ 
+
+  <div class="form-wrap">
+
+    <form id="clForm" novalidate>
+
+ 
+
+      <!-- General Information -->
+
+      <div class="card">
+
+        <div class="card-title">General Information</div>
+
+        <div class="grid-2" style="margin-bottom:14px;">
+
+          <div class="field">
+
+            <label>Date</label>
+
+            <input type="date" name="date" id="gen_date" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Agent</label>
+
+            <select name="agent">
+
+              <option value="">Select...</option>
+
+              <option>Mike Hokanson</option>
+
+              <option>Mason Abbott</option>
+
+              <option>Kevin Jensen</option>
+
+              <option>Nathanael Cook</option>
+
+              <option>Jennette Roylance</option>
+
+              <option>Tiffany Taylor</option>
+
+              <option>Ashtyn Cook</option>
+
+              <option>Isabel Sanders</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="grid-2" style="margin-bottom:0;">
+
+          <div class="field">
+
+            <label>Client Type</label>
+
+            <div class="radio-group">
+
+              <label class="radio-opt">
+
+                <input type="radio" name="client_type" value="new" checked /> New Client
+
+              </label>
+
+              <label class="radio-opt">
+
+                <input type="radio" name="client_type" value="existing" /> Existing Client
+
+              </label>
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Policy</label>
+
+            <div class="radio-group">
+
+              <label class="radio-opt">
+
+                <input type="radio" name="policy_status" value="new" checked /> New
+
+              </label>
+
+              <label class="radio-opt">
+
+                <input type="radio" name="policy_status" value="replacement" /> Replacement
+
+              </label>
+
+              <label class="radio-opt">
+
+                <input type="radio" name="policy_status" value="renewal" /> Renewal
+
+              </label>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Client Information -->
+
+      <div class="card">
+
+        <div class="card-title">Client Information</div>
+
+        <div class="grid-2">
+
+          <div class="field">
+
+            <label>Client Name</label>
+
+            <input type="text" name="client_name" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Contact Person</label>
+
+            <input type="text" name="contact_person" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Cell Phone</label>
+
+            <input type="tel" name="cell_phone" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Email</label>
+
+            <input type="email" name="email" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Secondary Cell Phone</label>
+
+            <input type="tel" name="secondary_cell_phone" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Secondary Email</label>
+
+            <input type="email" name="secondary_email" />
+
+          </div>
+
+        </div>
+
+        <div class="addr-row" style="margin-top:14px;">
+
+          <div class="field">
+
+            <label>Address</label>
+
+            <input type="text" name="address" />
+
+          </div>
+
+        </div>
+
+        <div class="city-row" style="margin-top:14px;">
+
+          <div class="field">
+
+            <label>City</label>
+
+            <input type="text" name="city" />
+
+          </div>
+
+          <div class="field">
+
+            <label>State</label>
+
+            <input type="text" name="state" maxlength="2" />
+
+          </div>
+
+          <div class="field">
+
+            <label>ZIP</label>
+
+            <input type="text" name="zip" maxlength="10" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Policy Information -->
+
+      <div class="card">
+
+        <div class="card-title">Policy Information</div>
+
+        <div class="grid-2">
+
+          <div class="field">
+
+            <label>Policy Type</label>
+
+            <select name="policy_type" id="policy_type" onchange="togglePolicyTypeOther()">
+
+              <option value="">Select...</option>
+
+              <option>Workers Comp</option>
+
+              <option>Auto</option>
+
+              <option>General Liability</option>
+
+              <option>Property</option>
+
+              <option>Commercial Package</option>
+
+              <option>Builders Risk</option>
+
+              <option>Cyber</option>
+
+              <option>Pollution</option>
+
+              <option>EPLI</option>
+
+              <option>Other</option>
+
+            </select>
+
+            <input type="text" name="policy_type_other" id="policy_type_other" placeholder="Enter policy type" style="display:none; margin-top:6px;" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Policy Number</label>
+
+            <input type="text" name="policy_number" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Policy Period</label>
+
+            <input type="text" name="policy_period" placeholder="e.g., 12 months" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Effective Date</label>
+
+            <input type="date" name="effective_date" id="effective_date" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Premium</label>
+
+            <div class="prefix-wrap">
+
+              <span>$</span>
+
+              <input type="number" name="premium" placeholder="0.00" step="0.01" min="0" />
+
+            </div>
+
+          </div>
+
+          <div class="field">
+
+            <label>General Agent</label>
+
+            <input type="text" name="general_agent" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Carrier</label>
+
+            <select name="carrier" id="carrier" onchange="toggleCarrierOther('carrier','carrier_other')">
+
+              <option value="">Select...</option>
+
+              <option>Auto Owners</option>
+
+              <option>Progressive</option>
+
+              <option>Nationwide</option>
+
+              <option>Hartford</option>
+
+              <option>Cincinnati</option>
+
+              <option>Other...</option>
+
+            </select>
+
+            <input type="text" name="carrier_other" id="carrier_other" placeholder="Enter carrier name" style="display:none; margin-top:6px;" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Issuing State</label>
+
+            <select name="issuing_state">
+
+              <option value="">Select...</option>
+
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+
+              <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+
+              <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+
+              <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+
+              <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+
+              <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+
+              <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+
+              <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+
+              <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+
+              <option>SD</option><option>TN</option><option>TX</option><option selected>UT</option>
+
+              <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+
+              <option>WI</option><option>WY</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Billing -->
+
+      <div class="card">
+
+        <div class="card-title">Billing</div>
+
+        <div class="field" style="margin-bottom:14px;">
+
+          <label>Billing Type</label>
+
+          <div class="radio-group">
+
+            <label class="radio-opt">
+
+              <input type="radio" name="billing_type" value="direct" checked /> Direct Bill
+
+            </label>
+
+            <label class="radio-opt">
+
+              <input type="radio" name="billing_type" value="agency" /> Agency Bill
+
+            </label>
+
+          </div>
+
+        </div>
+
+        <div class="field" style="max-width:360px;">
+
+          <label>Payment Mode</label>
+
+          <select name="payment_mode">
+
+            <option value="">Select...</option>
+
+            <option>Annual</option>
+
+            <option>Semi-Annual</option>
+
+            <option>Quarterly</option>
+
+            <option>Monthly</option>
+
+            <option>Monthly EFT</option>
+
+            <option>Mortgagee</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Notes -->
+
+      <div class="card">
+
+        <div class="card-title">Notes</div>
+
+        <div class="field">
+
+          <label>Notes</label>
+
+          <textarea name="notes"></textarea>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Actions -->
+
+      <div class="actions">
+
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+
+        <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
+
+      </div>
+
+ 
+
+      <div class="success" id="successMsg">
+
+        ✓ New commercial policy record has been submitted successfully.
+
+      </div>
+
+ 
+
+    </form>
+
+  </div>
+
+ 
+
+  <script>
+
+    const today = new Date().toISOString().split('T')[0];
+
+    document.getElementById('gen_date').value = today;
+
+    document.getElementById('effective_date').value = today;
+
+ 
+
+    document.querySelectorAll('input[type="tel"]').forEach(el => {
+
+      el.addEventListener('input', function() {
+
+        let v = this.value.replace(/\D/g, '').slice(0, 10);
+
+        if (v.length >= 7) v = `(${v.slice(0,3)}) ${v.slice(3,6)}-${v.slice(6)}`;
+
+        else if (v.length >= 4) v = `(${v.slice(0,3)}) ${v.slice(3)}`;
+
+        else if (v.length >= 1) v = `(${v}`;
+
+        this.value = v;
+
+      });
+
+    });
+
+ 
+
+    function resetForm() {
+
+      document.getElementById('clForm').reset();
+
+      document.getElementById('gen_date').value = today;
+
+      document.getElementById('effective_date').value = today;
+
+      document.getElementById('successMsg').classList.remove('show');
+
+    }
+
+ 
+
+    document.getElementById('clForm').addEventListener('submit', function(e) {
+
+      e.preventDefault();
+
+      document.getElementById('successMsg').classList.add('show');
+
+      document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    });
+
+  </script>
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  <script>
+
+    function toggleCarrierOther(selId, inpId) {
+
+      var sel=document.getElementById(selId), inp=document.getElementById(inpId);
+
+      if(!sel||!inp) return;
+
+      if(sel.value==='Other...') { inp.style.display='block'; inp.focus(); }
+
+      else { inp.style.display='none'; inp.value=''; }
+
+    }
+
+    function togglePolicyTypeOther() {
+
+      var sel=document.getElementById('policy_type'), inp=document.getElementById('policy_type_other');
+
+      if(!sel||!inp) return;
+
+      if(sel.value==='Other') { inp.style.display='block'; inp.focus(); }
+
+      else { inp.style.display='none'; inp.value=''; }
+
+    }
+
+  </script>
+
+ 
+
+  <script>
+
+  document.getElementById('generateBtn').addEventListener('click', function() {
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+    const navy=[44,74,110], ink=[26,26,26], mid=[85,85,85], rule=[212,207,201], light=[136,136,136];
+
+    const W=612, M=32, CW=W-M*2, H=CW/2;
+
+ 
+
+    function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+
+    function radio(n) { const e=document.querySelector('[name="'+n+'"]:checked'); return e?e.parentElement.textContent.trim():''; }
+
+    function carrierVal() { const x=v('carrier'); return x==='Other...'?(v('carrier_other')||'Other'):x; }
+
+    function policyTypeVal() { const x=v('policy_type'); return x==='Other'?(v('policy_type_other')||'Other'):x; }
+
+ 
+
+    let y=32;
+
+    doc.setFont('times','bold').setFontSize(16).setTextColor(...ink).text('Meridian Insurance',M,y);
+
+    doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+10);
+
+    doc.setFont('times','italic').setFontSize(12).setTextColor(...navy).text('Spec Sheet — Commercial',W-M,y,{align:'right'});
+
+    y+=18; doc.setDrawColor(...ink).setLineWidth(1.2).line(M,y,W-M,y); y+=10;
+
+ 
+
+    function sec(t) {
+
+      var s=y;
+
+      doc.setFont('helvetica','bold').setFontSize(8).setTextColor(...navy).text(t,M+8,y+6);
+
+      y+=13; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=6;
+
+      return s;
+
+    }
+
+    function box(s) { doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-4); y+=5; }
+
+    function f2(l1,v1,l2,v2) {
+
+      [[l1,v1,M],[l2,v2,M+H]].forEach(function(a) {
+
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,H,26);
+
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+4,y+8);
+
+        doc.setFontSize(9).setTextColor(...ink).text(a[1]||'',a[2]+4,y+19);
+
+      }); y+=30;
+
+    }
+
+    function ff(l,val) {
+
+      doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,26);
+
+      doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(l.toUpperCase(),M+4,y+8);
+
+      doc.setFontSize(9).setTextColor(...ink).text(val||'',M+4,y+19);
+
+      y+=30;
+
+    }
+
+ 
+
+    var s=sec('General Information');
+
+    f2('Date',v('date'),'Agent',v('agent'));
+
+    f2('Client Type',radio('client_type'),'Policy',radio('policy_status'));
+
+    box(s);
+
+ 
+
+    s=sec('Client Information');
+
+    f2('Client Name',v('client_name'),'Contact Person',v('contact_person'));
+
+    f2('Cell Phone',v('cell_phone'),'Email',v('email'));
+
+    f2('Secondary Cell Phone',v('secondary_cell_phone'),'Secondary Email',v('secondary_email'));
+
+    ff('Address',v('address'));
+
+    ff('City / State / ZIP',[v('city'),v('state'),v('zip')].filter(Boolean).join(', '));
+
+    box(s);
+
+ 
+
+    s=sec('Policy Information');
+
+    f2('Policy Type',policyTypeVal(),'Policy Number',v('policy_number'));
+
+    f2('Policy Period',v('policy_period'),'Effective Date',v('effective_date'));
+
+    f2('Premium','$'+v('premium'),'General Agent',v('general_agent'));
+
+    f2('Carrier',carrierVal(),'Issuing State',v('issuing_state'));
+
+    box(s);
+
+ 
+
+    s=sec('Billing');
+
+    f2('Billing Type',radio('billing_type'),'Payment Mode',v('payment_mode'));
+
+    box(s);
+
+ 
+
+    s=sec('Notes');
+
+    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,65);
+
+    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('NOTES',M+4,y+8);
+
+    doc.setFontSize(9).setTextColor(...ink).text(doc.splitTextToSize(v('notes'),CW-10),M+4,y+19);
+
+    doc.setDrawColor(...rule).setLineWidth(0.3);
+
+    for(var i=1;i<=3;i++) doc.line(M+2,y+i*16+4,W-M-2,y+i*16+4);
+
+    y+=69; box(s);
+
+ 
+
+    y=748; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=7;
+
+    doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · New policy documentation.',W/2,y,{align:'center'});
+
+    doc.save('spec-sheet-commercial-'+(v('client_name')||'form')+'.pdf');
+
+  });
+
+  </script>
+
+</body>
+
+</html>

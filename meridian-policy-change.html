@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Policy Change Form — Meridian Insurance</title>
+
+  <link href=https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap rel="stylesheet" />
+
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+ 
+
+    :root {
+
+      --accent:    #2c4a6e;
+
+      --accent-lt: #e8edf3;
+
+      --bg:        #f7f5f2;
+
+      --white:     #ffffff;
+
+      --rule:      #d4cfc9;
+
+      --ink:       #1a1a1a;
+
+      --mid:       #555;
+
+      --light:     #888;
+
+      --success:   #2d6a4f;
+
+    }
+
+ 
+
+    body {
+
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      background: var(--bg);
+
+      color: var(--ink);
+
+      min-height: 100vh;
+
+      padding: 0 0 60px;
+
+      font-size: 14px;
+
+    }
+
+ 
+
+    /* ── Top nav bar ── */
+
+    .topbar {
+
+      background: var(--white);
+
+      border-bottom: 1px solid var(--rule);
+
+      padding: 10px 24px;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      font-size: 13px;
+
+    }
+
+    .topbar a { color: var(--accent); text-decoration: none; }
+
+    .topbar a:hover { text-decoration: underline; }
+
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+
+ 
+
+    /* ── Form wrapper ── */
+
+    .form-wrap {
+
+      max-width: 740px;
+
+      margin: 0 auto;
+
+      padding: 0 16px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 16px;
+
+    }
+
+ 
+
+    /* ── Card / Section ── */
+
+    .card {
+
+      background: var(--white);
+
+      border: 1px solid var(--rule);
+
+      border-radius: 8px;
+
+      padding: 24px 24px 20px;
+
+    }
+
+    .card-title {
+
+      font-size: 15px;
+
+      font-weight: 600;
+
+      color: var(--accent);
+
+      margin-bottom: 18px;
+
+    }
+
+ 
+
+    /* ── Grid ── */
+
+    .grid-2 {
+
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 14px 20px;
+
+    }
+
+ 
+
+    /* ── Field ── */
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    .field label {
+
+      font-size: 13px;
+
+      font-weight: 400;
+
+      color: var(--mid);
+
+    }
+
+    input[type="text"],
+
+    input[type="date"],
+
+    select,
+
+    textarea {
+
+      width: 100%;
+
+      padding: 8px 10px;
+
+      border: 1px solid var(--rule);
+
+      border-radius: 6px;
+
+      font-family: inherit;
+
+      font-size: 13.5px;
+
+      color: var(--ink);
+
+      background: var(--white);
+
+      transition: border-color 0.15s, box-shadow 0.15s;
+
+      appearance: none;
+
+      -webkit-appearance: none;
+
+    }
+
+    input:focus, select:focus, textarea:focus {
+
+      outline: none;
+
+      border-color: var(--accent);
+
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+
+    }
+
+    select {
+
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+
+      background-repeat: no-repeat;
+
+      background-position: right 10px center;
+
+      padding-right: 30px;
+
+      cursor: pointer;
+
+    }
+
+    textarea {
+
+      min-height: 280px;
+
+      resize: vertical;
+
+      line-height: 2;
+
+      background-image: repeating-linear-gradient(
+
+        to bottom,
+
+        transparent,
+
+        transparent calc(2em - 1px),
+
+        var(--rule) calc(2em - 1px),
+
+        var(--rule) 2em
+
+      );
+
+      background-size: 100% 2em;
+
+      background-attachment: local;
+
+      padding-top: 6px;
+
+    }
+
+ 
+
+    /* ── Buttons ── */
+
+    .actions {
+
+      display: flex;
+
+      gap: 10px;
+
+      padding: 4px 0 0;
+
+    }
+
+    .btn {
+
+      padding: 10px 22px;
+
+      border-radius: 6px;
+
+      font-family: inherit;
+
+      font-size: 14px;
+
+      font-weight: 500;
+
+      cursor: pointer;
+
+      border: none;
+
+      transition: background 0.15s;
+
+    }
+
+    .btn-primary {
+
+      background: var(--accent);
+
+      color: #fff;
+
+    }
+
+    .btn-primary:hover { background: #1e3650; }
+
+    .btn-secondary {
+
+      background: var(--white);
+
+      color: var(--mid);
+
+      border: 1px solid var(--rule);
+
+    }
+
+    .btn-secondary:hover { background: var(--bg); }
+
+ 
+
+    /* ── Success ── */
+
+    .success {
+
+      display: none;
+
+      background: #f0faf4;
+
+      border: 1px solid #a8d5b8;
+
+      border-radius: 6px;
+
+      padding: 14px 20px;
+
+      color: var(--success);
+
+      font-size: 13.5px;
+
+    }
+
+    .success.show { display: block; }
+
+ 
+
+ 
+
+    /* ── Header ── */
+
+    .site-header {
+
+      max-width: 740px;
+
+      margin: 0 auto;
+
+      padding: 24px 16px 18px;
+
+      display: flex;
+
+      align-items: flex-end;
+
+      justify-content: space-between;
+
+      border-bottom: 2px solid var(--ink);
+
+      gap: 16px;
+
+      flex-wrap: wrap;
+
+    }
+
+    .logo-name {
+
+      font-family: 'EB Garamond', Georgia, serif;
+
+      font-size: 26px;
+
+      font-weight: 500;
+
+      color: var(--ink);
+
+      line-height: 1;
+
+    }
+
+    .logo-tag {
+
+      font-size: 11px;
+
+      letter-spacing: 0.13em;
+
+      text-transform: uppercase;
+
+      color: var(--light);
+
+      font-weight: 300;
+
+      margin-top: 3px;
+
+    }
+
+    .form-title-right {
+
+      font-family: 'EB Garamond', Georgia, serif;
+
+      font-size: 19px;
+
+      font-style: italic;
+
+      color: var(--accent);
+
+      text-align: right;
+
+    }
+
+    .form-wrap { margin-top: 24px; }
+
+    @media (max-width: 560px) {
+
+      .grid-2 { grid-template-columns: 1fr; }
+
+      .site-header { flex-direction: column; align-items: flex-start; }
+
+      .form-title-right { text-align: left; }
+
+    }
+
+  </style>
+
+  <link href=https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;1,400&display=swap rel="stylesheet" />
+
+ 
+
+ 
+
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js></script>
+
+</head>
+
+<body>
+
+ 
+
+  <!-- Top nav -->
+
+  <div class="topbar">
+
+    <span class="chevron">‹</span>
+
+    <a href="portal.html">Back to Home</a>
+
+  </div>
+
+ 
+
+  <!-- Header -->
+
+  <div class="site-header">
+
+    <div>
+
+      <div class="logo-name">Meridian Insurance</div>
+
+      <div class="logo-tag">Policy Services Department</div>
+
+    </div>
+
+    <div class="form-title-right">Policy Change Form</div>
+
+  </div>
+
+ 
+
+  <div class="form-wrap">
+
+    <form id="pcForm" novalidate>
+
+ 
+
+      <!-- Request Information -->
+
+      <div class="card">
+
+        <div class="card-title">Request Information</div>
+
+        <div class="grid-2">
+
+          <div class="field">
+
+            <label>Insured</label>
+
+            <input type="text" name="insured" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Request Date</label>
+
+            <input type="date" name="request_date" id="request_date" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Request Made By</label>
+
+            <input type="text" name="request_made_by" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Identity Verification</label>
+
+            <select name="identity_verification" id="identity_verification" onchange="toggleIdentityOther()">
+
+              <option value="">Select...</option>
+
+              <option>Phone Verification</option>
+
+              <option>Email Verification</option>
+
+              <option>Text</option>
+
+              <option>In Person</option>
+
+              <option>Written Authorization</option>
+
+              <option>Agent Confirmed</option>
+
+              <option>Other</option>
+
+            </select>
+
+            <input type="text" name="identity_verification_other" id="identity_verification_other" placeholder="Enter verification method" style="display:none; margin-top:6px;" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Policy Information -->
+
+      <div class="card">
+
+        <div class="card-title">Policy Information</div>
+
+        <div class="grid-2">
+
+          <div class="field">
+
+            <label>Carrier</label>
+
+            <select name="carrier" id="carrier" onchange="toggleCarrierOther('carrier','carrier_other')">
+
+              <option value="">Select...</option>
+
+              <option>Auto Owners</option>
+
+              <option>Progressive</option>
+
+              <option>Nationwide</option>
+
+              <option>Hartford</option>
+
+              <option>Cincinnati</option>
+
+              <option>Other...</option>
+
+            </select>
+
+            <input type="text" name="carrier_other" id="carrier_other" placeholder="Enter carrier name" style="display:none; margin-top:6px;" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Agent</label>
+
+            <select name="agent">
+
+              <option value="">Select...</option>
+
+              <option>Mike Hokanson</option>
+
+              <option>Mason Abbott</option>
+
+              <option>Kevin Jensen</option>
+
+              <option>Nathanael Cook</option>
+
+              <option>Jennette Roylance</option>
+
+              <option>Tiffany Taylor</option>
+
+              <option>Ashtyn Cook</option>
+
+              <option>Isabel Sanders</option>
+
+            </select>
+
+          </div>
+
+          <div class="field">
+
+            <label>Policy #</label>
+
+            <input type="text" name="policy_number" />
+
+          </div>
+
+          <div class="field">
+
+            <label>Policy Type</label>
+
+            <select name="policy_type" id="policy_type" onchange="togglePolicyTypeOther()">
+
+              <option value="">Select...</option>
+
+              <option>Home</option>
+
+              <option>Auto</option>
+
+              <option>Dwelling Fire</option>
+
+              <option>Motorcycle/UTV/ATV</option>
+
+              <option>RV</option>
+
+              <option>Boat</option>
+
+              <option>Annuity</option>
+
+              <option>Life Insurance</option>
+
+              <option>Health</option>
+
+              <option>Umbrella</option>
+
+              <option>Workers Comp</option>
+
+              <option>General Liability</option>
+
+              <option>Property</option>
+
+              <option>Commercial Package</option>
+
+              <option>Builders Risk</option>
+
+              <option>Cyber</option>
+
+              <option>Pollution</option>
+
+              <option>EPLI</option>
+
+              <option>Other</option>
+
+            </select>
+
+            <input type="text" name="policy_type_other" id="policy_type_other" placeholder="Enter policy type" style="display:none; margin-top:6px;" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Change Details -->
+
+      <div class="card">
+
+        <div class="card-title">Change Details</div>
+
+        <div class="field">
+
+          <label>Change Requested</label>
+
+          <textarea name="change_requested"></textarea>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Processing -->
+
+      <div class="card">
+
+        <div class="card-title">Processing</div>
+
+        <div class="grid-2">
+
+          <div class="field">
+
+            <label>Request Taken By</label>
+
+            <select name="request_taken_by">
+
+              <option value="">Select...</option>
+
+              <option>Mike Hokanson</option>
+
+              <option>Mason Abbott</option>
+
+              <option>Kevin Jensen</option>
+
+              <option>Nathanael Cook</option>
+
+              <option>Jennette Roylance</option>
+
+              <option>Tiffany Taylor</option>
+
+              <option>Ashtyn Cook</option>
+
+              <option>Isabel Sanders</option>
+
+            </select>
+
+          </div>
+
+          <div class="field">
+
+            <label>Change Processed By</label>
+
+            <select name="change_processed_by">
+
+              <option value="">Select...</option>
+
+              <option>Mike Hokanson</option>
+
+              <option>Mason Abbott</option>
+
+              <option>Kevin Jensen</option>
+
+              <option>Nathanael Cook</option>
+
+              <option>Jennette Roylance</option>
+
+              <option>Tiffany Taylor</option>
+
+              <option>Ashtyn Cook</option>
+
+              <option>Isabel Sanders</option>
+
+            </select>
+
+          </div>
+
+          <div class="field">
+
+            <label>Reviewed By</label>
+
+            <select name="reviewed_by">
+
+              <option value="">Select...</option>
+
+              <option>Mike Hokanson</option>
+
+              <option>Mason Abbott</option>
+
+              <option>Kevin Jensen</option>
+
+              <option>Nathanael Cook</option>
+
+              <option>Jennette Roylance</option>
+
+              <option>Tiffany Taylor</option>
+
+              <option>Ashtyn Cook</option>
+
+              <option>Isabel Sanders</option>
+
+            </select>
+
+          </div>
+
+          <div class="field">
+
+            <label>Submission Method</label>
+
+            <select name="submission_method">
+
+              <option value="">Select...</option>
+
+              <option>Phone</option>
+
+              <option>Email</option>
+
+              <option>Online Portal</option>
+
+              <option>Fax</option>
+
+              <option>In Person</option>
+
+              <option>Mail</option>
+
+            </select>
+
+          </div>
+
+          <div class="field">
+
+            <label>Date Processed</label>
+
+            <input type="date" name="date_processed" id="date_processed" />
+
+          </div>
+
+        </div>
+
+      </div>
+
+ 
+
+      <!-- Actions -->
+
+      <div class="actions">
+
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+
+        <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
+
+      </div>
+
+ 
+
+      <div class="success" id="successMsg">
+
+        ✓ Your policy change request has been submitted successfully.
+
+      </div>
+
+ 
+
+    </form>
+
+  </div>
+
+ 
+
+  <script>
+
+    const today = new Date().toISOString().split('T')[0];
+
+    document.getElementById('request_date').value = today;
+
+    document.getElementById('date_processed').value = today;
+
+ 
+
+    function resetForm() {
+
+      document.getElementById('pcForm').reset();
+
+      document.getElementById('request_date').value = today;
+
+      document.getElementById('date_processed').value = today;
+
+      document.getElementById('successMsg').classList.remove('show');
+
+    }
+
+ 
+
+    document.getElementById('pcForm').addEventListener('submit', function(e) {
+
+      e.preventDefault();
+
+      document.getElementById('successMsg').classList.add('show');
+
+      document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    });
+
+  </script>
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  <script>
+
+    function toggleCarrierOther(selId, inpId) {
+
+      var sel=document.getElementById(selId), inp=document.getElementById(inpId);
+
+      if(!sel||!inp) return;
+
+      if(sel.value==='Other...') { inp.style.display='block'; inp.focus(); }
+
+      else { inp.style.display='none'; inp.value=''; }
+
+    }
+
+    function togglePolicyTypeOther() {
+
+      var sel=document.getElementById('policy_type'), inp=document.getElementById('policy_type_other');
+
+      if(!sel||!inp) return;
+
+      if(sel.value==='Other') { inp.style.display='block'; inp.focus(); }
+
+      else { inp.style.display='none'; inp.value=''; }
+
+    }
+
+    function toggleIdentityOther() {
+
+      var sel=document.getElementById('identity_verification'), inp=document.getElementById('identity_verification_other');
+
+      if(!sel||!inp) return;
+
+      if(sel.value==='Other') { inp.style.display='block'; inp.focus(); }
+
+      else { inp.style.display='none'; inp.value=''; }
+
+    }
+
+  </script>
+
+ 
+
+  <script>
+
+  document.getElementById('generateBtn').addEventListener('click', function() {
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+    const navy=[44,74,110], ink=[26,26,26], mid=[85,85,85], rule=[212,207,201], light=[136,136,136];
+
+    const W=612, M=36, CW=W-M*2;
+
+ 
+
+    function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+
+    function carrierVal() { const x=v('carrier'); return x==='Other...'?(v('carrier_other')||'Other'):x; }
+
+    function policyTypeVal() { const x=v('policy_type'); return x==='Other'?(v('policy_type_other')||'Other'):x; }
+
+ 
+
+    let y=36;
+
+    doc.setFont('times','bold').setFontSize(18).setTextColor(...ink).text('Meridian Insurance',M,y);
+
+    doc.setFont('helvetica','normal').setFontSize(7.5).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+11);
+
+    doc.setFont('times','italic').setFontSize(13).setTextColor(...navy).text('Policy Change Form',W-M,y,{align:'right'});
+
+    y+=20; doc.setDrawColor(...ink).setLineWidth(1.2).line(M,y,W-M,y); y+=14;
+
+ 
+
+    function secTitle(t) {
+
+      doc.setFont('helvetica','bold').setFontSize(8.5).setTextColor(...navy).text(t,M+10,y+6);
+
+      y+=14; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=8;
+
+    }
+
+    function frow(fields) {
+
+      let x=M;
+
+      fields.forEach(function(f) {
+
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(x,y,f.w,28);
+
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(f.l.toUpperCase(),x+4,y+8);
+
+        doc.setFontSize(9).setTextColor(...ink).text(f.v||'',x+4,y+20);
+
+        x+=f.w;
+
+      });
+
+      y+=33;
+
+    }
+
+ 
+
+    var s=y; secTitle('Request Information');
+
+    frow([{l:'Insured',v:v('insured'),w:CW/2},{l:'Request Date',v:v('request_date'),w:CW/2}]);
+
+    frow([{l:'Request Made By',v:v('request_made_by'),w:CW/2},{l:'Identity Verification',v:v('identity_verification'),w:CW/2}]);
+
+    doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-5); y+=2;
+
+ 
+
+    s=y; secTitle('Policy Information');
+
+    frow([{l:'Carrier',v:carrierVal(),w:CW/2},{l:'Agent',v:v('agent'),w:CW/2}]);
+
+    frow([{l:'Policy #',v:v('policy_number'),w:CW/2},{l:'Policy Type',v:policyTypeVal(),w:CW/2}]);
+
+    doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-5); y+=2;
+
+ 
+
+    s=y; secTitle('Change Details');
+
+    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,130);
+
+    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('CHANGE REQUESTED',M+4,y+9);
+
+    var lines=doc.splitTextToSize(v('change_requested'),CW-10);
+
+    doc.setFontSize(9).setTextColor(...ink).text(lines,M+4,y+21);
+
+    doc.setDrawColor(...rule).setLineWidth(0.3);
+
+    for(var i=1;i<=7;i++) doc.line(M+2,y+i*16+5,W-M-2,y+i*16+5);
+
+    y+=135; doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-5); y+=2;
+
+ 
+
+    s=y; secTitle('Processing');
+
+    frow([{l:'Request Taken By',v:v('request_taken_by'),w:CW/2},{l:'Change Processed By',v:v('change_processed_by'),w:CW/2}]);
+
+    frow([{l:'Reviewed By',v:v('reviewed_by'),w:CW/2},{l:'Submission Method',v:v('submission_method'),w:CW/2}]);
+
+    frow([{l:'Date Processed',v:v('date_processed'),w:CW/2},{l:'',v:'',w:CW/2}]);
+
+    doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-5);
+
+ 
+
+    y=748; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=8;
+
+    doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · This form is for change request purposes only.',W/2,y,{align:'center'});
+
+ 
+
+    doc.save('policy-change-'+(v('insured')||'form')+'.pdf');
+
+  });
+
+  </script>
+
+</body>
+
+</html>
