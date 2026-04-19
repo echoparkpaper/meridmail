@@ -1192,27 +1192,29 @@
 
       var s=y;
 
-      doc.setFont('helvetica','bold').setFontSize(8).setTextColor(...navy).text(t,M+8,y+6);
+      doc.setFillColor(...navy).rect(M,y,CW,24,'F');
 
-      y+=13; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=6;
+      doc.setFont('helvetica','bold').setFontSize(9).setTextColor(255,255,255).text(t.toUpperCase(),M+8,y+16);
+
+      y+=28;
 
       return s;
 
     }
 
-    function box(s) { doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-4); y+=5; }
+    function box(s) { doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-4); y+=6; }
 
     function f2(l1,v1,l2,v2) {
 
       [[l1,v1,M],[l2,v2,M+H]].forEach(function(a) {
 
-        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,H,26);
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,H,32);
 
-        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+4,y+8);
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+6,y+10);
 
-        doc.setFontSize(9).setTextColor(...ink).text(a[1]||'',a[2]+4,y+19);
+        doc.setFontSize(10).setTextColor(...ink).text(a[1]||'',a[2]+6,y+24);
 
-      }); y+=30;
+      }); y+=36;
 
     }
 
@@ -1220,25 +1222,25 @@
 
       [[l1,v1,M],[l2,v2,M+T],[l3,v3,M+T*2]].forEach(function(a) {
 
-        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,T,26);
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,T,32);
 
-        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+4,y+8);
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+6,y+10);
 
-        doc.setFontSize(9).setTextColor(...ink).text(a[1]||'',a[2]+4,y+19);
+        doc.setFontSize(10).setTextColor(...ink).text(a[1]||'',a[2]+6,y+24);
 
-      }); y+=30;
+      }); y+=36;
 
     }
 
     function ff(l,val) {
 
-      doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,26);
+      doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,32);
 
-      doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(l.toUpperCase(),M+4,y+8);
+      doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(l.toUpperCase(),M+6,y+10);
 
-      doc.setFontSize(9).setTextColor(...ink).text(val||'',M+4,y+19);
+      doc.setFontSize(10).setTextColor(...ink).text(val||'',M+6,y+24);
 
-      y+=30;
+      y+=36;
 
     }
 
