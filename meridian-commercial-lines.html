@@ -1182,11 +1182,19 @@
 
     doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('NOTES',M+4,y+9);
 
-    doc.setFontSize(9).setTextColor(...ink).text(doc.splitTextToSize(v('notes'),CW-10),M+4,y+20);
-
     doc.setDrawColor(...rule).setLineWidth(0.3);
 
     for(var i=1;i<=5;i++) doc.line(M+2,y+i*16+10,W-M-2,y+i*16+10);
+
+    // Fillable text field — click anywhere in the box to type
+    var pageH = doc.internal.pageSize.getHeight();
+    var notesField = new doc.AcroForm.TextField();
+    notesField.Rect = [M+2, pageH-(y+88), CW-4, 72];
+    notesField.multiline = true;
+    notesField.fontSize = 9;
+    notesField.value = v('notes') || '';
+    notesField.borderStyle = 'none';
+    doc.addField(notesField);
 
     y+=94; box(s);
 
