@@ -1304,7 +1304,7 @@
 
     s=sec('Notes');
 
-    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,65);
+    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,120);
 
     doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('NOTES',M+4,y+8);
 
@@ -1312,9 +1312,9 @@
 
     doc.setDrawColor(...rule).setLineWidth(0.3);
 
-    for(var i=1;i<=3;i++) doc.line(M+2,y+i*16+4,W-M-2,y+i*16+4);
+    for(var i=1;i<=6;i++) doc.line(M+2,y+i*16+8,W-M-2,y+i*16+8);
 
-    y+=69; box(s);
+    y+=124; box(s);
 
  
 
