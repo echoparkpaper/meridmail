@@ -188,19 +188,33 @@
 
       border-radius: 8px;
 
-      padding: 24px 24px 20px;
+      padding: 0 24px 24px;
+
+      overflow: hidden;
 
     }
 
     .card-title {
 
-      font-size: 15px;
+      font-size: 12px;
 
       font-weight: 600;
 
-      color: var(--accent);
+      color: #ffffff;
 
-      margin-bottom: 18px;
+      background: var(--accent);
+
+      padding: 10px 24px;
+
+      margin: 0 -24px 22px -24px;
+
+      letter-spacing: 0.06em;
+
+      text-transform: uppercase;
+
+      -webkit-print-color-adjust: exact;
+
+      print-color-adjust: exact;
 
     }
 
@@ -208,11 +222,11 @@
 
     /* ── Grids ── */
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
 
-    .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px 12px; }
+    .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 18px 16px; }
 
-    .grid-ssn { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px 16px; }
+    .grid-ssn { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 16px; }
 
  
 
@@ -240,7 +254,7 @@
 
       width: 100%;
 
-      padding: 8px 10px;
+      padding: 10px 12px;
 
       border: 1px solid var(--rule);
 
