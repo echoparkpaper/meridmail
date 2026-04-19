@@ -1074,7 +1074,7 @@
 
     let y=32;
 
-    doc.setFont('times','bold').setFontSize(22).setTextColor(...ink).text('Meridian Insurance',M,y);
+    doc.setFont('times','bold').setFontSize(18).setTextColor(...ink).text('Meridian Insurance',M,y);
 
     doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+13);
 
@@ -1178,17 +1178,17 @@
 
     s=sec('Notes');
 
-    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,120);
+    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,90);
 
-    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('NOTES',M+4,y+8);
+    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('NOTES',M+4,y+9);
 
-    doc.setFontSize(9).setTextColor(...ink).text(doc.splitTextToSize(v('notes'),CW-10),M+4,y+19);
+    doc.setFontSize(9).setTextColor(...ink).text(doc.splitTextToSize(v('notes'),CW-10),M+4,y+20);
 
     doc.setDrawColor(...rule).setLineWidth(0.3);
 
-    for(var i=1;i<=6;i++) doc.line(M+2,y+i*16+8,W-M-2,y+i*16+8);
+    for(var i=1;i<=5;i++) doc.line(M+2,y+i*16+10,W-M-2,y+i*16+10);
 
-    y+=124; box(s);
+    y+=94; box(s);
 
  
 
