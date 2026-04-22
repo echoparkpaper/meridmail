@@ -178,6 +178,24 @@
       display: inline-flex; align-items: center;
     }
     .btn-primary { background: var(--accent); color: #fff; }
+    .add-form-select {
+      width: auto;
+      padding: 10px 34px 10px 22px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .add-form-select:hover { background-color: #1e3650; }
     .btn-primary:hover { background: #1e3650; }
     .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
     .btn-secondary:hover { background: var(--bg); }
@@ -559,7 +577,7 @@
         <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('a126Form').reset()">Clear Form</button>
         <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
-        <select class="btn btn-secondary" onchange="if(this.value){addForm(this.value); this.value='';}" style="padding-right: 30px; appearance: auto; -webkit-appearance: menulist;">
+        <select class="add-form-select" onchange="if(this.value){addForm(this.value); this.value='';}">
           <option value="">+ Add Form</option>
           <option value="acord-125.html">ACORD 125 — Commercial Application</option>
         </select>
