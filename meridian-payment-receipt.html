@@ -1522,56 +1522,67 @@
 
  
 
-    // Always give Special Instructions its own dedicated continuation page so it has
-    // plenty of room and can never be clipped by the page bottom, regardless of
-    // whether Agency Bill Reconciliation was rendered.
-    var fyCur = 748;
+    // Only render Special Instructions if the user entered content. When present,
+    // put it on a dedicated continuation page with a large auto-sized box so
+    // long notes never get clipped. When empty, skip it entirely and keep
+    // the receipt to one page.
+    var siText = (v('special_instructions')||'').trim();
 
-    doc.setDrawColor(...rule).setLineWidth(0.4).line(M,fyCur,W-M,fyCur);
+    if (siText) {
 
-    doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · Payment receipt documentation.',W/2,fyCur+7,{align:'center'});
+      // Draw footer on current page, then start a fresh page for the section.
 
-    doc.addPage();
+      var fyCur = 748;
 
-    y = 32;
+      doc.setDrawColor(...rule).setLineWidth(0.4).line(M,fyCur,W-M,fyCur);
 
-    doc.setFont('times','bold').setFontSize(18).setTextColor(...ink).text('Meridian Insurance',M,y);
+      doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · Payment receipt documentation.',W/2,fyCur+7,{align:'center'});
 
-    doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+12);
+      doc.addPage();
 
-    doc.setFont('times','italic').setFontSize(14).setTextColor(...navy).text('Payment Receipt (continued)',W-M,y,{align:'right'});
+      y = 32;
 
-    y+=20; doc.setDrawColor(...ink).setLineWidth(0.8).line(M,y,W-M,y); y+=12;
+      doc.setFont('times','bold').setFontSize(18).setTextColor(...ink).text('Meridian Insurance',M,y);
 
-    s=sec('Special Instructions');
+      doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+12);
 
-    // Box fills remaining space down to just above the footer.
-    var siBoxHeight = 748 - y - 10;
+      doc.setFont('times','italic').setFontSize(14).setTextColor(...navy).text('Payment Receipt (continued)',W-M,y,{align:'right'});
 
-    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,siBoxHeight);
+      y+=20; doc.setDrawColor(...ink).setLineWidth(0.8).line(M,y,W-M,y); y+=12;
 
-    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('SPECIAL INSTRUCTIONS',M+6,y+10);
+      s=sec('Special Instructions');
 
-    // Clip long notes to what fits in the box (at ~14pt line height).
-    var siLines = doc.splitTextToSize(v('special_instructions'),CW-14);
+      // Box fills remaining space down to just above the footer.
 
-    var maxLines = Math.floor((siBoxHeight-26)/14);
+      var siBoxHeight = 748 - y - 10;
 
-    if (siLines.length > maxLines) siLines = siLines.slice(0, maxLines);
+      doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,siBoxHeight);
 
-    doc.setFontSize(10).setTextColor(...ink).text(siLines,M+6,y+26);
+      doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('SPECIAL INSTRUCTIONS',M+6,y+10);
 
-    // Draw ruled lines across the full inner area of the box.
+      // Clip long notes to what fits in the box (at ~14pt line height).
 
-    doc.setDrawColor(...rule).setLineWidth(0.3);
+      var siLines = doc.splitTextToSize(siText, CW-14);
 
-    var ruleCount = Math.floor((siBoxHeight-20)/16);
+      var maxLines = Math.floor((siBoxHeight-26)/14);
 
-    for(var i=1;i<=ruleCount;i++) doc.line(M+4,y+18+i*16,W-M-4,y+18+i*16);
+      if (siLines.length > maxLines) siLines = siLines.slice(0, maxLines);
 
-    y+=siBoxHeight;
+      doc.setFontSize(10).setTextColor(...ink).text(siLines,M+6,y+26);
 
+      // Draw ruled lines across the full inner area of the box.
 
+      doc.setDrawColor(...rule).setLineWidth(0.3);
+
+      var ruleCount = Math.floor((siBoxHeight-20)/16);
+
+      for(var i=1;i<=ruleCount;i++) doc.line(M+4,y+18+i*16,W-M-4,y+18+i*16);
+
+      y+=siBoxHeight;
+
+    }
+
+    // Footer on the final page (same whether 1 or 2 pages).
 
     var fy2 = 748; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,fy2,W-M,fy2);
 
