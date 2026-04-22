@@ -1070,6 +1070,8 @@
 
       <div class="actions">
 
+        <a id="backToSourceBtn" href="#" class="btn btn-secondary" style="display:none;">← Back to Spec Sheet</a>
+
         <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
 
         <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
@@ -1206,6 +1208,23 @@
       try { var d = JSON.parse(raw); } catch(e) { return; }
 
       localStorage.removeItem('ep_pr_prefill');
+
+      // If the user came from a spec sheet, show a Back button linking to it.
+      if (d.source_url) {
+
+        var backBtn = document.getElementById('backToSourceBtn');
+
+        if (backBtn) {
+
+          backBtn.href = d.source_url;
+
+          backBtn.textContent = '← Back to ' + (d.source_label || 'Spec Sheet');
+
+          backBtn.style.display = '';
+
+        }
+
+      }
 
       function set(name, val) {
 
