@@ -653,7 +653,7 @@
       <div class="actions">
         <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('a125Form').reset()">Clear Form</button>
-        <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+        <button type="button" class="btn btn-secondary" onclick="printAcord125(this)">Print</button>
         <select class="add-form-select" onchange="if(this.value){addForm(this.value); this.value='';}">
           <option value="">+ Add Form</option>
           <option value="acord-126.html">ACORD 126 — Commercial GL Section</option>
@@ -703,30 +703,30 @@
       } catch(e) { console.error('prefill load failed', e); }
     })();
 
-    document.getElementById('generateBtn').addEventListener('click', async function() {
-      const btn = this;
-      btn.disabled = true; btn.textContent = 'Generating...';
-
+    // Build the filled ACORD 125 PDF and return its bytes. Shared by the
+    // Generate PDF (download) and Print (open in new window) buttons so both
+    // always produce the authentic ACORD 125 form, never the Meridian-styled
+    // HTML view.
+    async function buildAcord125Pdf() {
       function v(n) { var e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
       function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(p[1]+'/'+p[2]+'/'+p[0]):s; }
       function chk(n) { var e=document.querySelector('[name="'+n+'"]'); return !!(e&&e.checked); }
 
-      try {
-        const { PDFDocument } = window.PDFLib;
-        const existingBytes = await fetch('acord-125-blank.pdf').then(r => {
-          if (!r.ok) throw new Error('Failed to load ACORD 125 template');
-          return r.arrayBuffer();
-        });
-        const pdfDoc = await PDFDocument.load(existingBytes);
-        const form = pdfDoc.getForm();
+      const { PDFDocument } = window.PDFLib;
+      const existingBytes = await fetch('acord-125-blank.pdf').then(r => {
+        if (!r.ok) throw new Error('Failed to load ACORD 125 template');
+        return r.arrayBuffer();
+      });
+      const pdfDoc = await PDFDocument.load(existingBytes);
+      const form = pdfDoc.getForm();
 
-        function setText(name, val) {
-          if (val === '' || val == null) return;
-          try { form.getTextField(name).setText(String(val)); } catch(e) {}
-        }
-        function setCheck(name, on) {
-          try { const cb = form.getCheckBox(name); if (on) cb.check(); else cb.uncheck(); } catch(e) {}
-        }
+      function setText(name, val) {
+        if (val === '' || val == null) return;
+        try { form.getTextField(name).setText(String(val)); } catch(e) {}
+      }
+      function setCheck(name, on) {
+        try { const cb = form.getCheckBox(name); if (on) cb.check(); else cb.uncheck(); } catch(e) {}
+      }
 
         // --- Producer ---
         setText('Producer_FullName_A',                 v('producer_name'));
@@ -988,13 +988,25 @@
         setText('NamedInsured_SignatureDate_A',                 fmtDate(v('sig_insured_date')));
         setText('NamedInsured_Initials_A',                      v('sig_insured_initials'));
 
-        // Save and download
-        const pdfBytes = await pdfDoc.save();
+      return await pdfDoc.save();
+    }
+
+    function _niSlug() {
+      var el = document.querySelector('[name="ni_name"]');
+      var raw = (el && el.value) || 'form';
+      return raw.replace(/[^a-z0-9]+/gi, '-');
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true; btn.textContent = 'Generating...';
+      try {
+        const pdfBytes = await buildAcord125Pdf();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'acord-125-' + (v('ni_name') || 'form').replace(/[^a-z0-9]+/gi,'-') + '.pdf';
+        a.download = 'acord-125-' + _niSlug() + '.pdf';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1006,6 +1018,35 @@
         btn.disabled = false; btn.textContent = 'Generate PDF';
       }
     });
+
+    // Print button: generate the authentic ACORD 125 PDF and open it in a
+    // new tab so the user prints the real form, not the HTML view.
+    async function printAcord125(btn) {
+      if (btn) { btn.disabled = true; btn.textContent = 'Preparing...'; }
+      try {
+        const pdfBytes = await buildAcord125Pdf();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const w = window.open(url, '_blank');
+        if (!w) {
+          alert('Popup blocked. Please allow popups for this site to print the ACORD form.');
+          return;
+        }
+        // Kick off the print dialog once the PDF viewer has rendered.
+        var tries = 0;
+        var iv = setInterval(function() {
+          tries++;
+          try { if (w.document && w.document.readyState === 'complete') { w.focus(); w.print(); clearInterval(iv); } } catch(e) {}
+          if (tries > 20) clearInterval(iv);
+        }, 400);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+      } catch (err) {
+        alert('Failed to prepare form for printing: ' + err.message);
+        console.error(err);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Print'; }
+      }
+    }
   </script>
 
   <script>
