@@ -966,9 +966,9 @@
 
     let y=36;
 
-    doc.setFont('times','bold').setFontSize(18).setTextColor(...ink).text('Meridian Insurance',M,y);
+    doc.setFont('times','bold').setFontSize(22).setTextColor(...ink).text('Meridian Insurance',M,y);
 
-    doc.setFont('helvetica','normal').setFontSize(7.5).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+11);
+    doc.setFont('helvetica','normal').setFontSize(7.5).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+14);
 
     doc.setFont('times','italic').setFontSize(13).setTextColor(...navy).text('Policy Change Form',W-M,y,{align:'right'});
 
@@ -978,9 +978,11 @@
 
     function secTitle(t) {
 
-      doc.setFont('helvetica','bold').setFontSize(8.5).setTextColor(...navy).text(t,M+10,y+6);
+      doc.setFillColor(...navy).rect(M,y,CW,24,'F');
 
-      y+=14; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=8;
+      doc.setFont('helvetica','bold').setFontSize(9).setTextColor(255,255,255).text(t.toUpperCase(),M+8,y+16);
+
+      y+=28;
 
     }
 
@@ -990,17 +992,17 @@
 
       fields.forEach(function(f) {
 
-        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(x,y,f.w,28);
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(x,y,f.w,32);
 
-        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(f.l.toUpperCase(),x+4,y+8);
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(f.l.toUpperCase(),x+6,y+10);
 
-        doc.setFontSize(9).setTextColor(...ink).text(f.v||'',x+4,y+20);
+        doc.setFontSize(10).setTextColor(...ink).text(f.v||'',x+6,y+24);
 
         x+=f.w;
 
       });
 
-      y+=33;
+      y+=36;
 
     }
 
@@ -1030,11 +1032,11 @@
 
     doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,130);
 
-    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('CHANGE REQUESTED',M+4,y+9);
+    doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('CHANGE REQUESTED',M+6,y+10);
 
     var lines=doc.splitTextToSize(v('change_requested'),CW-10);
 
-    doc.setFontSize(9).setTextColor(...ink).text(lines,M+4,y+21);
+    doc.setFontSize(10).setTextColor(...ink).text(lines,M+6,y+26);
 
     doc.setDrawColor(...rule).setLineWidth(0.3);
 
