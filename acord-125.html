@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACORD 125 — Commercial Application | Meridian Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:    #2c4a6e;
+      --accent-lt: #e8edf3;
+      --bg:        #f7f5f2;
+      --white:     #ffffff;
+      --rule:      #d4cfc9;
+      --ink:       #1a1a1a;
+      --mid:       #555;
+      --light:     #888;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0 0 60px;
+      font-size: 14px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--rule); padding: 10px 24px; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .topbar a { color: var(--accent); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+    .site-header {
+      max-width: 860px; margin: 0 auto; padding: 24px 16px 18px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2px solid var(--ink); gap: 16px; flex-wrap: wrap;
+    }
+    .logo-name { font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 500; color: var(--ink); line-height: 1; }
+    .logo-tag { font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--light); font-weight: 300; margin-top: 3px; }
+    .form-title-right { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; font-style: italic; color: var(--accent); text-align: right; }
+    .form-wrap { max-width: 860px; margin: 24px auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 0 24px 24px; overflow: hidden; }
+    .card-title {
+      font-size: 12px; font-weight: 600; color: #ffffff; background: var(--accent);
+      padding: 10px 24px; margin: 0 -24px 22px -24px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px 12px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+    input[type="text"], input[type="date"], input[type="number"], input[type="email"], input[type="tel"], select, textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px;
+      font-family: inherit; font-size: 13.5px; color: var(--ink); background: var(--white);
+      transition: border-color 0.15s; appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+    }
+    input::placeholder { color: var(--light); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      padding-right: 30px; cursor: pointer;
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    .prefix-wrap { position: relative; }
+    .prefix-wrap span { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--mid); font-size: 13.5px; pointer-events: none; }
+    .prefix-wrap input { padding-left: 20px; }
+    .check-group { display: flex; gap: 20px; flex-wrap: wrap; padding-top: 4px; }
+    .check-opt { display: flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+    .check-opt input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+    .yn-row { display: flex; align-items: flex-start; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+    .yn-row:last-child { border-bottom: none; }
+    .yn-label { flex: 1; font-size: 13px; color: var(--ink); line-height: 1.4; }
+    .yn-select { width: 80px; flex-shrink: 0; }
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 22px; border-radius: 6px; font-family: inherit; font-size: 14px;
+      font-weight: 500; cursor: pointer; border: none; transition: background 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1e3650; }
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+    .btn-secondary:hover { background: var(--bg); }
+    .subhead { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin: 10px 0 8px; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .site-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="chevron">‹</span>
+    <a href="portal.html">Back to Home</a>
+  </div>
+
+  <div class="site-header">
+    <div>
+      <div class="logo-name">Meridian Insurance</div>
+      <div class="logo-tag">Policy Services Department</div>
+    </div>
+    <div class="form-title-right">ACORD 125 — Commercial Application</div>
+  </div>
+
+  <div class="form-wrap">
+    <form id="a125Form" novalidate>
+
+      <!-- Producer -->
+      <div class="card">
+        <div class="card-title">Producer</div>
+        <div class="grid-2">
+          <div class="field"><label>Producer / Agency Name</label><input type="text" name="producer_name" /></div>
+          <div class="field"><label>Customer ID</label><input type="text" name="customer_id" /></div>
+          <div class="field"><label>Address Line 1</label><input type="text" name="producer_addr1" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="producer_addr2" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="producer_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="producer_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="producer_zip" maxlength="10" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Contact Name</label><input type="text" name="producer_contact" /></div>
+          <div class="field"><label>Phone</label><input type="tel" name="producer_phone" /></div>
+          <div class="field"><label>Fax</label><input type="tel" name="producer_fax" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Email</label><input type="email" name="producer_email" /></div>
+          <div class="field"><label>Producer ID (code)</label><input type="text" name="producer_id" /></div>
+          <div class="field"><label>Sub-Producer ID</label><input type="text" name="subproducer_id" /></div>
+        </div>
+      </div>
+
+      <!-- Insurer / Underwriter -->
+      <div class="card">
+        <div class="card-title">Insurer / Underwriter</div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer / Company Name</label><input type="text" name="insurer_name" /></div>
+          <div class="field"><label>NAIC Code</label><input type="text" name="naic_code" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="policy_number" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Product / Program</label><input type="text" name="product" /></div>
+          <div class="field"><label>Product Code</label><input type="text" name="product_code" /></div>
+          <div class="field"><label>Underwriter</label><input type="text" name="underwriter" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Underwriter Office</label><input type="text" name="underwriter_office" /></div>
+          <div class="field"><label>Form Date</label><input type="date" name="form_date" /></div>
+        </div>
+      </div>
+
+      <!-- Status of Transaction -->
+      <div class="card">
+        <div class="card-title">Status of Transaction</div>
+        <div class="check-group" style="margin-bottom:16px;">
+          <label class="check-opt"><input type="checkbox" name="status_quote" /> Quote</label>
+          <label class="check-opt"><input type="checkbox" name="status_bound" /> Bound</label>
+          <label class="check-opt"><input type="checkbox" name="status_issue" /> Issue Policy</label>
+          <label class="check-opt"><input type="checkbox" name="status_renew" /> Renewal</label>
+          <label class="check-opt"><input type="checkbox" name="status_change" /> Change</label>
+          <label class="check-opt"><input type="checkbox" name="status_cancel" /> Cancel</label>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Effective Date</label><input type="date" name="effective_date" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="expiration_date" /></div>
+          <div class="field"><label>Effective Time</label><input type="text" name="effective_time" placeholder="12:01" /></div>
+        </div>
+        <div class="check-group" style="margin-top:12px;">
+          <label class="check-opt"><input type="checkbox" name="effective_time_am" /> AM</label>
+          <label class="check-opt"><input type="checkbox" name="effective_time_pm" /> PM</label>
+        </div>
+      </div>
+
+      <!-- Lines of Business & Premium -->
+      <div class="card">
+        <div class="card-title">Lines of Business &amp; Premium</div>
+        <div class="grid-2">
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_gl" /> Commercial General Liability</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_gl_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_prop" /> Commercial Property</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_prop_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_ba" /> Business Auto</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_ba_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_bo" /> Business Owners</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_bo_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_im" /> Inland Marine</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_im_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_crime" /> Crime</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_crime_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_cyber" /> Cyber &amp; Privacy</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_cyber_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_umbrella" /> Commercial Umbrella</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_umbrella_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_bm" /> Boiler &amp; Machinery</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_bm_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field">
+            <label class="check-opt"><input type="checkbox" name="lob_liquor" /> Liquor Liability</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lob_liquor_prem" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <div class="subhead" style="margin-top:22px;">Other Lines</div>
+        <div class="grid-2">
+          <div class="field"><label>Other Line (A) — Description</label><input type="text" name="lob_other_a_desc" /></div>
+          <div class="field"><label>Other Line (A) — Premium</label><div class="prefix-wrap"><span>$</span><input type="text" name="lob_other_a_prem" placeholder="0.00" /></div></div>
+          <div class="field"><label>Other Line (B) — Description</label><input type="text" name="lob_other_b_desc" /></div>
+          <div class="field"><label>Other Line (B) — Premium</label><div class="prefix-wrap"><span>$</span><input type="text" name="lob_other_b_prem" placeholder="0.00" /></div></div>
+        </div>
+      </div>
+
+      <!-- Payment Plan -->
+      <div class="card">
+        <div class="card-title">Payment Plan</div>
+        <div class="check-group" style="margin-bottom:16px;">
+          <label class="check-opt"><input type="checkbox" name="pay_direct" /> Direct Bill</label>
+          <label class="check-opt"><input type="checkbox" name="pay_producer" /> Agency/Producer Bill</label>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Payment Schedule</label><input type="text" name="pay_schedule" placeholder="e.g., Annual, Quarterly" /></div>
+          <div class="field"><label>Payment Method</label><input type="text" name="pay_method" /></div>
+          <div class="field"><label>Audit Frequency</label><input type="text" name="audit_freq" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Deposit Amount</label><div class="prefix-wrap"><span>$</span><input type="text" name="deposit" placeholder="0.00" /></div></div>
+          <div class="field"><label>Minimum Premium</label><div class="prefix-wrap"><span>$</span><input type="text" name="min_premium" placeholder="0.00" /></div></div>
+          <div class="field"><label>Estimated Total Premium</label><div class="prefix-wrap"><span>$</span><input type="text" name="total_premium" placeholder="0.00" /></div></div>
+        </div>
+      </div>
+
+      <!-- Named Insured -->
+      <div class="card">
+        <div class="card-title">Named Insured (Applicant)</div>
+        <div class="grid-2">
+          <div class="field"><label>Full Name / Business Name</label><input type="text" name="ni_name" /></div>
+          <div class="field"><label>Website</label><input type="text" name="ni_website" /></div>
+          <div class="field"><label>Mailing Address Line 1</label><input type="text" name="ni_addr1" /></div>
+          <div class="field"><label>Mailing Address Line 2</label><input type="text" name="ni_addr2" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="ni_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="ni_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="ni_zip" maxlength="10" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Primary Phone</label><input type="tel" name="ni_phone" /></div>
+          <div class="field"><label>Tax ID / FEIN</label><input type="text" name="tax_id" /></div>
+          <div class="field"><label>GL Code</label><input type="text" name="gl_code" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>SIC Code</label><input type="text" name="sic_code" /></div>
+          <div class="field"><label>NAICS Code</label><input type="text" name="naics_code" /></div>
+        </div>
+        <div class="subhead" style="margin-top:22px;">Legal Entity Type</div>
+        <div class="check-group">
+          <label class="check-opt"><input type="checkbox" name="entity_corp" /> Corporation</label>
+          <label class="check-opt"><input type="checkbox" name="entity_scorp" /> S-Corp</label>
+          <label class="check-opt"><input type="checkbox" name="entity_llc" /> LLC</label>
+          <label class="check-opt"><input type="checkbox" name="entity_partnership" /> Partnership</label>
+          <label class="check-opt"><input type="checkbox" name="entity_individual" /> Individual / Sole Prop.</label>
+          <label class="check-opt"><input type="checkbox" name="entity_jv" /> Joint Venture</label>
+          <label class="check-opt"><input type="checkbox" name="entity_npo" /> Not For Profit</label>
+          <label class="check-opt"><input type="checkbox" name="entity_trust" /> Trust</label>
+          <label class="check-opt"><input type="checkbox" name="entity_other" /> Other</label>
+        </div>
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="field"><label>LLC Member/Manager Count</label><input type="number" name="llc_members" /></div>
+          <div class="field"><label>Entity Other — Description</label><input type="text" name="entity_other_desc" /></div>
+        </div>
+      </div>
+
+      <!-- Primary Contact -->
+      <div class="card">
+        <div class="card-title">Primary Contact</div>
+        <div class="grid-2">
+          <div class="field"><label>Contact Name</label><input type="text" name="contact_name" /></div>
+          <div class="field"><label>Contact Title / Description</label><input type="text" name="contact_desc" /></div>
+          <div class="field"><label>Primary Phone</label><input type="tel" name="contact_phone" /></div>
+          <div class="field"><label>Primary Email</label><input type="email" name="contact_email" /></div>
+          <div class="field"><label>Secondary Phone</label><input type="tel" name="contact_phone2" /></div>
+          <div class="field"><label>Secondary Email</label><input type="email" name="contact_email2" /></div>
+        </div>
+      </div>
+
+      <!-- Premises / Location 1 -->
+      <div class="card">
+        <div class="card-title">Premises — Location 1</div>
+        <div class="grid-3">
+          <div class="field"><label>Loc #</label><input type="text" name="loc1_loc" /></div>
+          <div class="field"><label>Building #</label><input type="text" name="loc1_bldg" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Address Line 1</label><input type="text" name="loc1_addr1" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="loc1_addr2" /></div>
+        </div>
+        <div class="grid-4" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="loc1_city" /></div>
+          <div class="field"><label>County</label><input type="text" name="loc1_county" /></div>
+          <div class="field"><label>State</label><input type="text" name="loc1_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="loc1_zip" maxlength="10" /></div>
+        </div>
+        <div class="check-group" style="margin-top:14px;">
+          <label class="check-opt"><input type="checkbox" name="loc1_inside" /> Inside City Limits</label>
+          <label class="check-opt"><input type="checkbox" name="loc1_outside" /> Outside City Limits</label>
+          <label class="check-opt"><input type="checkbox" name="loc1_owner" /> Owner</label>
+          <label class="check-opt"><input type="checkbox" name="loc1_tenant" /> Tenant</label>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Full-Time Employees</label><input type="number" name="loc1_ft" /></div>
+          <div class="field"><label>Part-Time Employees</label><input type="number" name="loc1_pt" /></div>
+          <div class="field"><label>Annual Revenue</label><div class="prefix-wrap"><span>$</span><input type="text" name="loc1_revenue" placeholder="0.00" /></div></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Occupied Area (sq ft)</label><input type="text" name="loc1_occupied" /></div>
+          <div class="field"><label>Open to Public Area (sq ft)</label><input type="text" name="loc1_public" /></div>
+          <div class="field"><label>Total Building Area (sq ft)</label><input type="text" name="loc1_area" /></div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Description of Operations at this Location</label>
+          <textarea name="loc1_ops"></textarea>
+        </div>
+      </div>
+
+      <!-- Premises / Location 2 -->
+      <div class="card">
+        <div class="card-title">Premises — Location 2 (Optional)</div>
+        <div class="grid-3">
+          <div class="field"><label>Loc #</label><input type="text" name="loc2_loc" /></div>
+          <div class="field"><label>Building #</label><input type="text" name="loc2_bldg" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Address Line 1</label><input type="text" name="loc2_addr1" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="loc2_addr2" /></div>
+        </div>
+        <div class="grid-4" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="loc2_city" /></div>
+          <div class="field"><label>County</label><input type="text" name="loc2_county" /></div>
+          <div class="field"><label>State</label><input type="text" name="loc2_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="loc2_zip" maxlength="10" /></div>
+        </div>
+        <div class="check-group" style="margin-top:14px;">
+          <label class="check-opt"><input type="checkbox" name="loc2_inside" /> Inside City Limits</label>
+          <label class="check-opt"><input type="checkbox" name="loc2_outside" /> Outside City Limits</label>
+          <label class="check-opt"><input type="checkbox" name="loc2_owner" /> Owner</label>
+          <label class="check-opt"><input type="checkbox" name="loc2_tenant" /> Tenant</label>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Full-Time Employees</label><input type="number" name="loc2_ft" /></div>
+          <div class="field"><label>Part-Time Employees</label><input type="number" name="loc2_pt" /></div>
+          <div class="field"><label>Annual Revenue</label><div class="prefix-wrap"><span>$</span><input type="text" name="loc2_revenue" placeholder="0.00" /></div></div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Description of Operations at this Location</label>
+          <textarea name="loc2_ops"></textarea>
+        </div>
+      </div>
+
+      <!-- Nature of Business -->
+      <div class="card">
+        <div class="card-title">Nature of Business</div>
+        <div class="check-group" style="margin-bottom:16px;">
+          <label class="check-opt"><input type="checkbox" name="biz_apartments" /> Apartments</label>
+          <label class="check-opt"><input type="checkbox" name="biz_condos" /> Condominiums</label>
+          <label class="check-opt"><input type="checkbox" name="biz_contractor" /> Contractor</label>
+          <label class="check-opt"><input type="checkbox" name="biz_institutional" /> Institutional</label>
+          <label class="check-opt"><input type="checkbox" name="biz_manufacturing" /> Manufacturing</label>
+          <label class="check-opt"><input type="checkbox" name="biz_office" /> Office</label>
+          <label class="check-opt"><input type="checkbox" name="biz_restaurant" /> Restaurant</label>
+          <label class="check-opt"><input type="checkbox" name="biz_retail" /> Retail</label>
+          <label class="check-opt"><input type="checkbox" name="biz_service" /> Service</label>
+          <label class="check-opt"><input type="checkbox" name="biz_wholesale" /> Wholesale</label>
+          <label class="check-opt"><input type="checkbox" name="biz_other" /> Other</label>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Other Business Type — Description</label><input type="text" name="biz_other_desc" /></div>
+          <div class="field"><label>Business Start Date</label><input type="date" name="business_start" /></div>
+          <div class="field"><label>% Installation/Repair Work</label><input type="text" name="install_pct" placeholder="0" /></div>
+          <div class="field"><label>% Work Off Premises</label><input type="text" name="offpremise_pct" placeholder="0" /></div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Description of Primary Operations</label>
+          <textarea name="operations_desc"></textarea>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Additional Operations / Other Ventures</label>
+          <textarea name="operations_desc_b"></textarea>
+        </div>
+      </div>
+
+      <!-- Additional Interest -->
+      <div class="card">
+        <div class="card-title">Additional Interest (Primary)</div>
+        <div class="check-group" style="margin-bottom:16px;">
+          <label class="check-opt"><input type="checkbox" name="ai_additional_insured" /> Additional Insured</label>
+          <label class="check-opt"><input type="checkbox" name="ai_mortgagee" /> Mortgagee</label>
+          <label class="check-opt"><input type="checkbox" name="ai_loss_payee" /> Loss Payee</label>
+          <label class="check-opt"><input type="checkbox" name="ai_lienholder" /> Lienholder</label>
+          <label class="check-opt"><input type="checkbox" name="ai_lenders_loss" /> Lender's Loss Payable</label>
+          <label class="check-opt"><input type="checkbox" name="ai_owner" /> Owner</label>
+          <label class="check-opt"><input type="checkbox" name="ai_trustee" /> Trustee</label>
+          <label class="check-opt"><input type="checkbox" name="ai_other" /> Other</label>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Name / Entity</label><input type="text" name="ai_name" /></div>
+          <div class="field"><label>Account Number</label><input type="text" name="ai_account" /></div>
+          <div class="field"><label>Address Line 1</label><input type="text" name="ai_addr1" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="ai_addr2" /></div>
+        </div>
+        <div class="grid-4" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="ai_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="ai_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="ai_zip" maxlength="10" /></div>
+          <div class="field"><label>Country</label><input type="text" name="ai_country" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Phone</label><input type="tel" name="ai_phone" /></div>
+          <div class="field"><label>Email</label><input type="email" name="ai_email" /></div>
+          <div class="field"><label>Interest End Date</label><input type="date" name="ai_end_date" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Loan Amount</label><div class="prefix-wrap"><span>$</span><input type="text" name="ai_loan" placeholder="0.00" /></div></div>
+          <div class="field"><label>Interest Rank</label><input type="text" name="ai_rank" placeholder="1st, 2nd..." /></div>
+          <div class="field"><label>Other — Description</label><input type="text" name="ai_other_desc" /></div>
+        </div>
+        <div class="check-group" style="margin-top:12px;">
+          <label class="check-opt"><input type="checkbox" name="ai_cert_required" /> Certificate Required</label>
+          <label class="check-opt"><input type="checkbox" name="ai_policy_required" /> Policy Required</label>
+          <label class="check-opt"><input type="checkbox" name="ai_send_bill" /> Send Bill</label>
+        </div>
+      </div>
+
+      <!-- General Information Questions -->
+      <div class="card">
+        <div class="card-title">General Information</div>
+        <div class="yn-row">
+          <div class="yn-label">1. Any subsidiaries/affiliates, parent organization, or any entity not covered?</div>
+          <select class="yn-select" name="q_subsidiaries"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">2. Is a formal safety program in operation?</div>
+          <select class="yn-select" name="q_safety"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="check-group" style="padding-left:24px; padding-top:8px;">
+          <label class="check-opt"><input type="checkbox" name="safety_manual" /> Safety Manual</label>
+          <label class="check-opt"><input type="checkbox" name="safety_position" /> Safety Position</label>
+          <label class="check-opt"><input type="checkbox" name="safety_monthly" /> Monthly Meetings</label>
+          <label class="check-opt"><input type="checkbox" name="safety_osha" /> OSHA</label>
+          <label class="check-opt"><input type="checkbox" name="safety_other" /> Other</label>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">3. Any exposure to flammables, explosives, or chemicals?</div>
+          <select class="yn-select" name="q_flammable"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="field" style="margin-top:8px;">
+          <label>If Yes, explain</label>
+          <textarea name="q_flammable_explain"></textarea>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">4. Any other insurance with this company? (Check yes and list policies below)</div>
+          <select class="yn-select" name="q_other_policies"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">5. Any policy or coverage declined, cancelled, or non-renewed in the last 3 years?</div>
+          <select class="yn-select" name="q_declined"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="check-group" style="padding-left:24px; padding-top:8px;">
+          <label class="check-opt"><input type="checkbox" name="cancel_nonpayment" /> Non-Payment</label>
+          <label class="check-opt"><input type="checkbox" name="cancel_nonrenewal" /> Non-Renewal</label>
+          <label class="check-opt"><input type="checkbox" name="cancel_agent" /> Agent No Longer Writes</label>
+          <label class="check-opt"><input type="checkbox" name="cancel_underwriting" /> Underwriting</label>
+          <label class="check-opt"><input type="checkbox" name="cancel_other" /> Other</label>
+        </div>
+        <div class="field" style="margin-top:8px;">
+          <label>Cancel / Non-Renew Other Description</label>
+          <input type="text" name="cancel_other_desc" />
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">6. Past losses/claims relating to sexual abuse, discrimination, or negligent hiring?</div>
+          <select class="yn-select" name="q_past_abuse"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="field" style="margin-top:8px;">
+          <label>If Yes, explain</label>
+          <textarea name="q_past_abuse_explain"></textarea>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">7. In past 5 years, has applicant been indicted or convicted of fraud, bribery, or arson?</div>
+          <select class="yn-select" name="q_convicted"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">8. Uncorrected fire code violations?</div>
+          <select class="yn-select" name="q_fire_code"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">9. Foreclosure, repossession, or bankruptcy within past 5 years?</div>
+          <select class="yn-select" name="q_bankruptcy"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">10. Judgments or liens within past 5 years?</div>
+          <select class="yn-select" name="q_judgments"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">11. Does applicant own, lease, or operate drones/UAVs?</div>
+          <select class="yn-select" name="q_drones_own"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">12. Does applicant hire others to operate drones/UAVs on their behalf?</div>
+          <select class="yn-select" name="q_drones_hire"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+      </div>
+
+      <!-- Prior Carrier -->
+      <div class="card">
+        <div class="card-title">Prior Carrier Information</div>
+        <div class="grid-3">
+          <div class="field"><label>Policy Year</label><input type="text" name="prior_year" placeholder="e.g., 2024" /></div>
+        </div>
+        <div class="subhead" style="margin-top:18px;">General Liability</div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer</label><input type="text" name="prior_gl_insurer" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="prior_gl_policy" /></div>
+          <div class="field"><label>Total Premium</label><div class="prefix-wrap"><span>$</span><input type="text" name="prior_gl_premium" placeholder="0.00" /></div></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="prior_gl_effective" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="prior_gl_expiration" /></div>
+        </div>
+        <div class="subhead" style="margin-top:18px;">Automobile</div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer</label><input type="text" name="prior_auto_insurer" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="prior_auto_policy" /></div>
+          <div class="field"><label>Total Premium</label><div class="prefix-wrap"><span>$</span><input type="text" name="prior_auto_premium" placeholder="0.00" /></div></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="prior_auto_effective" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="prior_auto_expiration" /></div>
+        </div>
+        <div class="subhead" style="margin-top:18px;">Property</div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer</label><input type="text" name="prior_prop_insurer" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="prior_prop_policy" /></div>
+          <div class="field"><label>Total Premium</label><div class="prefix-wrap"><span>$</span><input type="text" name="prior_prop_premium" placeholder="0.00" /></div></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="prior_prop_effective" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="prior_prop_expiration" /></div>
+        </div>
+      </div>
+
+      <!-- Loss History -->
+      <div class="card">
+        <div class="card-title">Loss History</div>
+        <div class="check-group" style="margin-bottom:16px;">
+          <label class="check-opt"><input type="checkbox" name="no_losses" /> No Prior Losses</label>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Years of Loss Information</label><input type="number" name="loss_years" /></div>
+          <div class="field"><label>Total Loss Amount</label><div class="prefix-wrap"><span>$</span><input type="text" name="loss_total" placeholder="0.00" /></div></div>
+        </div>
+        <div class="subhead" style="margin-top:22px;">Loss #1</div>
+        <div class="grid-3">
+          <div class="field"><label>Occurrence Date</label><input type="date" name="loss1_date" /></div>
+          <div class="field"><label>Line of Business</label><input type="text" name="loss1_line" /></div>
+          <div class="field"><label>Claim Date</label><input type="date" name="loss1_claim_date" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Amount Paid</label><div class="prefix-wrap"><span>$</span><input type="text" name="loss1_paid" placeholder="0.00" /></div></div>
+          <div class="field"><label>Reserved Amount</label><div class="prefix-wrap"><span>$</span><input type="text" name="loss1_reserved" placeholder="0.00" /></div></div>
+          <div class="field"><label>Status (O=Open/C=Closed)</label><input type="text" name="loss1_status" maxlength="2" /></div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Description of Loss</label>
+          <textarea name="loss1_desc"></textarea>
+        </div>
+        <div class="subhead" style="margin-top:22px;">Loss #2</div>
+        <div class="grid-3">
+          <div class="field"><label>Occurrence Date</label><input type="date" name="loss2_date" /></div>
+          <div class="field"><label>Line of Business</label><input type="text" name="loss2_line" /></div>
+          <div class="field"><label>Claim Date</label><input type="date" name="loss2_claim_date" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Amount Paid</label><div class="prefix-wrap"><span>$</span><input type="text" name="loss2_paid" placeholder="0.00" /></div></div>
+          <div class="field"><label>Reserved Amount</label><div class="prefix-wrap"><span>$</span><input type="text" name="loss2_reserved" placeholder="0.00" /></div></div>
+          <div class="field"><label>Status (O=Open/C=Closed)</label><input type="text" name="loss2_status" maxlength="2" /></div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Description of Loss</label>
+          <textarea name="loss2_desc"></textarea>
+        </div>
+      </div>
+
+      <!-- Remarks & Signatures -->
+      <div class="card">
+        <div class="card-title">Remarks &amp; Signatures</div>
+        <div class="field">
+          <label>Remarks</label>
+          <textarea name="remarks" style="min-height:100px;"></textarea>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Producer's Name (Signature)</label><input type="text" name="sig_producer_name" /></div>
+          <div class="field"><label>State Producer License #</label><input type="text" name="sig_producer_license" /></div>
+          <div class="field"><label>National Producer Number</label><input type="text" name="sig_producer_npn" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Insured Signature Date</label><input type="date" name="sig_insured_date" /></div>
+          <div class="field"><label>Insured Initials</label><input type="text" name="sig_insured_initials" maxlength="5" /></div>
+        </div>
+      </div>
+
+      <!-- Notes (internal) -->
+      <div class="card" style="padding-bottom:0;cursor:text;" onclick="this.querySelector('textarea').focus()">
+        <div class="card-title">Notes (Internal Only)</div>
+        <textarea name="notes" style="display:block;width:100%;min-height:180px;border:none;border-radius:0 0 8px 8px;resize:vertical;padding:16px 24px;font-size:14px;line-height:1.6;outline:none;background-image:none;background-color:#fff;" placeholder="Click anywhere here to add notes..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('a125Form').reset()">Clear Form</button>
+        <a href="portal.html" class="btn btn-primary">Home</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true; btn.textContent = 'Generating...';
+
+      function v(n) { var e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+      function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(p[1]+'/'+p[2]+'/'+p[0]):s; }
+      function chk(n) { var e=document.querySelector('[name="'+n+'"]'); return !!(e&&e.checked); }
+
+      try {
+        const { PDFDocument } = window.PDFLib;
+        const existingBytes = await fetch('acord-125-blank.pdf').then(r => {
+          if (!r.ok) throw new Error('Failed to load ACORD 125 template');
+          return r.arrayBuffer();
+        });
+        const pdfDoc = await PDFDocument.load(existingBytes);
+        const form = pdfDoc.getForm();
+
+        function setText(name, val) {
+          if (val === '' || val == null) return;
+          try { form.getTextField(name).setText(String(val)); } catch(e) {}
+        }
+        function setCheck(name, on) {
+          try { const cb = form.getCheckBox(name); if (on) cb.check(); else cb.uncheck(); } catch(e) {}
+        }
+
+        // --- Producer ---
+        setText('Producer_FullName_A',                 v('producer_name'));
+        setText('Producer_MailingAddress_LineOne_A',   v('producer_addr1'));
+        setText('Producer_MailingAddress_LineTwo_A',   v('producer_addr2'));
+        setText('Producer_MailingAddress_CityName_A',  v('producer_city'));
+        setText('Producer_MailingAddress_StateOrProvinceCode_A', v('producer_state'));
+        setText('Producer_MailingAddress_PostalCode_A',v('producer_zip'));
+        setText('Producer_ContactPerson_FullName_A',   v('producer_contact'));
+        setText('Producer_ContactPerson_PhoneNumber_A',v('producer_phone'));
+        setText('Producer_FaxNumber_A',                v('producer_fax'));
+        setText('Producer_ContactPerson_EmailAddress_A',v('producer_email'));
+        setText('Producer_CustomerIdentifier_A',       v('customer_id'));
+        setText('Insurer_ProducerIdentifier_A',        v('producer_id'));
+        setText('Insurer_SubProducerIdentifier_A',     v('subproducer_id'));
+
+        // --- Insurer / Underwriter ---
+        setText('Form_CompletionDate_A',              fmtDate(v('form_date')));
+        setText('Insurer_FullName_A',                 v('insurer_name'));
+        setText('Insurer_NAICCode_A',                 v('naic_code'));
+        setText('Insurer_ProductDescription_A',       v('product'));
+        setText('Insurer_ProductCode_A',              v('product_code'));
+        setText('Policy_PolicyNumberIdentifier_A',    v('policy_number'));
+        setText('Insurer_Underwriter_FullName_A',     v('underwriter'));
+        setText('Insurer_Underwriter_OfficeIdentifier_A', v('underwriter_office'));
+
+        // --- Status of Transaction ---
+        setCheck('Policy_Status_QuoteIndicator_A',  chk('status_quote'));
+        setCheck('Policy_Status_IssueIndicator_A',  chk('status_issue'));
+        setCheck('Policy_Status_RenewIndicator_A',  chk('status_renew'));
+        setCheck('Policy_Status_BoundIndicator_A',  chk('status_bound'));
+        setCheck('Policy_Status_ChangeIndicator_A', chk('status_change'));
+        setCheck('Policy_Status_CancelIndicator_A', chk('status_cancel'));
+        setText('Policy_Status_EffectiveDate_A',    fmtDate(v('effective_date')));
+        setText('Policy_Status_EffectiveTime_A',    v('effective_time'));
+        setCheck('Policy_Status_EffectiveTimeAMIndicator_A', chk('effective_time_am'));
+        setCheck('Policy_Status_EffectiveTimePMIndicator_A', chk('effective_time_pm'));
+        setText('Policy_EffectiveDate_A',           fmtDate(v('effective_date')));
+        setText('Policy_ExpirationDate_A',          fmtDate(v('expiration_date')));
+
+        // --- Lines of Business ---
+        setCheck('Policy_LineOfBusiness_BoilerAndMachineryIndicator_A', chk('lob_bm'));
+        setText('BoilerAndMachineryLineOfBusiness_PremiumAmount_A',      v('lob_bm_prem'));
+        setCheck('Policy_LineOfBusiness_BusinessAutoIndicator_A',        chk('lob_ba'));
+        setText('CommercialVehicleLineOfBusiness_PremiumAmount_A',       v('lob_ba_prem'));
+        setCheck('Policy_LineOfBusiness_BusinessOwnersIndicator_A',      chk('lob_bo'));
+        setText('BusinessOwnersLineOfBusiness_PremiumAmount_A',          v('lob_bo_prem'));
+        setCheck('Policy_LineOfBusiness_CommercialGeneralLiability_A',   chk('lob_gl'));
+        setText('GeneralLiabilityLineOfBusiness_TotalPremiumAmount_A',   v('lob_gl_prem'));
+        setCheck('Policy_LineOfBusiness_CommercialInlandMarineIndicator_A', chk('lob_im'));
+        setText('CommercialInlandMarineLineOfBusiness_PremiumAmount_A',  v('lob_im_prem'));
+        setCheck('Policy_LineOfBusiness_CommercialProperty_A',           chk('lob_prop'));
+        setText('CommercialPropertyLineOfBusiness_PremiumAmount_A',      v('lob_prop_prem'));
+        setCheck('Policy_LineOfBusiness_CrimeIndicator_A',               chk('lob_crime'));
+        setText('CrimeLineOfBusiness_PremiumAmount_A',                   v('lob_crime_prem'));
+        setCheck('Policy_LineOfBusiness_CyberAndPrivacy_A',              chk('lob_cyber'));
+        setText('CyberAndPrivacyLineOfBusiness_PremiumAmount_A',         v('lob_cyber_prem'));
+        setCheck('Policy_LineOfBusiness_LiquorLiabilityIndicator_A',     chk('lob_liquor'));
+        setText('LiquorLiabilityLineOfBusiness_PremiumAmount_A',         v('lob_liquor_prem'));
+        setCheck('Policy_LineOfBusiness_UmbrellaIndicator_A',            chk('lob_umbrella'));
+        setText('CommercialUmbrellaLineOfBusiness_PremiumAmount_A',      v('lob_umbrella_prem'));
+
+        // Other LOBs
+        if (v('lob_other_a_desc')) setCheck('Policy_LineOfBusiness_OtherIndicator_A', true);
+        setText('Policy_LineOfBusiness_OtherLineOfBusinessDescription_A', v('lob_other_a_desc'));
+        setText('Policy_SectionAttached_OtherPremiumAmount_A',            v('lob_other_a_prem'));
+        if (v('lob_other_b_desc')) setCheck('Policy_LineOfBusiness_OtherIndicator_B', true);
+        setText('Policy_LineOfBusiness_OtherLineOfBusinessDescription_B', v('lob_other_b_desc'));
+        setText('Policy_SectionAttached_OtherPremiumAmount_B',            v('lob_other_b_prem'));
+
+        // --- Payment ---
+        setCheck('Policy_Payment_DirectBillIndicator_A',   chk('pay_direct'));
+        setCheck('Policy_Payment_ProducerBillIndicator_A', chk('pay_producer'));
+        setText('Policy_Payment_PaymentScheduleCode_A',    v('pay_schedule'));
+        setText('Policy_PaymentMethod_MethodDescription_A',v('pay_method'));
+        setText('Policy_Audit_FrequencyCode_A',            v('audit_freq'));
+        setText('Policy_Payment_DepositAmount_A',          v('deposit'));
+        setText('Policy_Payment_MinimumPremiumAmount_A',   v('min_premium'));
+        setText('Policy_Payment_EstimatedTotalAmount_A',   v('total_premium'));
+
+        // --- Named Insured (primary = A) ---
+        setText('NamedInsured_FullName_A',                 v('ni_name'));
+        setText('NamedInsured_MailingAddress_LineOne_A',   v('ni_addr1'));
+        setText('NamedInsured_MailingAddress_LineTwo_A',   v('ni_addr2'));
+        setText('NamedInsured_MailingAddress_CityName_A',  v('ni_city'));
+        setText('NamedInsured_MailingAddress_StateOrProvinceCode_A', v('ni_state'));
+        setText('NamedInsured_MailingAddress_PostalCode_A',v('ni_zip'));
+        setText('NamedInsured_GeneralLiabilityCode_A',     v('gl_code'));
+        setText('NamedInsured_SICCode_A',                  v('sic_code'));
+        setText('NamedInsured_NAICSCode_A',                v('naics_code'));
+        setText('NamedInsured_TaxIdentifier_A',            v('tax_id'));
+        setText('NamedInsured_Primary_PhoneNumber_A',      v('ni_phone'));
+        setText('NamedInsured_Primary_WebsiteAddress_A',   v('ni_website'));
+
+        // Legal Entity
+        setCheck('NamedInsured_LegalEntity_CorporationIndicator_A',             chk('entity_corp'));
+        setCheck('NamedInsured_LegalEntity_IndividualIndicator_A',              chk('entity_individual'));
+        setCheck('NamedInsured_LegalEntity_JointVentureIndicator_A',            chk('entity_jv'));
+        setCheck('NamedInsured_LegalEntity_LimitedLiabilityCorporationIndicator_A', chk('entity_llc'));
+        setCheck('NamedInsured_LegalEntity_NotForProfitIndicator_A',            chk('entity_npo'));
+        setCheck('NamedInsured_LegalEntity_PartnershipIndicator_A',             chk('entity_partnership'));
+        setCheck('NamedInsured_LegalEntity_SubchapterSCorporationIndicator_A',  chk('entity_scorp'));
+        setCheck('NamedInsured_LegalEntity_TrustIndicator_A',                   chk('entity_trust'));
+        setCheck('NamedInsured_LegalEntity_OtherIndicator_A',                   chk('entity_other'));
+        setText('NamedInsured_LegalEntity_OtherDescription_A',                  v('entity_other_desc'));
+        setText('NamedInsured_LegalEntity_MemberManagerCount_A',                v('llc_members'));
+
+        // --- Primary Contact ---
+        setText('NamedInsured_Contact_ContactDescription_A',    v('contact_desc'));
+        setText('NamedInsured_Contact_FullName_A',              v('contact_name'));
+        setText('NamedInsured_Contact_PrimaryPhoneNumber_A',    v('contact_phone'));
+        setText('NamedInsured_Contact_PrimaryEmailAddress_A',   v('contact_email'));
+        setText('NamedInsured_Contact_SecondaryPhoneNumber_A',  v('contact_phone2'));
+        setText('NamedInsured_Contact_SecondaryEmailAddress_A', v('contact_email2'));
+
+        // --- Premises Locations 1 (A) and 2 (B) ---
+        [['1','A'],['2','B']].forEach(function(p) {
+          var n = p[0], s = p[1];
+          setText('CommercialStructure_Location_ProducerIdentifier_'+s,  v('loc'+n+'_loc'));
+          setText('CommercialStructure_Building_ProducerIdentifier_'+s,  v('loc'+n+'_bldg'));
+          setText('CommercialStructure_PhysicalAddress_LineOne_'+s,      v('loc'+n+'_addr1'));
+          setText('CommercialStructure_PhysicalAddress_LineTwo_'+s,      v('loc'+n+'_addr2'));
+          setText('CommercialStructure_PhysicalAddress_CityName_'+s,     v('loc'+n+'_city'));
+          setText('CommercialStructure_PhysicalAddress_CountyName_'+s,   v('loc'+n+'_county'));
+          setText('CommercialStructure_PhysicalAddress_StateOrProvinceCode_'+s, v('loc'+n+'_state'));
+          setText('CommercialStructure_PhysicalAddress_PostalCode_'+s,   v('loc'+n+'_zip'));
+          setCheck('CommercialStructure_RiskLocation_InsideCityLimitsIndicator_'+s,  chk('loc'+n+'_inside'));
+          setCheck('CommercialStructure_RiskLocation_OutsideCityLimitsIndicator_'+s, chk('loc'+n+'_outside'));
+          setCheck('CommercialStructure_InsuredInterest_OwnerIndicator_'+s,          chk('loc'+n+'_owner'));
+          setCheck('CommercialStructure_InsuredInterest_TenantIndicator_'+s,         chk('loc'+n+'_tenant'));
+          setText('BusinessInformation_FullTimeEmployeeCount_'+s,        v('loc'+n+'_ft'));
+          setText('BusinessInformation_PartTimeEmployeeCount_'+s,        v('loc'+n+'_pt'));
+          setText('CommercialStructure_AnnualRevenueAmount_'+s,          v('loc'+n+'_revenue'));
+          setText('BuildingOccupancy_OccupiedArea_'+s,                   v('loc'+n+'_occupied'));
+          setText('BuildingOccupancy_OpenToPublicArea_'+s,               v('loc'+n+'_public'));
+          setText('Construction_BuildingArea_'+s,                        v('loc'+n+'_area'));
+          setText('BuildingOccupancy_OperationsDescription_'+s,          v('loc'+n+'_ops'));
+        });
+
+        // --- Nature of Business ---
+        setCheck('BusinessInformation_BusinessType_ApartmentsIndicator_A',    chk('biz_apartments'));
+        setCheck('BusinessInformation_BusinessType_CondominiumsIndicator_A',  chk('biz_condos'));
+        setCheck('BusinessInformation_BusinessType_ContractorIndicator_A',    chk('biz_contractor'));
+        setCheck('BusinessInformation_BusinessType_InstitutionalIndicator_A', chk('biz_institutional'));
+        setCheck('BusinessInformation_BusinessType_ManufacturingIndicator_A', chk('biz_manufacturing'));
+        setCheck('BusinessInformation_BusinessType_OfficeIndicator_A',        chk('biz_office'));
+        setCheck('BusinessInformation_BusinessType_RestaurantIndicator_A',    chk('biz_restaurant'));
+        setCheck('BusinessInformation_BusinessType_RetailIndicator_A',        chk('biz_retail'));
+        setCheck('BusinessInformation_BusinessType_ServiceIndicator_A',       chk('biz_service'));
+        setCheck('BusinessInformation_BusinessType_WholesaleIndicator_A',     chk('biz_wholesale'));
+        setCheck('BusinessInformation_BusinessType_OtherIndicator_A',         chk('biz_other'));
+        setText('BusinessInformation_BusinessType_OtherDescription_A',        v('biz_other_desc'));
+        setText('NamedInsured_BusinessStartDate_A',                           fmtDate(v('business_start')));
+        setText('CommercialPolicy_OperationsDescription_A',                   v('operations_desc'));
+        setText('CommercialPolicy_OperationsDescription_B',                   v('operations_desc_b'));
+        setText('CommercialStructure_InstallationRepairWorkPercent_A',        v('install_pct'));
+        setText('CommercialStructure_InstallationRepairWorkOffPremisesPercent_A', v('offpremise_pct'));
+
+        // --- Additional Interest ---
+        setCheck('AdditionalInterest_Interest_AdditionalInsuredIndicator_A', chk('ai_additional_insured'));
+        setCheck('AdditionalInterest_Interest_MortgageeIndicator_A',         chk('ai_mortgagee'));
+        setCheck('AdditionalInterest_Interest_LossPayeeIndicator_A',         chk('ai_loss_payee'));
+        setCheck('AdditionalInterest_Interest_LienholderIndicator_A',        chk('ai_lienholder'));
+        setCheck('AdditionalInterest_Interest_LendersLossPayableIndicator_A',chk('ai_lenders_loss'));
+        setCheck('AdditionalInterest_Interest_OwnerIndicator_A',             chk('ai_owner'));
+        setCheck('AdditionalInterest_Interest_TrusteeIndicator_A',           chk('ai_trustee'));
+        setCheck('AdditionalInterest_Interest_OtherIndicator_A',             chk('ai_other'));
+        setText('AdditionalInterest_Interest_OtherDescription_A',            v('ai_other_desc'));
+        setText('AdditionalInterest_InterestRank_A',                         v('ai_rank'));
+        setCheck('AdditionalInterest_CertificateRequiredIndicator_A',        chk('ai_cert_required'));
+        setCheck('AdditionalInterest_PolicyRequiredIndicator_A',             chk('ai_policy_required'));
+        setCheck('AdditionalInterest_SendBillIndicator_A',                   chk('ai_send_bill'));
+        setText('AdditionalInterest_FullName_A',                             v('ai_name'));
+        setText('AdditionalInterest_MailingAddress_LineOne_A',               v('ai_addr1'));
+        setText('AdditionalInterest_MailingAddress_LineTwo_A',               v('ai_addr2'));
+        setText('AdditionalInterest_MailingAddress_CityName_A',              v('ai_city'));
+        setText('AdditionalInterest_MailingAddress_StateOrProvinceCode_A',   v('ai_state'));
+        setText('AdditionalInterest_MailingAddress_PostalCode_A',            v('ai_zip'));
+        setText('AdditionalInterest_MailingAddress_CountryCode_A',           v('ai_country'));
+        setText('AdditionalInterest_AccountNumberIdentifier_A',              v('ai_account'));
+        setText('AdditionalInterest_InterestEndDate_A',                      fmtDate(v('ai_end_date')));
+        setText('AdditionalInterest_LoanAmount_A',                           v('ai_loan'));
+        setText('AdditionalInterest_Primary_PhoneNumber_A',                  v('ai_phone'));
+        setText('AdditionalInterest_Primary_EmailAddress_A',                 v('ai_email'));
+
+        // --- General Info Y/N ---
+        setText('CommercialPolicy_Question_AAICode_A', v('q_subsidiaries'));
+        setText('CommercialPolicy_Question_AAJCode_A', v('q_other_policies'));
+        setText('CommercialPolicy_Question_KAACode_A', v('q_safety'));
+        setText('CommercialPolicy_Question_ABCCode_A', v('q_flammable'));
+        setText('CommercialPolicy_AnyExposureToFlammableExplosivesChemicalsExplanation_A', v('q_flammable_explain'));
+        setText('CommercialPolicy_Question_AAHCode_A', v('q_declined'));
+        setText('CommercialPolicy_Question_AACCode_A', v('q_past_abuse'));
+        setText('CommercialPolicy_PastLossesClaimsRelatingSexualAbuseDiscriminationNegligentHiringExplanation_A', v('q_past_abuse_explain'));
+        setText('CommercialPolicy_Question_AADCode_A', v('q_convicted'));
+        setText('CommercialPolicy_Question_AAFCode_A', v('q_fire_code'));
+        setText('CommercialPolicy_Question_KAKCode_A', v('q_bankruptcy'));
+        setText('CommercialPolicy_Question_KALCode_A', v('q_judgments'));
+        setText('CommercialPolicy_Question_KANCode_A', v('q_drones_own'));
+        setText('CommercialPolicy_Question_KAOCode_A', v('q_drones_hire'));
+
+        // Safety Program checkboxes
+        setCheck('CommercialPolicy_FormalSafetyProgram_SafetyManualIndicator_A',   chk('safety_manual'));
+        setCheck('CommercialPolicy_FormalSafetyProgram_SafetyPositionIndicator_B', chk('safety_position'));
+        setCheck('CommercialPolicy_FormalSafetyProgram_MonthlyMeetingsIndicator_B',chk('safety_monthly'));
+        setCheck('CommercialPolicy_FormalSafetyProgram_OSHAIndicator_B',           chk('safety_osha'));
+        setCheck('CommercialPolicy_FormalSafetyProgram_OtherIndicator_B',          chk('safety_other'));
+
+        // Cancel / Non-Renew
+        setCheck('CancelNonRenew_NonPaymentIndicator_A',                     chk('cancel_nonpayment'));
+        setCheck('CancelNonRenew_NonRenewalIndicator_A',                     chk('cancel_nonrenewal'));
+        setCheck('CancelNonRenew_AgentNoLongerWritesForInsurerIndicator_A',  chk('cancel_agent'));
+        setCheck('CancelNonRenew_UnderwritingIndicator_A',                   chk('cancel_underwriting'));
+        setCheck('CancelNonRenew_OtherIndicator_A',                          chk('cancel_other'));
+        setText('CancelNonRenew_OtherDescription_A',                         v('cancel_other_desc'));
+
+        // --- Prior Coverage (Year A) ---
+        setText('PriorCoverage_PolicyYear_A',                           v('prior_year'));
+        setText('PriorCoverage_GeneralLiability_InsurerFullName_A',     v('prior_gl_insurer'));
+        setText('PriorCoverage_GeneralLiability_PolicyNumberIdentifier_A', v('prior_gl_policy'));
+        setText('PriorCoverage_GeneralLiability_TotalPremiumAmount_A',  v('prior_gl_premium'));
+        setText('PriorCoverage_GeneralLiability_EffectiveDate_A',       fmtDate(v('prior_gl_effective')));
+        setText('PriorCoverage_GeneralLiability_ExpirationDate_A',      fmtDate(v('prior_gl_expiration')));
+        setText('PriorCoverage_Automobile_InsurerFullName_A',           v('prior_auto_insurer'));
+        setText('PriorCoverage_Automobile_PolicyNumberIdentifier_A',    v('prior_auto_policy'));
+        setText('PriorCoverage_Automobile_TotalPremiumAmount_A',        v('prior_auto_premium'));
+        setText('PriorCoverage_Automobile_EffectiveDate_A',             fmtDate(v('prior_auto_effective')));
+        setText('PriorCoverage_Automobile_ExpirationDate_A',            fmtDate(v('prior_auto_expiration')));
+        setText('PriorCoverage_Property_InsurerFullName_A',             v('prior_prop_insurer'));
+        setText('PriorCoverage_Property_PolicyNumberIdentifier_A',      v('prior_prop_policy'));
+        setText('PriorCoverage_Property_TotalPremiumAmount_A',          v('prior_prop_premium'));
+        setText('PriorCoverage_Property_EffectiveDate_A',               fmtDate(v('prior_prop_effective')));
+        setText('PriorCoverage_Property_ExpirationDate_A',              fmtDate(v('prior_prop_expiration')));
+
+        // --- Loss History ---
+        setCheck('LossHistory_NoPriorLossesIndicator_A',      chk('no_losses'));
+        setText('LossHistory_InformationYearCount_A',         v('loss_years'));
+        setText('LossHistory_TotalAmount_A',                  v('loss_total'));
+        setText('LossHistory_OccurrenceDate_A',               fmtDate(v('loss1_date')));
+        setText('LossHistory_LineOfBusiness_A',               v('loss1_line'));
+        setText('LossHistory_OccurrenceDescription_A',        v('loss1_desc'));
+        setText('LossHistory_ClaimDate_A',                    fmtDate(v('loss1_claim_date')));
+        setText('LossHistory_PaidAmount_A',                   v('loss1_paid'));
+        setText('LossHistory_ReservedAmount_A',               v('loss1_reserved'));
+        setText('LossHistory_ClaimStatus_OpenCode_A',         v('loss1_status'));
+        setText('LossHistory_OccurrenceDate_B',               fmtDate(v('loss2_date')));
+        setText('LossHistory_LineOfBusiness_B',               v('loss2_line'));
+        setText('LossHistory_OccurrenceDescription_B',        v('loss2_desc'));
+        setText('LossHistory_ClaimDate_B',                    fmtDate(v('loss2_claim_date')));
+        setText('LossHistory_PaidAmount_B',                   v('loss2_paid'));
+        setText('LossHistory_ReservedAmount_B',               v('loss2_reserved'));
+        setText('LossHistory_ClaimStatus_OpenCode_B',         v('loss2_status'));
+
+        // --- Remarks & Signatures ---
+        setText('CommercialPolicy_RemarkText_A',                v('remarks'));
+        setText('Producer_AuthorizedRepresentative_FullName_A', v('sig_producer_name'));
+        setText('Producer_StateLicenseIdentifier_A',            v('sig_producer_license'));
+        setText('Producer_NationalIdentifier_A',                v('sig_producer_npn'));
+        setText('NamedInsured_SignatureDate_A',                 fmtDate(v('sig_insured_date')));
+        setText('NamedInsured_Initials_A',                      v('sig_insured_initials'));
+
+        // Save and download
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'acord-125-' + (v('ni_name') || 'form').replace(/[^a-z0-9]+/gi,'-') + '.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Failed to generate PDF: ' + err.message);
+        console.error(err);
+      } finally {
+        btn.disabled = false; btn.textContent = 'Generate PDF';
+      }
+    });
+  </script>
+
+  <script>
+    // Auto-redirect to portal at 12:01 AM
+    (function() {
+      var now = new Date();
+      var nextReset = new Date();
+      nextReset.setHours(0, 1, 0, 0);
+      if (nextReset <= now) nextReset.setDate(nextReset.getDate() + 1);
+      setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
+    })();
+  </script>
+
+</body>
+</html>
