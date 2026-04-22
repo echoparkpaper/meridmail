@@ -1004,43 +1004,41 @@
 
     function goToPaymentReceipt() {
 
-      var carrierVal = document.querySelector('[name="carrier"]').value;
-
-      var carrierOther = document.querySelector('[name="carrier_other"]').value;
-
-      var policyTypeVal = document.querySelector('[name="policy_type"]').value;
-
-      var policyTypeOther = document.querySelector('[name="policy_type_other"]').value;
+      function val(n) { var e = document.querySelector('[name="'+n+'"]'); return e ? e.value : ''; }
 
       var billingVal = document.querySelector('[name="billing_type"]:checked');
 
-      localStorage.setItem('ep_pr_prefill', JSON.stringify({
+      try {
 
-        client:           document.querySelector('[name="client_name"]').value,
+        localStorage.setItem('ep_pr_prefill', JSON.stringify({
 
-        date:             document.querySelector('[name="date"]').value,
+          client:            val('client_name'),
 
-        carrier:          carrierVal,
+          date:              val('date'),
 
-        carrier_other:    carrierOther,
+          carrier:           val('carrier'),
 
-        top_policy_number: document.querySelector('[name="policy_number"]').value,
+          carrier_other:     val('carrier_other'),
 
-        policy_number:    document.querySelector('[name="policy_number"]').value,
+          top_policy_number: val('policy_number'),
 
-        general_agent:    document.querySelector('[name="general_agent"]').value,
+          policy_number:     val('policy_number'),
 
-        applied_payment:  document.querySelector('[name="premium"]').value,
+          general_agent:     val('general_agent'),
 
-        amount:           document.querySelector('[name="premium"]').value,
+          applied_payment:   val('premium'),
 
-        policy_type:      policyTypeVal,
+          amount:            val('premium'),
 
-        policy_type_other: policyTypeOther,
+          policy_type:       val('policy_type'),
 
-        billing_type:     billingVal ? billingVal.value : ''
+          policy_type_other: val('policy_type_other'),
 
-      }));
+          billing_type:      billingVal ? billingVal.value : ''
+
+        }));
+
+      } catch(e) { console.error('prefill save failed', e); }
 
       window.location.href = 'meridian-payment-receipt.html';
 
