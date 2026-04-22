@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACORD 126 — Commercial GL | Meridian Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:    #2c4a6e;
+      --accent-lt: #e8edf3;
+      --bg:        #f7f5f2;
+      --white:     #ffffff;
+      --rule:      #d4cfc9;
+      --ink:       #1a1a1a;
+      --mid:       #555;
+      --light:     #888;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0 0 60px;
+      font-size: 14px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--rule);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .topbar a { color: var(--accent); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+    .site-header {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px 16px 18px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--ink);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .logo-name {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .logo-tag {
+      font-size: 11px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--light);
+      font-weight: 300;
+      margin-top: 3px;
+    }
+    .form-title-right {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      font-style: italic;
+      color: var(--accent);
+      text-align: right;
+    }
+    .form-wrap {
+      max-width: 860px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 0 24px 24px;
+      overflow: hidden;
+    }
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffffff;
+      background: var(--accent);
+      padding: 10px 24px;
+      margin: 0 -24px 22px -24px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px 12px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+    input[type="text"], input[type="date"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+    }
+    input::placeholder { color: var(--light); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+      cursor: pointer;
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    .yn-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .yn-row:last-child { border-bottom: none; }
+    .yn-label { flex: 1; font-size: 13px; color: var(--ink); line-height: 1.4; }
+    .yn-select { width: 80px; flex-shrink: 0; }
+    .yn-explain { flex: 1; }
+    .prefix-wrap { position: relative; }
+    .prefix-wrap span {
+      position: absolute; left: 10px; top: 50%;
+      transform: translateY(-50%); color: var(--mid);
+      font-size: 13.5px; pointer-events: none;
+    }
+    .prefix-wrap input { padding-left: 20px; }
+    .check-group { display: flex; gap: 20px; flex-wrap: wrap; padding-top: 4px; }
+    .check-opt {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13.5px; color: var(--ink); cursor: pointer;
+    }
+    .check-opt input[type="checkbox"] {
+      width: 15px; height: 15px;
+      accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    table th {
+      background: var(--accent-lt); color: var(--accent);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; padding: 6px 8px; text-align: left;
+      border: 1px solid var(--rule);
+    }
+    table td { border: 1px solid var(--rule); padding: 2px; }
+    table td input { border: none; border-radius: 0; padding: 6px 8px; font-size: 12px; }
+    table td input:focus { outline: none; background: #f0f4f8; }
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 22px; border-radius: 6px;
+      font-family: inherit; font-size: 14px;
+      font-weight: 500; cursor: pointer; border: none;
+      transition: background 0.15s; text-decoration: none;
+      display: inline-flex; align-items: center;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1e3650; }
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+    .btn-secondary:hover { background: var(--bg); }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .site-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="chevron">‹</span>
+    <a href="portal.html">Back to Home</a>
+  </div>
+
+  <div class="site-header">
+    <div>
+      <div class="logo-name">Meridian Insurance</div>
+      <div class="logo-tag">Policy Services Department</div>
+    </div>
+    <div class="form-title-right">ACORD 126 — Commercial GL</div>
+  </div>
+
+  <div class="form-wrap">
+    <form id="a126Form" novalidate>
+
+      <!-- Header Info -->
+      <div class="card">
+        <div class="card-title">Application Header</div>
+        <div class="grid-3" style="margin-bottom:18px;">
+          <div class="field"><label>Agency Customer ID</label><input type="text" name="agency_customer_id" /></div>
+          <div class="field"><label>Agency</label><input type="text" name="agency" /></div>
+          <div class="field"><label>Date (MM/DD/YYYY)</label><input type="date" name="date" /></div>
+        </div>
+        <div class="grid-3" style="margin-bottom:18px;">
+          <div class="field"><label>Carrier</label><input type="text" name="carrier" /></div>
+          <div class="field"><label>NAIC Code</label><input type="text" name="naic_code" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="policy_number" /></div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Effective Date</label><input type="date" name="effective_date" /></div>
+          <div class="field"><label>Applicant / First Named Insured</label><input type="text" name="applicant" /></div>
+        </div>
+      </div>
+
+      <!-- Coverages & Limits -->
+      <div class="card">
+        <div class="card-title">Coverages &amp; Limits</div>
+        <div class="field" style="margin-bottom:18px;">
+          <label>Coverage Type</label>
+          <div class="check-group">
+            <label class="check-opt"><input type="checkbox" name="cov_claims_made" /> Claims Made</label>
+            <label class="check-opt"><input type="checkbox" name="cov_occurrence" /> Occurrence</label>
+            <label class="check-opt"><input type="checkbox" name="cov_owners_protective" /> Owner's &amp; Contractor's Protective</label>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>Property Damage Deductible</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="ded_property" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Bodily Injury Deductible</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="ded_bodily" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>Deductible Per Claim</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="ded_per_claim" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Deductible Per Occurrence</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="ded_per_occ" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>General Aggregate Limit</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lim_general_agg" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Products &amp; Completed Operations Aggregate</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lim_products_agg" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>Personal &amp; Advertising Injury</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lim_personal_adv" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Each Occurrence</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lim_each_occ" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>Damage to Rented Premises (each occurrence)</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lim_rented_prem" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Medical Expense (any one person)</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lim_medical_exp" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>Employee Benefits</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="lim_emp_benefits" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Limit Applies Per</label>
+            <div class="check-group">
+              <label class="check-opt"><input type="checkbox" name="limit_per_policy" /> Policy</label>
+              <label class="check-opt"><input type="checkbox" name="limit_per_location" /> Location</label>
+              <label class="check-opt"><input type="checkbox" name="limit_per_project" /> Project</label>
+            </div>
+          </div>
+        </div>
+        <div class="grid-4">
+          <div class="field"><label>Premises/Operations Premium</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="prem_premises_ops" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Products Premium</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="prem_products" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Other Premium</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="prem_other" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>Total Premium</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="prem_total" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Other Coverages, Restrictions and/or Endorsements</label>
+          <textarea name="other_coverages" placeholder="Describe any other coverages, restrictions, or endorsements..."></textarea>
+        </div>
+      </div>
+
+      <!-- Schedule of Hazards -->
+      <div class="card">
+        <div class="card-title">Schedule of Hazards</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Loc #</th>
+                <th>Haz #</th>
+                <th>Class Code</th>
+                <th>Premium Basis</th>
+                <th>Exposure</th>
+                <th>Terr</th>
+                <th>Rate Prem/Ops</th>
+                <th>Rate Products</th>
+                <th>Prem Prem/Ops</th>
+                <th>Prem Products</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" name="haz1_loc" /></td>
+                <td><input type="text" name="haz1_haz" /></td>
+                <td><input type="text" name="haz1_class" /></td>
+                <td><input type="text" name="haz1_basis" /></td>
+                <td><input type="text" name="haz1_exp" /></td>
+                <td><input type="text" name="haz1_terr" /></td>
+                <td><input type="text" name="haz1_rate_po" /></td>
+                <td><input type="text" name="haz1_rate_prod" /></td>
+                <td><input type="text" name="haz1_prem_po" /></td>
+                <td><input type="text" name="haz1_prem_prod" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="haz2_loc" /></td>
+                <td><input type="text" name="haz2_haz" /></td>
+                <td><input type="text" name="haz2_class" /></td>
+                <td><input type="text" name="haz2_basis" /></td>
+                <td><input type="text" name="haz2_exp" /></td>
+                <td><input type="text" name="haz2_terr" /></td>
+                <td><input type="text" name="haz2_rate_po" /></td>
+                <td><input type="text" name="haz2_rate_prod" /></td>
+                <td><input type="text" name="haz2_prem_po" /></td>
+                <td><input type="text" name="haz2_prem_prod" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="haz3_loc" /></td>
+                <td><input type="text" name="haz3_haz" /></td>
+                <td><input type="text" name="haz3_class" /></td>
+                <td><input type="text" name="haz3_basis" /></td>
+                <td><input type="text" name="haz3_exp" /></td>
+                <td><input type="text" name="haz3_terr" /></td>
+                <td><input type="text" name="haz3_rate_po" /></td>
+                <td><input type="text" name="haz3_rate_prod" /></td>
+                <td><input type="text" name="haz3_prem_po" /></td>
+                <td><input type="text" name="haz3_prem_prod" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Classification Description</label>
+          <textarea name="classification_desc" placeholder="Describe the classification of operations..."></textarea>
+        </div>
+      </div>
+
+      <!-- Claims Made -->
+      <div class="card">
+        <div class="card-title">Claims Made</div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>Proposed Retroactive Date</label><input type="date" name="retro_date" /></div>
+          <div class="field"><label>Entry Date into Uninterrupted Claims Made Coverage</label><input type="date" name="claims_entry_date" /></div>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">3. Has any product, work, accident, or location been excluded, uninsured or self-insured from any previous coverage?</div>
+          <select class="yn-select" name="yn_excluded"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">4. Was tail coverage purchased under any previous policy?</div>
+          <select class="yn-select" name="yn_tail"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Explain All "Yes" Responses</label>
+          <textarea name="claims_explain"></textarea>
+        </div>
+      </div>
+
+      <!-- Employee Benefits Liability -->
+      <div class="card">
+        <div class="card-title">Employee Benefits Liability</div>
+        <div class="grid-2">
+          <div class="field"><label>1. Deductible Per Claim</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="ebl_deductible" placeholder="0.00" /></div>
+          </div>
+          <div class="field"><label>2. Number of Employees</label><input type="number" name="ebl_employees" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>3. Number of Employees Covered by Benefits Plans</label><input type="number" name="ebl_covered" /></div>
+          <div class="field"><label>4. Retroactive Date</label><input type="date" name="ebl_retro_date" /></div>
+        </div>
+      </div>
+
+      <!-- Contractors -->
+      <div class="card">
+        <div class="card-title">Contractors</div>
+        <div class="yn-row">
+          <div class="yn-label">1. Does applicant draw plans, designs, or specifications for others?</div>
+          <select class="yn-select" name="con_yn1"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">2. Do any operations include blasting or utilize or store explosive material?</div>
+          <select class="yn-select" name="con_yn2"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">3. Do any operations include excavation, tunneling, underground work or earth moving?</div>
+          <select class="yn-select" name="con_yn3"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">4. Do your subcontractors carry coverages or limits less than yours?</div>
+          <select class="yn-select" name="con_yn4"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">5. Are subcontractors allowed to work without providing you with a certificate of insurance?</div>
+          <select class="yn-select" name="con_yn5"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="yn-row">
+          <div class="yn-label">6. Does applicant lease equipment to others with or without operators?</div>
+          <select class="yn-select" name="con_yn6"><option value="">—</option><option>Y</option><option>N</option></select>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>Explain All "Yes" Responses</label>
+          <textarea name="con_explain"></textarea>
+        </div>
+        <div class="grid-4" style="margin-top:18px;">
+          <div class="field"><label>Describe Type of Work Subcontracted</label><input type="text" name="sub_work_desc" /></div>
+          <div class="field"><label>$ Paid to Subcontractors</label>
+            <div class="prefix-wrap"><span>$</span><input type="text" name="sub_paid" /></div>
+          </div>
+          <div class="field"><label>% of Work Subcontracted</label><input type="text" name="sub_pct" /></div>
+          <div class="field"><label># Full-Time / Part-Time Staff</label><input type="text" name="sub_staff" /></div>
+        </div>
+      </div>
+
+      <!-- Products / Completed Operations -->
+      <div class="card">
+        <div class="card-title">Products / Completed Operations</div>
+        <div class="table-wrap" style="margin-bottom:18px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Products</th>
+                <th>Annual Gross Sales</th>
+                <th># of Units</th>
+                <th>Time in Market</th>
+                <th>Expected Life</th>
+                <th>Intended Use</th>
+                <th>Principal Components</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" name="prod1_name" /></td>
+                <td><input type="text" name="prod1_sales" /></td>
+                <td><input type="text" name="prod1_units" /></td>
+                <td><input type="text" name="prod1_time" /></td>
+                <td><input type="text" name="prod1_life" /></td>
+                <td><input type="text" name="prod1_use" /></td>
+                <td><input type="text" name="prod1_components" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="prod2_name" /></td>
+                <td><input type="text" name="prod2_sales" /></td>
+                <td><input type="text" name="prod2_units" /></td>
+                <td><input type="text" name="prod2_time" /></td>
+                <td><input type="text" name="prod2_life" /></td>
+                <td><input type="text" name="prod2_use" /></td>
+                <td><input type="text" name="prod2_components" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="yn-row"><div class="yn-label">1. Does applicant install, service or demonstrate products?</div><select class="yn-select" name="prod_yn1"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">2. Foreign products sold, distributed, used as components?</div><select class="yn-select" name="prod_yn2"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">3. Research and development conducted or new products planned?</div><select class="yn-select" name="prod_yn3"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">4. Guarantees, warranties, hold harmless agreements?</div><select class="yn-select" name="prod_yn4"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">5. Products related to aircraft/space industry?</div><select class="yn-select" name="prod_yn5"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">6. Products recalled, discontinued, changed?</div><select class="yn-select" name="prod_yn6"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">7. Products of others sold or re-packaged under applicant label?</div><select class="yn-select" name="prod_yn7"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">8. Products under label of others?</div><select class="yn-select" name="prod_yn8"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">9. Vendors coverage required?</div><select class="yn-select" name="prod_yn9"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">10. Does any named insured sell to other named insureds?</div><select class="yn-select" name="prod_yn10"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="field" style="margin-top:18px;">
+          <label>Explain All "Yes" Responses</label>
+          <textarea name="prod_explain"></textarea>
+        </div>
+      </div>
+
+      <!-- General Information -->
+      <div class="card">
+        <div class="card-title">General Information</div>
+        <div class="yn-row"><div class="yn-label">1. Any medical facilities provided or medical professionals employed or contracted?</div><select class="yn-select" name="gen_yn1"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">2. Any exposure to radioactive/nuclear materials?</div><select class="yn-select" name="gen_yn2"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">3. Do/have past, present or discontinued operations involve(d) storing, treating, discharging, applying, disposing, or transporting of hazardous material?</div><select class="yn-select" name="gen_yn3"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">4. Any operations sold, acquired, or discontinued in last five (5) years?</div><select class="yn-select" name="gen_yn4"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">5. Do you rent or loan equipment to others?</div><select class="yn-select" name="gen_yn5"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">6. Any watercraft, docks, floats owned, hired or leased?</div><select class="yn-select" name="gen_yn6"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">7. Any parking facilities owned/rented?</div><select class="yn-select" name="gen_yn7"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">8. Is a fee charged for parking?</div><select class="yn-select" name="gen_yn8"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">9. Recreation facilities provided?</div><select class="yn-select" name="gen_yn9"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">10. Are there any lodging operations including apartments?</div><select class="yn-select" name="gen_yn10"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">11. Is there a swimming pool on premises?</div><select class="yn-select" name="gen_yn11"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">12. Are social events sponsored?</div><select class="yn-select" name="gen_yn12"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">13. Are athletic teams sponsored?</div><select class="yn-select" name="gen_yn13"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">14. Any structural alterations contemplated?</div><select class="yn-select" name="gen_yn14"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">15. Any demolition exposure contemplated?</div><select class="yn-select" name="gen_yn15"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">16. Has applicant been active in or is currently active in joint ventures?</div><select class="yn-select" name="gen_yn16"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">17. Do you lease employees to or from other employers?</div><select class="yn-select" name="gen_yn17"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">18. Is there a labor interchange with any other business or subsidiaries?</div><select class="yn-select" name="gen_yn18"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">19. Are day care facilities operated or controlled?</div><select class="yn-select" name="gen_yn19"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">20. Have any crimes occurred or been attempted on your premises within the last three (3) years?</div><select class="yn-select" name="gen_yn20"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">21. Is there a formal, written safety and security policy in effect?</div><select class="yn-select" name="gen_yn21"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="yn-row"><div class="yn-label">22. Does the business' promotional literature make any representations about the safety or security of the premises?</div><select class="yn-select" name="gen_yn22"><option value="">—</option><option>Y</option><option>N</option></select></div>
+        <div class="field" style="margin-top:18px;">
+          <label>Explain All "Yes" Responses</label>
+          <textarea name="gen_explain" style="min-height:120px;"></textarea>
+        </div>
+      </div>
+
+      <!-- Remarks & Signature -->
+      <div class="card">
+        <div class="card-title">Remarks &amp; Signature</div>
+        <div class="field" style="margin-bottom:18px;">
+          <label>Remarks</label>
+          <textarea name="remarks" style="min-height:100px;" placeholder="Additional remarks or processing instructions..."></textarea>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Producer's Name (Please Print)</label><input type="text" name="producer_name" /></div>
+          <div class="field"><label>State Producer License No.</label><input type="text" name="producer_license" /></div>
+          <div class="field"><label>National Producer Number</label><input type="text" name="producer_npn" /></div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="card" style="padding-bottom:0;cursor:text;" onclick="this.querySelector('textarea').focus()">
+        <div class="card-title">Notes</div>
+        <textarea name="notes" style="display:block;width:100%;min-height:180px;border:none;border-radius:0 0 8px 8px;resize:vertical;padding:16px 24px;font-size:14px;line-height:1.6;outline:none;background-image:none;background-color:#fff;" placeholder="Click anywhere here to add notes..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('a126Form').reset()">Clear Form</button>
+        <a href="portal.html" class="btn btn-primary">Home</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('generateBtn').addEventListener('click', function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      const navy=[44,74,110], ink=[26,26,26], mid=[85,85,85], rule=[212,207,201], light=[136,136,136];
+      const W=612, M=32, CW=W-M*2;
+
+      function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+      function chk(n) { const e=document.querySelector('[name="'+n+'"]'); return e&&e.checked?'X':''; }
+
+      let y=32;
+      doc.setFont('times','bold').setFontSize(22).setTextColor(...ink).text('Meridian Insurance',M,y);
+      doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+14);
+      doc.setFont('times','italic').setFontSize(18).setTextColor(...navy).text('ACORD 126 — Commercial GL',W-M,y,{align:'right'});
+      y+=22; doc.setDrawColor(...ink).setLineWidth(1.2).line(M,y,W-M,y); y+=12;
+
+      function sec(t) {
+        doc.setFillColor(...navy).rect(M,y,CW,24,'F');
+        doc.setFont('helvetica','bold').setFontSize(9).setTextColor(255,255,255).text(t.toUpperCase(),M+8,y+16);
+        y+=28;
+      }
+      function box(s) { doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s); y+=6; }
+      function f2(l1,v1,l2,v2) {
+        const H=CW/2;
+        [[l1,v1,M],[l2,v2,M+H]].forEach(function(a) {
+          doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,H,32);
+          doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+6,y+10);
+          doc.setFontSize(10).setTextColor(...ink).text(a[1]||'',a[2]+6,y+24);
+        }); y+=36;
+      }
+      function f3(l1,v1,l2,v2,l3,v3) {
+        const T=CW/3;
+        [[l1,v1,M],[l2,v2,M+T],[l3,v3,M+T*2]].forEach(function(a) {
+          doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(a[2],y,T,32);
+          doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(a[0].toUpperCase(),a[2]+6,y+10);
+          doc.setFontSize(10).setTextColor(...ink).text(a[1]||'',a[2]+6,y+24);
+        }); y+=36;
+      }
+      function ff(l,val) {
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,32);
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text(l.toUpperCase(),M+6,y+10);
+        doc.setFontSize(10).setTextColor(...ink).text(val||'',M+6,y+24);
+        y+=36;
+      }
+      function ynRow(label, val) {
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW-40,28);
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M+CW-40,y,40,28);
+        doc.setFont('helvetica','normal').setFontSize(8).setTextColor(...ink).text(label,M+4,y+18,{maxWidth:CW-50});
+        doc.setFontSize(9).setTextColor(...navy).text(val||'',M+CW-30,y+18);
+        y+=32;
+      }
+      function newPage() {
+        y=748; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=7;
+        doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · ACORD 126 Commercial General Liability Section',W/2,y,{align:'center'});
+        doc.addPage();
+        y=32;
+        doc.setFont('times','bold').setFontSize(18).setTextColor(...ink).text('Meridian Insurance',M,y);
+        doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT',M,y+12);
+        doc.setFont('times','italic').setFontSize(14).setTextColor(...navy).text('ACORD 126 (continued)',W-M,y,{align:'right'});
+        y+=22; doc.setDrawColor(...ink).setLineWidth(0.8).line(M,y,W-M,y); y+=12;
+      }
+
+      // Page 1
+      var s=y; sec('Application Header');
+      f3('Agency Customer ID',v('agency_customer_id'),'Agency',v('agency'),'Date',v('date'));
+      f3('Carrier',v('carrier'),'NAIC Code',v('naic_code'),'Policy Number',v('policy_number'));
+      f2('Effective Date',v('effective_date'),'Applicant / First Named Insured',v('applicant'));
+      box(s);
+
+      s=y; sec('Coverages & Limits');
+      const covTypes = [chk('cov_claims_made')&&'Claims Made',chk('cov_occurrence')&&'Occurrence',chk('cov_owners_protective')&&"Owner's & Contractor's Protective"].filter(Boolean).join('  ');
+      ff('Coverage Type', covTypes);
+      f2('Property Damage Deductible','$'+v('ded_property'),'Bodily Injury Deductible','$'+v('ded_bodily'));
+      f2('Deductible Per Claim','$'+v('ded_per_claim'),'Deductible Per Occurrence','$'+v('ded_per_occ'));
+      f2('General Aggregate','$'+v('lim_general_agg'),'Products & Completed Ops Aggregate','$'+v('lim_products_agg'));
+      f2('Personal & Advertising Injury','$'+v('lim_personal_adv'),'Each Occurrence','$'+v('lim_each_occ'));
+      f2('Damage to Rented Premises','$'+v('lim_rented_prem'),'Medical Expense','$'+v('lim_medical_exp'));
+      f2('Employee Benefits','$'+v('lim_emp_benefits'),'Premises/Ops Premium','$'+v('prem_premises_ops'));
+      f2('Products Premium','$'+v('prem_products'),'Total Premium','$'+v('prem_total'));
+      if(v('other_coverages')) {
+        doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,44);
+        doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('OTHER COVERAGES / RESTRICTIONS',M+6,y+10);
+        doc.setFontSize(9).setTextColor(...ink).text(doc.splitTextToSize(v('other_coverages'),CW-12),M+6,y+22);
+        y+=48;
+      }
+      box(s);
+
+      newPage();
+
+      s=y; sec('Claims Made');
+      f2('Proposed Retroactive Date',v('retro_date'),'Entry Date into Claims Made Coverage',v('claims_entry_date'));
+      ynRow('3. Has any product, work, accident, or location been excluded, uninsured or self-insured from any previous coverage?', v('yn_excluded'));
+      ynRow('4. Was tail coverage purchased under any previous policy?', v('yn_tail'));
+      if(v('claims_explain')) { ff('Explain Yes Responses', v('claims_explain')); }
+      box(s);
+
+      s=y; sec('Employee Benefits Liability');
+      f2('Deductible Per Claim','$'+v('ebl_deductible'),'Number of Employees',v('ebl_employees'));
+      f2('Employees Covered by Benefits Plans',v('ebl_covered'),'Retroactive Date',v('ebl_retro_date'));
+      box(s);
+
+      s=y; sec('Contractors');
+      ['Does applicant draw plans, designs, or specifications for others?',
+       'Do any operations include blasting or utilize or store explosive material?',
+       'Do any operations include excavation, tunneling, underground work or earth moving?',
+       'Do your subcontractors carry coverages or limits less than yours?',
+       'Are subcontractors allowed to work without providing you with a certificate of insurance?',
+       'Does applicant lease equipment to others with or without operators?'
+      ].forEach(function(q,i) {
+        ynRow((i+1)+'. '+q, v('con_yn'+(i+1)));
+      });
+      if(v('con_explain')) { ff('Explain Yes Responses', v('con_explain')); }
+      f3('Describe Work Subcontracted',v('sub_work_desc'),'$ Paid to Subcontractors',v('sub_paid'),'% Work Subcontracted / Staff',v('sub_pct'));
+      box(s);
+
+      newPage();
+
+      s=y; sec('Products / Completed Operations');
+      ['Does applicant install, service or demonstrate products?',
+       'Foreign products sold, distributed, used as components?',
+       'Research and development conducted or new products planned?',
+       'Guarantees, warranties, hold harmless agreements?',
+       'Products related to aircraft/space industry?',
+       'Products recalled, discontinued, changed?',
+       'Products of others sold or re-packaged under applicant label?',
+       'Products under label of others?',
+       'Vendors coverage required?',
+       'Does any named insured sell to other named insureds?'
+      ].forEach(function(q,i) {
+        ynRow((i+1)+'. '+q, v('prod_yn'+(i+1)));
+      });
+      if(v('prod_explain')) { ff('Explain Yes Responses', v('prod_explain')); }
+      box(s);
+
+      newPage();
+
+      s=y; sec('General Information');
+      ['Any medical facilities provided or medical professionals employed or contracted?',
+       'Any exposure to radioactive/nuclear materials?',
+       'Past/present/discontinued operations involve storing, treating, discharging, applying, disposing, or transporting of hazardous material?',
+       'Any operations sold, acquired, or discontinued in last five (5) years?',
+       'Do you rent or loan equipment to others?',
+       'Any watercraft, docks, floats owned, hired or leased?',
+       'Any parking facilities owned/rented?',
+       'Is a fee charged for parking?',
+       'Recreation facilities provided?',
+       'Are there any lodging operations including apartments?',
+       'Is there a swimming pool on premises?',
+       'Are social events sponsored?',
+       'Are athletic teams sponsored?',
+       'Any structural alterations contemplated?',
+       'Any demolition exposure contemplated?',
+       'Has applicant been active in or is currently active in joint ventures?',
+       'Do you lease employees to or from other employers?',
+       'Is there a labor interchange with any other business or subsidiaries?',
+       'Are day care facilities operated or controlled?',
+       'Have any crimes occurred or been attempted on your premises within the last three (3) years?',
+       'Is there a formal, written safety and security policy in effect?',
+       "Does the business' promotional literature make any representations about the safety or security of the premises?"
+      ].forEach(function(q,i) {
+        if(y > 680) newPage();
+        ynRow((i+1)+'. '+q, v('gen_yn'+(i+1)));
+      });
+      if(v('gen_explain')) { ff('Explain Yes Responses', v('gen_explain')); }
+      box(s);
+
+      if(v('remarks')) {
+        s=y; sec('Remarks');
+        ff('Remarks', v('remarks'));
+        box(s);
+      }
+
+      s=y; sec('Signature');
+      f3('Producer\'s Name (Please Print)',v('producer_name'),'State Producer License No.',v('producer_license'),'National Producer Number',v('producer_npn'));
+      box(s);
+
+      // Footer
+      y=748; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=7;
+      doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · ACORD 126 Commercial General Liability Section',W/2,y,{align:'center'});
+
+      doc.save('acord-126-'+(v('applicant')||'form')+'.pdf');
+    });
+  </script>
+
+  <script>
+    (function() {
+      var now = new Date();
+      var nextReset = new Date();
+      nextReset.setHours(0, 1, 0, 0);
+      if (nextReset <= now) nextReset.setDate(nextReset.getDate() + 1);
+      setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
+    })();
+  </script>
+
+</body>
+</html>

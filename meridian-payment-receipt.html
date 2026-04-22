@@ -1194,6 +1194,94 @@
 
     });
 
+    // Auto-fill from spec sheet (commercial or personal lines)
+    (function() {
+
+      var raw = localStorage.getItem('ep_pr_prefill');
+
+      if (!raw) return;
+
+      try { var d = JSON.parse(raw); } catch(e) { return; }
+
+      localStorage.removeItem('ep_pr_prefill');
+
+      function set(name, val) {
+
+        var el = document.querySelector('[name="'+name+'"]');
+
+        if (el && val) el.value = val;
+
+      }
+
+      function setSelect(name, val, otherId, otherVal) {
+
+        var sel = document.querySelector('[name="'+name+'"]');
+
+        if (!sel || !val) return;
+
+        var opt = Array.from(sel.options).find(function(o) { return o.value === val; });
+
+        if (opt) {
+
+          sel.value = val;
+
+        } else {
+
+          // Try matching "Other" option
+          var otherOpt = Array.from(sel.options).find(function(o) { return o.value === 'Other' || o.value === 'Other...'; });
+
+          if (otherOpt) {
+
+            sel.value = otherOpt.value;
+
+            var inp = document.getElementById(otherId);
+
+            if (inp && otherVal) { inp.value = otherVal; inp.style.display = 'block'; }
+
+          }
+
+        }
+
+      }
+
+      set('client', d.client);
+
+      set('date', d.date);
+
+      set('top_policy_number', d.top_policy_number);
+
+      set('policy_number', d.policy_number);
+
+      set('general_agent', d.general_agent);
+
+      set('applied_payment', d.applied_payment);
+
+      set('amount', d.amount);
+
+      setSelect('top_carrier', d.carrier, 'top_carrier_other', d.carrier_other);
+
+      setSelect('carrier', d.carrier, 'carrier_other', d.carrier_other);
+
+      setSelect('policy_type', d.policy_type, 'policy_type_other', d.policy_type_other);
+
+      if (d.billing_type) {
+
+        var rb = document.querySelector('[name="billing_type"][value="'+d.billing_type+'"]');
+
+        if (rb) {
+
+          rb.checked = true;
+
+          rb.dispatchEvent(new Event('change'));
+
+        }
+
+      }
+
+      if (d.applied_payment) calcTotal();
+
+    })();
+
   </script>
 
  

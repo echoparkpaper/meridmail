@@ -1008,7 +1008,7 @@
 
         <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
 
-        <a href="meridian-payment-receipt.html" class="btn btn-secondary">Payment Receipt →</a>
+        <button type="button" class="btn btn-secondary" onclick="goToPaymentReceipt()">Payment Receipt →</button>
 
         <a href="portal.html" class="btn btn-primary">Home</a>
 
@@ -1105,6 +1105,50 @@
       document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     });
+
+    function goToPaymentReceipt() {
+
+      var carrierVal = document.querySelector('[name="carrier"]').value;
+
+      var carrierOther = document.querySelector('[name="carrier_other"]').value;
+
+      var policyTypeVal = document.querySelector('[name="policy_type"]').value;
+
+      var policyTypeOther = document.querySelector('[name="policy_type_other"]').value;
+
+      var billingVal = document.querySelector('[name="billing_type"]:checked');
+
+      localStorage.setItem('ep_pr_prefill', JSON.stringify({
+
+        client:            document.querySelector('[name="client_name"]').value,
+
+        date:              document.querySelector('[name="date"]').value,
+
+        carrier:           carrierVal,
+
+        carrier_other:     carrierOther,
+
+        top_policy_number: document.querySelector('[name="policy_number"]').value,
+
+        policy_number:     document.querySelector('[name="policy_number"]').value,
+
+        general_agent:     document.querySelector('[name="general_agent"]').value,
+
+        applied_payment:   document.querySelector('[name="premium"]').value,
+
+        amount:            document.querySelector('[name="premium"]').value,
+
+        policy_type:       policyTypeVal,
+
+        policy_type_other: policyTypeOther,
+
+        billing_type:      billingVal ? billingVal.value : ''
+
+      }));
+
+      window.location.href = 'meridian-payment-receipt.html';
+
+    }
 
   </script>
 
