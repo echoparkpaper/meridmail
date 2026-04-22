@@ -636,6 +636,10 @@
         <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('a125Form').reset()">Clear Form</button>
         <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+        <select class="btn btn-secondary" onchange="if(this.value){addForm(this.value); this.value='';}" style="padding-right: 30px; appearance: auto; -webkit-appearance: menulist;">
+          <option value="">+ Add Form</option>
+          <option value="acord-126.html">ACORD 126 — Commercial GL Section</option>
+        </select>
         <a href="portal.html" class="btn btn-primary">Home</a>
       </div>
 
@@ -643,6 +647,44 @@
   </div>
 
   <script>
+    // --- Cross-form data sharing (Add Form dropdown) ---
+    function addForm(targetUrl) {
+      if (!targetUrl) return;
+      function val(n) { var e = document.querySelector('[name="'+n+'"]'); return e ? e.value : ''; }
+      try {
+        localStorage.setItem('ep_acord_prefill', JSON.stringify({
+          customer_id:    val('customer_id'),
+          agency_name:    val('producer_name'),
+          form_date:      val('form_date'),
+          carrier_name:   val('insurer_name'),
+          naic_code:      val('naic_code'),
+          policy_number:  val('policy_number'),
+          effective_date: val('effective_date'),
+          applicant_name: val('ni_name')
+        }));
+      } catch(e) { console.error('prefill save failed', e); }
+      window.location.href = targetUrl;
+    }
+
+    // On load: populate from any prefill dropped by another ACORD form.
+    (function() {
+      try {
+        var raw = localStorage.getItem('ep_acord_prefill');
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        localStorage.removeItem('ep_acord_prefill');
+        function set(n, val) { var e = document.querySelector('[name="'+n+'"]'); if (e && val) e.value = val; }
+        set('customer_id',    d.customer_id);
+        set('producer_name',  d.agency_name);
+        set('form_date',      d.form_date);
+        set('insurer_name',   d.carrier_name);
+        set('naic_code',      d.naic_code);
+        set('policy_number',  d.policy_number);
+        set('effective_date', d.effective_date);
+        set('ni_name',        d.applicant_name);
+      } catch(e) { console.error('prefill load failed', e); }
+    })();
+
     document.getElementById('generateBtn').addEventListener('click', async function() {
       const btn = this;
       btn.disabled = true; btn.textContent = 'Generating...';
