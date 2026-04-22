@@ -572,6 +572,7 @@
       const W=612, M=32, CW=W-M*2;
 
       function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+      function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(parseInt(p[1])+'-'+parseInt(p[2])+'-'+p[0]):s; }
       function chk(n) { const e=document.querySelector('[name="'+n+'"]'); return e&&e.checked?'X':''; }
 
       let y=32;
@@ -628,9 +629,9 @@
 
       // Page 1
       var s=y; sec('Application Header');
-      f3('Agency Customer ID',v('agency_customer_id'),'Agency',v('agency'),'Date',v('date'));
+      f3('Agency Customer ID',v('agency_customer_id'),'Agency',v('agency'),'Date',fmtDate(v('date')));
       f3('Carrier',v('carrier'),'NAIC Code',v('naic_code'),'Policy Number',v('policy_number'));
-      f2('Effective Date',v('effective_date'),'Applicant / First Named Insured',v('applicant'));
+      f2('Effective Date',fmtDate(v('effective_date')),'Applicant / First Named Insured',v('applicant'));
       box(s);
 
       s=y; sec('Coverages & Limits');
@@ -654,7 +655,7 @@
       newPage();
 
       s=y; sec('Claims Made');
-      f2('Proposed Retroactive Date',v('retro_date'),'Entry Date into Claims Made Coverage',v('claims_entry_date'));
+      f2('Proposed Retroactive Date',fmtDate(v('retro_date')),'Entry Date into Claims Made Coverage',fmtDate(v('claims_entry_date')));
       ynRow('3. Has any product, work, accident, or location been excluded, uninsured or self-insured from any previous coverage?', v('yn_excluded'));
       ynRow('4. Was tail coverage purchased under any previous policy?', v('yn_tail'));
       if(v('claims_explain')) { ff('Explain Yes Responses', v('claims_explain')); }
@@ -662,7 +663,7 @@
 
       s=y; sec('Employee Benefits Liability');
       f2('Deductible Per Claim','$'+v('ebl_deductible'),'Number of Employees',v('ebl_employees'));
-      f2('Employees Covered by Benefits Plans',v('ebl_covered'),'Retroactive Date',v('ebl_retro_date'));
+      f2('Employees Covered by Benefits Plans',v('ebl_covered'),'Retroactive Date',fmtDate(v('ebl_retro_date')));
       box(s);
 
       s=y; sec('Contractors');

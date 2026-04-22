@@ -1106,6 +1106,8 @@
 
     function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
 
+    function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(parseInt(p[1])+'-'+parseInt(p[2])+'-'+p[0]):s; }
+
     function radio(n) { const e=document.querySelector('[name="'+n+'"]:checked'); return e?e.parentElement.textContent.trim():''; }
 
     function carrierVal() { const x=v('carrier'); return x==='Other...'?(v('carrier_other')||'Other'):x; }
@@ -1172,7 +1174,7 @@
 
     var s=sec('General Information');
 
-    f2('Date',v('date'),'Agent',v('agent'));
+    f2('Date',fmtDate(v('date')),'Agent',v('agent'));
 
     f2('Client Type',radio('client_type'),'Policy',radio('policy_status'));
 
@@ -1200,7 +1202,7 @@
 
     f2('Policy Type',policyTypeVal(),'Policy Number',v('policy_number'));
 
-    f2('Policy Period',v('policy_period'),'Effective Date',v('effective_date'));
+    f2('Policy Period',v('policy_period'),'Effective Date',fmtDate(v('effective_date')));
 
     f2('Premium','$'+v('premium'),'General Agent',v('general_agent'));
 

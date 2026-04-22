@@ -1210,6 +1210,8 @@
 
     function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
 
+    function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(parseInt(p[1])+'-'+parseInt(p[2])+'-'+p[0]):s; }
+
     function radio(n) { const e=document.querySelector('[name="'+n+'"]:checked'); return e?e.parentElement.textContent.trim():''; }
 
     function carrierVal() { const x=v('carrier'); return x==='Other...'?(v('carrier_other')||'Other'):x; }
@@ -1290,7 +1292,7 @@
 
     var s=sec('General Information');
 
-    f2('Date',v('gen_date'),'Agent',v('agent'));
+    f2('Date',fmtDate(v('date')),'Agent',v('agent'));
 
     f2('Client Type',radio('client_type'),'Policy',radio('policy_status'));
 
@@ -1314,9 +1316,9 @@
 
     s=sec('Client Details');
 
-    f3('SSN',v('ssn'),'DL Number',v('dl_number'),'Date of Birth',v('dob'));
+    f3('SSN',v('ssn'),'DL Number',v('dl_number'),'Date of Birth',fmtDate(v('dob')));
 
-    f3('Sec. Insured SSN',v('sec_ssn'),'Sec. Insured DL Number',v('sec_dl_number'),'Sec. Insured DOB',v('sec_dob'));
+    f3('Sec. Insured SSN',v('sec_ssn'),'Sec. Insured DL Number',v('sec_dl_number'),'Sec. Insured DOB',fmtDate(v('sec_dob')));
 
     box(s);
 
@@ -1328,7 +1330,7 @@
 
     f2('Policy Period',v('policy_period'),'Premium','$'+v('premium'));
 
-    f2('Effective Date',v('effective_date'),'Carrier',carrierVal());
+    f2('Effective Date',fmtDate(v('effective_date')),'Carrier',carrierVal());
 
     f2('Issuing State',v('issuing_state'),'','');
 

@@ -960,6 +960,8 @@
 
     function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
 
+    function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(parseInt(p[1])+'-'+parseInt(p[2])+'-'+p[0]):s; }
+
     function carrierVal() { const x=v('carrier'); return x==='Other...'?(v('carrier_other')||'Other'):x; }
 
     function policyTypeVal() { const x=v('policy_type'); return x==='Other'?(v('policy_type_other')||'Other'):x; }
@@ -1012,7 +1014,7 @@
 
     var s=y; secTitle('Request Information');
 
-    frow([{l:'Insured',v:v('insured'),w:CW/2},{l:'Request Date',v:v('request_date'),w:CW/2}]);
+    frow([{l:'Insured',v:v('insured'),w:CW/2},{l:'Request Date',v:fmtDate(v('request_date')),w:CW/2}]);
 
     frow([{l:'Request Made By',v:v('request_made_by'),w:CW/2},{l:'Identity Verification',v:v('identity_verification'),w:CW/2}]);
 
@@ -1054,7 +1056,7 @@
 
     frow([{l:'Reviewed By',v:v('reviewed_by'),w:CW/2},{l:'Submission Method',v:v('submission_method'),w:CW/2}]);
 
-    frow([{l:'Date Processed',v:v('date_processed'),w:CW/2},{l:'',v:'',w:CW/2}]);
+    frow([{l:'Date Processed',v:fmtDate(v('date_processed')),w:CW/2},{l:'',v:'',w:CW/2}]);
 
     doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-5);
 

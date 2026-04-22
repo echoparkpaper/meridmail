@@ -1344,6 +1344,8 @@
 
     function v(n) { const e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
 
+    function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(parseInt(p[1])+'-'+parseInt(p[2])+'-'+p[0]):s; }
+
     function radio(n) { const e=document.querySelector('[name="'+n+'"]:checked'); return e?e.parentElement.textContent.trim():''; }
 
     function checks(n) { return Array.from(document.querySelectorAll('[name="'+n+'"]:checked')).map(function(e){return e.parentElement.textContent.trim();}); }
@@ -1426,7 +1428,7 @@
 
     var s=sec('Payment Information');
 
-    f2('Client',v('client'),'Date',v('date'));
+    f2('Client',v('client'),'Date',fmtDate(v('date')));
 
     f2('Policy Number',v('top_policy_number'),'Carrier',carrierVal('top_carrier','top_carrier_other'));
 
@@ -1448,7 +1450,7 @@
 
     f2('General Agent',v('general_agent'),'Payment Received By',v('payment_received_by'));
 
-    f2('Funds Received By (Accounting)',v('funds_received_by'),'Date Received By Accounting',v('date_received_accounting'));
+    f2('Funds Received By (Accounting)',v('funds_received_by'),'Date Received By Accounting',fmtDate(v('date_received_accounting')));
 
     box(s);
 
@@ -1510,9 +1512,9 @@
 
       f2('Amount to Company','$'+v('abr_amount_to_company'),'Amount Financed',v('abr_amount_financed'));
 
-      f2('Financed By',v('abr_financed_by'),'Agency Bill Entered Date',v('abr_entered_date'));
+      f2('Financed By',v('abr_financed_by'),'Agency Bill Entered Date',fmtDate(v('abr_entered_date')));
 
-      f2('Commission Paid Date',v('abr_commission_paid_date'),'Commission Paid Check #',v('abr_commission_check'));
+      f2('Commission Paid Date',fmtDate(v('abr_commission_paid_date')),'Commission Paid Check #',v('abr_commission_check'));
 
       box(s);
 
