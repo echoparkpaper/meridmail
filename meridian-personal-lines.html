@@ -1206,6 +1206,20 @@
 
       var billingVal = document.querySelector('[name="billing_type"]:checked');
 
+      // Divide the annual premium by the payment frequency so the payment
+
+      // receipt is prefilled with a single installment amount.
+
+      var freqMap = { 'Annual':1, 'Semi-Annual':2, 'Quarterly':4, 'Monthly':12, 'Monthly EFT':12, 'Mortgagee':1 };
+
+      var mode = val('payment_mode');
+
+      var freq = freqMap[mode] || 1;
+
+      var premium = parseFloat(val('premium'));
+
+      var perPayment = (!isNaN(premium) && freq > 0) ? (premium / freq).toFixed(2) : val('premium');
+
       try {
 
         localStorage.setItem('ep_pr_prefill', JSON.stringify({
@@ -1224,9 +1238,13 @@
 
           general_agent:     val('general_agent'),
 
-          applied_payment:   val('premium'),
+          applied_payment:   perPayment,
 
-          amount:            val('premium'),
+          amount:            perPayment,
+
+          annual_premium:    val('premium'),
+
+          payment_mode:      mode,
 
           policy_type:       val('policy_type'),
 
