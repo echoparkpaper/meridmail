@@ -1244,6 +1244,8 @@
 
         if (!sel || !val) return;
 
+        var isOther = (val === 'Other' || val === 'Other...');
+
         var opt = Array.from(sel.options).find(function(o) { return o.value === val; });
 
         if (opt) {
@@ -1252,18 +1254,35 @@
 
         } else {
 
-          // Try matching "Other" option
+          // Fall back to matching an "Other" option on this select.
+
           var otherOpt = Array.from(sel.options).find(function(o) { return o.value === 'Other' || o.value === 'Other...'; });
 
           if (otherOpt) {
 
             sel.value = otherOpt.value;
 
-            var inp = document.getElementById(otherId);
+            isOther = true;
 
-            if (inp && otherVal) { inp.value = otherVal; inp.style.display = 'block'; }
+            // If no explicit otherVal was passed, use val itself as the free-text value.
+
+            if (!otherVal) otherVal = val;
 
           }
+
+        }
+
+        // When the selected value is "Other" (either directly or via fallback),
+
+        // populate the accompanying free-text input so the user sees exactly
+
+        // what was typed on the spec sheet.
+
+        if (isOther) {
+
+          var inp = document.getElementById(otherId);
+
+          if (inp && otherVal) { inp.value = otherVal; inp.style.display = 'block'; }
 
         }
 
