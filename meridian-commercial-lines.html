@@ -958,6 +958,58 @@
 
     document.getElementById('effective_date').value = today;
 
+    // Restore full form state when arriving via the Back button from the
+    // payment receipt page.
+    (function() {
+
+      if (sessionStorage.getItem('ep_restore_spec') !== '1') return;
+
+      sessionStorage.removeItem('ep_restore_spec');
+
+      var raw = sessionStorage.getItem('ep_spec_snapshot');
+
+      if (!raw) return;
+
+      try { var d = JSON.parse(raw); } catch(e) { return; }
+
+      if (!d || d.source_url !== 'meridian-commercial-lines.html') return;
+
+      sessionStorage.removeItem('ep_spec_snapshot');
+
+      var fields = d.fields || {};
+
+      Object.keys(fields).forEach(function(key) {
+
+        var v = fields[key];
+
+        var idx = key.indexOf('::');
+
+        if (idx > -1) {
+
+          var n = key.slice(0, idx), val = key.slice(idx+2);
+
+          var el = document.querySelector('[name="'+n+'"][value="'+val+'"]');
+
+          if (el) el.checked = !!v;
+
+        } else {
+
+          var el2 = document.querySelector('[name="'+key+'"]');
+
+          if (el2) el2.value = v;
+
+        }
+
+      });
+
+      // Re-trigger "Other" fields visibility after restoring selects.
+
+      try { toggleCarrierOther('carrier','carrier_other'); } catch(e){}
+
+      try { togglePolicyTypeOther(); } catch(e){}
+
+    })();
+
  
 
     document.querySelectorAll('input[type="tel"]').forEach(el => {
@@ -1007,6 +1059,46 @@
     function goToPaymentReceipt() {
 
       function val(n) { var e = document.querySelector('[name="'+n+'"]'); return e ? e.value : ''; }
+
+      // Full form snapshot so the Back button on payment receipt can restore
+
+      // everything the user entered, not just the fields we pass as prefill.
+
+      var snap = {};
+
+      var clForm = document.getElementById('clForm');
+
+      if (clForm) {
+
+        Array.from(clForm.elements).forEach(function(el) {
+
+          if (!el.name) return;
+
+          if (el.type === 'checkbox' || el.type === 'radio') {
+
+            snap[el.name + '::' + el.value] = el.checked;
+
+          } else {
+
+            snap[el.name] = el.value;
+
+          }
+
+        });
+
+      }
+
+      try {
+
+        sessionStorage.setItem('ep_spec_snapshot', JSON.stringify({
+
+          source_url: 'meridian-commercial-lines.html',
+
+          fields: snap
+
+        }));
+
+      } catch(e) { console.error('snapshot save failed', e); }
 
       var billingVal = document.querySelector('[name="billing_type"]:checked');
 
