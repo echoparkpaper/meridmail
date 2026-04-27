@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACORD 25 — Certificate of Liability Insurance | Meridian Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:    #2c4a6e;
+      --accent-lt: #e8edf3;
+      --bg:        #f7f5f2;
+      --white:     #ffffff;
+      --rule:      #d4cfc9;
+      --ink:       #1a1a1a;
+      --mid:       #555;
+      --light:     #888;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0 0 60px;
+      font-size: 14px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--rule); padding: 10px 24px; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .topbar a { color: var(--accent); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+    .site-header {
+      max-width: 860px; margin: 0 auto; padding: 24px 16px 18px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2px solid var(--ink); gap: 16px; flex-wrap: wrap;
+    }
+    .logo-name { font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 500; color: var(--ink); line-height: 1; }
+    .logo-tag { font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--light); font-weight: 300; margin-top: 3px; }
+    .form-title-right { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; font-style: italic; color: var(--accent); text-align: right; }
+    .form-wrap { max-width: 860px; margin: 24px auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 0 24px 24px; overflow: hidden; }
+    .card-title {
+      font-size: 12px; font-weight: 600; color: #ffffff; background: var(--accent);
+      padding: 10px 24px; margin: 0 -24px 22px -24px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px 12px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+    input[type="text"], input[type="date"], input[type="number"], input[type="email"], input[type="tel"], select, textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px;
+      font-family: inherit; font-size: 13.5px; color: var(--ink); background: var(--white);
+      transition: border-color 0.15s; appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+    }
+    input::placeholder { color: var(--light); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      padding-right: 30px; cursor: pointer;
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    .prefix-wrap { position: relative; }
+    .prefix-wrap span { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--mid); font-size: 13.5px; pointer-events: none; }
+    .prefix-wrap input { padding-left: 20px; }
+    .check-group { display: flex; gap: 20px; flex-wrap: wrap; padding-top: 4px; }
+    .check-opt { display: flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+    .check-opt input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 22px; border-radius: 6px; font-family: inherit; font-size: 14px;
+      font-weight: 500; cursor: pointer; border: none; transition: background 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1e3650; }
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+    .btn-secondary:hover { background: var(--bg); }
+    .add-form-select {
+      width: auto; padding: 10px 34px 10px 22px; border-radius: 6px; font-family: inherit;
+      font-size: 14px; font-weight: 500; cursor: pointer; border: none;
+      background: var(--accent); color: #fff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      appearance: none; -webkit-appearance: none;
+    }
+    .add-form-select:hover { background-color: #1e3650; }
+    .subhead { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin: 10px 0 8px; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+    .insurer-row { display: grid; grid-template-columns: 28px 1fr 140px; gap: 12px; align-items: center; padding: 6px 0; }
+    .insurer-row .ltr { font-weight: 600; color: var(--accent); text-align: center; }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .site-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="chevron">‹</span>
+    <a href="portal.html">Back to Home</a>
+  </div>
+
+  <div class="site-header">
+    <div>
+      <div class="logo-name">Meridian Insurance</div>
+      <div class="logo-tag">Policy Services Department</div>
+    </div>
+    <div class="form-title-right">ACORD 25 — Certificate of Liability Insurance</div>
+  </div>
+
+  <div class="form-wrap">
+    <form id="a25Form" novalidate>
+
+      <!-- Header / Date -->
+      <div class="card">
+        <div class="card-title">Header</div>
+        <div class="grid-3">
+          <div class="field"><label>Date Issued</label><input type="date" name="date" /></div>
+          <div class="field"><label>Customer ID</label><input type="text" name="customer_id" /></div>
+          <div class="field"><label>Revision Number</label><input type="text" name="revision_number" /></div>
+        </div>
+      </div>
+
+      <!-- Producer -->
+      <div class="card">
+        <div class="card-title">Producer</div>
+        <div class="grid-2">
+          <div class="field"><label>Producer / Agency Name</label><input type="text" name="producer_name" /></div>
+          <div class="field"><label>Contact Name</label><input type="text" name="producer_contact" /></div>
+          <div class="field"><label>Address Line 1</label><input type="text" name="producer_addr1" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="producer_addr2" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="producer_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="producer_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="producer_zip" maxlength="10" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Phone (A/C, No, Ext)</label><input type="tel" name="producer_phone" /></div>
+          <div class="field"><label>Fax (A/C, No)</label><input type="tel" name="producer_fax" /></div>
+          <div class="field"><label>Email</label><input type="email" name="producer_email" /></div>
+        </div>
+      </div>
+
+      <!-- Insured -->
+      <div class="card">
+        <div class="card-title">Insured</div>
+        <div class="grid-2">
+          <div class="field"><label>Insured Name</label><input type="text" name="insured_name" /></div>
+          <div class="field"><label>Insured Customer Identifier</label><input type="text" name="insured_customer_id" /></div>
+          <div class="field"><label>Address Line 1</label><input type="text" name="insured_addr1" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="insured_addr2" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="insured_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="insured_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="insured_zip" maxlength="10" /></div>
+        </div>
+      </div>
+
+      <!-- Insurers Affording Coverage -->
+      <div class="card">
+        <div class="card-title">Insurers Affording Coverage</div>
+        <div class="insurer-row" style="font-size:11px; color:var(--mid); border-bottom:1px solid var(--rule); padding-bottom:8px;">
+          <div></div><div>Insurer Name</div><div>NAIC #</div>
+        </div>
+        <div class="insurer-row"><div class="ltr">A</div><input type="text" name="insurer_a_name" /><input type="text" name="insurer_a_naic" /></div>
+        <div class="insurer-row"><div class="ltr">B</div><input type="text" name="insurer_b_name" /><input type="text" name="insurer_b_naic" /></div>
+        <div class="insurer-row"><div class="ltr">C</div><input type="text" name="insurer_c_name" /><input type="text" name="insurer_c_naic" /></div>
+        <div class="insurer-row"><div class="ltr">D</div><input type="text" name="insurer_d_name" /><input type="text" name="insurer_d_naic" /></div>
+        <div class="insurer-row"><div class="ltr">E</div><input type="text" name="insurer_e_name" /><input type="text" name="insurer_e_naic" /></div>
+        <div class="insurer-row"><div class="ltr">F</div><input type="text" name="insurer_f_name" /><input type="text" name="insurer_f_naic" /></div>
+      </div>
+
+      <!-- Commercial General Liability -->
+      <div class="card">
+        <div class="card-title">Commercial General Liability</div>
+        <div class="check-group" style="margin-bottom:14px;">
+          <label class="check-opt"><input type="checkbox" name="gl_present" /> Include on certificate</label>
+          <label class="check-opt"><input type="checkbox" name="gl_claims_made" /> Claims-Made</label>
+          <label class="check-opt"><input type="checkbox" name="gl_occurrence" /> Occurrence</label>
+          <label class="check-opt"><input type="checkbox" name="gl_addl_insured" /> Additional Insured</label>
+          <label class="check-opt"><input type="checkbox" name="gl_subro_waived" /> Subrogation Waived</label>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer Letter (A–F)</label><input type="text" name="gl_insurer_ltr" maxlength="1" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="gl_policy_number" /></div>
+          <div class="field"><label>Other (X)</label><input type="text" name="gl_other_desc" placeholder="Description" /></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="gl_effective_date" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="gl_expiration_date" /></div>
+        </div>
+        <div class="subhead" style="margin-top:18px;">Limits</div>
+        <div class="grid-2">
+          <div class="field"><label>Each Occurrence</label><div class="prefix-wrap"><span>$</span><input type="text" name="gl_each_occurrence" placeholder="0" /></div></div>
+          <div class="field"><label>Damage to Rented Premises (each occ.)</label><div class="prefix-wrap"><span>$</span><input type="text" name="gl_damage_rented" placeholder="0" /></div></div>
+          <div class="field"><label>Med Exp (any one person)</label><div class="prefix-wrap"><span>$</span><input type="text" name="gl_med_exp" placeholder="0" /></div></div>
+          <div class="field"><label>Personal &amp; Advertising Injury</label><div class="prefix-wrap"><span>$</span><input type="text" name="gl_personal_adv" placeholder="0" /></div></div>
+          <div class="field"><label>General Aggregate</label><div class="prefix-wrap"><span>$</span><input type="text" name="gl_general_aggregate" placeholder="0" /></div></div>
+          <div class="field"><label>Products – Comp/Op Aggregate</label><div class="prefix-wrap"><span>$</span><input type="text" name="gl_products_aggregate" placeholder="0" /></div></div>
+        </div>
+        <div class="check-group" style="margin-top:14px;">
+          <label class="check-opt"><input type="checkbox" name="gl_agg_per_policy" /> Aggregate applies per Policy</label>
+          <label class="check-opt"><input type="checkbox" name="gl_agg_per_project" /> per Project</label>
+          <label class="check-opt"><input type="checkbox" name="gl_agg_per_location" /> per Location</label>
+        </div>
+      </div>
+
+      <!-- Automobile Liability -->
+      <div class="card">
+        <div class="card-title">Automobile Liability</div>
+        <div class="check-group" style="margin-bottom:14px;">
+          <label class="check-opt"><input type="checkbox" name="auto_present" /> Include on certificate</label>
+          <label class="check-opt"><input type="checkbox" name="auto_any_auto" /> Any Auto</label>
+          <label class="check-opt"><input type="checkbox" name="auto_owned" /> Owned Autos</label>
+          <label class="check-opt"><input type="checkbox" name="auto_scheduled" /> Scheduled Autos</label>
+          <label class="check-opt"><input type="checkbox" name="auto_hired" /> Hired Autos</label>
+          <label class="check-opt"><input type="checkbox" name="auto_non_owned" /> Non-Owned Autos</label>
+          <label class="check-opt"><input type="checkbox" name="auto_addl_insured" /> Additional Insured</label>
+          <label class="check-opt"><input type="checkbox" name="auto_subro_waived" /> Subrogation Waived</label>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer Letter (A–F)</label><input type="text" name="auto_insurer_ltr" maxlength="1" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="auto_policy_number" /></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="auto_effective_date" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="auto_expiration_date" /></div>
+        </div>
+        <div class="subhead" style="margin-top:18px;">Limits</div>
+        <div class="grid-2">
+          <div class="field"><label>Combined Single Limit (each accident)</label><div class="prefix-wrap"><span>$</span><input type="text" name="auto_csl" placeholder="0" /></div></div>
+          <div class="field"><label>Bodily Injury (per person)</label><div class="prefix-wrap"><span>$</span><input type="text" name="auto_bi_person" placeholder="0" /></div></div>
+          <div class="field"><label>Bodily Injury (per accident)</label><div class="prefix-wrap"><span>$</span><input type="text" name="auto_bi_accident" placeholder="0" /></div></div>
+          <div class="field"><label>Property Damage (per accident)</label><div class="prefix-wrap"><span>$</span><input type="text" name="auto_pd" placeholder="0" /></div></div>
+        </div>
+      </div>
+
+      <!-- Umbrella / Excess Liability -->
+      <div class="card">
+        <div class="card-title">Umbrella / Excess Liability</div>
+        <div class="check-group" style="margin-bottom:14px;">
+          <label class="check-opt"><input type="checkbox" name="umb_present" /> Include on certificate</label>
+          <label class="check-opt"><input type="checkbox" name="umb_umbrella" /> Umbrella</label>
+          <label class="check-opt"><input type="checkbox" name="umb_excess" /> Excess</label>
+          <label class="check-opt"><input type="checkbox" name="umb_claims_made" /> Claims-Made</label>
+          <label class="check-opt"><input type="checkbox" name="umb_occurrence" /> Occurrence</label>
+          <label class="check-opt"><input type="checkbox" name="umb_addl_insured" /> Additional Insured</label>
+          <label class="check-opt"><input type="checkbox" name="umb_subro_waived" /> Subrogation Waived</label>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer Letter (A–F)</label><input type="text" name="umb_insurer_ltr" maxlength="1" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="umb_policy_number" /></div>
+          <div class="field"><label>Retention</label><div class="prefix-wrap"><span>$</span><input type="text" name="umb_retention" placeholder="0" /></div></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="umb_effective_date" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="umb_expiration_date" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Each Occurrence</label><div class="prefix-wrap"><span>$</span><input type="text" name="umb_each_occurrence" placeholder="0" /></div></div>
+          <div class="field"><label>Aggregate</label><div class="prefix-wrap"><span>$</span><input type="text" name="umb_aggregate" placeholder="0" /></div></div>
+        </div>
+      </div>
+
+      <!-- Workers Compensation -->
+      <div class="card">
+        <div class="card-title">Workers Compensation &amp; Employers' Liability</div>
+        <div class="check-group" style="margin-bottom:14px;">
+          <label class="check-opt"><input type="checkbox" name="wc_present" /> Include on certificate</label>
+          <label class="check-opt"><input type="checkbox" name="wc_subro_waived" /> Subrogation Waived</label>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Insurer Letter (A–F)</label><input type="text" name="wc_insurer_ltr" maxlength="1" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="wc_policy_number" /></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="wc_effective_date" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="wc_expiration_date" /></div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label class="check-opt"><input type="checkbox" name="wc_proprietor_excluded" /> Any Proprietor / Partner / Executive Officer / Member Excluded?</label>
+        </div>
+        <div class="subhead" style="margin-top:18px;">Limits</div>
+        <div class="grid-3">
+          <div class="field"><label>E.L. Each Accident</label><div class="prefix-wrap"><span>$</span><input type="text" name="wc_el_accident" placeholder="0" /></div></div>
+          <div class="field"><label>E.L. Disease – Ea Employee</label><div class="prefix-wrap"><span>$</span><input type="text" name="wc_el_disease_ee" placeholder="0" /></div></div>
+          <div class="field"><label>E.L. Disease – Policy Limit</label><div class="prefix-wrap"><span>$</span><input type="text" name="wc_el_disease_policy" placeholder="0" /></div></div>
+        </div>
+        <div class="check-group" style="margin-top:14px;">
+          <label class="check-opt"><input type="checkbox" name="wc_stat_limits" /> Per Statute (statutory limits)</label>
+          <label class="check-opt"><input type="checkbox" name="wc_other_limits" /> Other</label>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label>If Excluded — Description of Operations</label>
+          <textarea name="wc_excluded_description"></textarea>
+        </div>
+      </div>
+
+      <!-- Other -->
+      <div class="card">
+        <div class="card-title">Other Coverage</div>
+        <div class="check-group" style="margin-bottom:14px;">
+          <label class="check-opt"><input type="checkbox" name="other_present" /> Include on certificate</label>
+          <label class="check-opt"><input type="checkbox" name="other_addl_insured" /> Additional Insured</label>
+          <label class="check-opt"><input type="checkbox" name="other_subro_waived" /> Subrogation Waived</label>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Coverage Description</label><input type="text" name="other_description" placeholder="e.g., Professional Liability, Cyber, etc." /></div>
+          <div class="field"><label>Insurer Letter (A–F)</label><input type="text" name="other_insurer_ltr" maxlength="1" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="other_policy_number" /></div>
+          <div class="field"><label>Limits / Notes</label><input type="text" name="other_limits" /></div>
+          <div class="field"><label>Effective Date</label><input type="date" name="other_effective_date" /></div>
+          <div class="field"><label>Expiration Date</label><input type="date" name="other_expiration_date" /></div>
+        </div>
+      </div>
+
+      <!-- Description of Operations -->
+      <div class="card">
+        <div class="card-title">Description of Operations / Locations / Vehicles</div>
+        <div class="field">
+          <label>Description (referencing additional remarks if needed)</label>
+          <textarea name="description_of_operations" style="min-height:140px;" placeholder="Describe operations, additional insured language, project numbers, vehicle schedules, etc."></textarea>
+        </div>
+      </div>
+
+      <!-- Certificate Holder -->
+      <div class="card">
+        <div class="card-title">Certificate Holder</div>
+        <div class="grid-2">
+          <div class="field"><label>Holder Name</label><input type="text" name="holder_name" /></div>
+          <div class="field"><label>Attention / Contact</label><input type="text" name="holder_contact" /></div>
+          <div class="field"><label>Address Line 1</label><input type="text" name="holder_addr1" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="holder_addr2" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="holder_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="holder_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="holder_zip" maxlength="10" /></div>
+        </div>
+      </div>
+
+      <!-- Authorized Representative -->
+      <div class="card">
+        <div class="card-title">Authorized Representative</div>
+        <div class="grid-2">
+          <div class="field"><label>Authorized Representative Name</label><input type="text" name="auth_rep_name" /></div>
+          <div class="field"><label>Signature Date</label><input type="date" name="auth_rep_date" /></div>
+        </div>
+      </div>
+
+      <!-- Notes (internal) -->
+      <div class="card" style="padding-bottom:0;cursor:text;" onclick="this.querySelector('textarea').focus()">
+        <div class="card-title">Notes (Internal Only)</div>
+        <textarea name="notes" style="display:block;width:100%;min-height:160px;border:none;border-radius:0 0 8px 8px;resize:vertical;padding:16px 24px;font-size:14px;line-height:1.6;outline:none;background-image:none;background-color:#fff;" placeholder="Click anywhere here to add notes..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('a25Form').reset()">Clear Form</button>
+        <button type="button" class="btn btn-secondary" onclick="printAcord25(this)">Print</button>
+        <select class="add-form-select" onchange="if(this.value){addForm(this.value); this.value='';}">
+          <option value="">+ Add Form</option>
+          <option value="acord-125.html">ACORD 125 — Commercial Application</option>
+          <option value="acord-126.html">ACORD 126 — Commercial GL Section</option>
+        </select>
+        <a href="portal.html" class="btn btn-primary">Home</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    // --- Cross-form data sharing (Add Form dropdown) ---
+    function addForm(targetUrl) {
+      if (!targetUrl) return;
+      function val(n) { var e = document.querySelector('[name="'+n+'"]'); return e ? e.value : ''; }
+      try {
+        localStorage.setItem('ep_acord_prefill', JSON.stringify({
+          customer_id:    val('customer_id'),
+          agency_name:    val('producer_name'),
+          form_date:      val('date'),
+          carrier_name:   val('insurer_a_name'),
+          naic_code:      val('insurer_a_naic'),
+          policy_number:  val('gl_policy_number'),
+          effective_date: val('gl_effective_date'),
+          applicant_name: val('insured_name')
+        }));
+      } catch(e) { console.error('prefill save failed', e); }
+      window.location.href = targetUrl;
+    }
+
+    // On load: populate from any prefill dropped by another ACORD form.
+    (function() {
+      try {
+        var raw = localStorage.getItem('ep_acord_prefill');
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        localStorage.removeItem('ep_acord_prefill');
+        function set(n, val) { var e = document.querySelector('[name="'+n+'"]'); if (e && val) e.value = val; }
+        set('customer_id',         d.customer_id);
+        set('producer_name',       d.agency_name);
+        set('date',                d.form_date);
+        set('insurer_a_name',      d.carrier_name);
+        set('insurer_a_naic',      d.naic_code);
+        set('gl_policy_number',    d.policy_number);
+        set('gl_effective_date',   d.effective_date);
+        set('insured_name',        d.applicant_name);
+      } catch(e) { console.error('prefill load failed', e); }
+    })();
+
+    // --- Build the filled ACORD 25 PDF ---
+    // Loads acord-25-blank.pdf at runtime, fills its AcroForm fields, returns
+    // the filled bytes. Field-name mapping below uses standard ACORD naming
+    // patterns — exact names are confirmed once the blank PDF is in the repo
+    // and may need touch-up edits to match.
+    async function buildAcord25Pdf() {
+      function v(n) { var e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+      function fmtDate(s) { if(!s) return ''; var p=s.split('-'); return p.length===3?(p[1]+'/'+p[2]+'/'+p[0]):s; }
+      function chk(n) { var e=document.querySelector('[name="'+n+'"]'); return !!(e&&e.checked); }
+
+      const { PDFDocument } = window.PDFLib;
+      const existingBytes = await fetch('acord-25-blank.pdf').then(r => {
+        if (!r.ok) throw new Error('Failed to load ACORD 25 template — drop acord-25-blank.pdf into the repo.');
+        return r.arrayBuffer();
+      });
+      const pdfDoc = await PDFDocument.load(existingBytes);
+      const form = pdfDoc.getForm();
+
+      function setText(name, val) {
+        if (val === '' || val == null) return;
+        try { form.getTextField(name).setText(String(val)); } catch(e) {}
+      }
+      function setCheck(name, on) {
+        try { const cb = form.getCheckBox(name); if (on) cb.check(); else cb.uncheck(); } catch(e) {}
+      }
+
+      // --- Header / Date ---
+      setText('Form_CompletionDate_A',           fmtDate(v('date')));
+      setText('Producer_CustomerIdentifier_A',   v('customer_id'));
+      setText('Certificate_RevisionNumber_A',    v('revision_number'));
+
+      // --- Producer ---
+      setText('Producer_FullName_A',                            v('producer_name'));
+      setText('Producer_MailingAddress_LineOne_A',              v('producer_addr1'));
+      setText('Producer_MailingAddress_LineTwo_A',              v('producer_addr2'));
+      setText('Producer_MailingAddress_CityName_A',             v('producer_city'));
+      setText('Producer_MailingAddress_StateOrProvinceCode_A',  v('producer_state'));
+      setText('Producer_MailingAddress_PostalCode_A',           v('producer_zip'));
+      setText('Producer_ContactPerson_FullName_A',              v('producer_contact'));
+      setText('Producer_ContactPerson_PhoneNumber_A',           v('producer_phone'));
+      setText('Producer_FaxNumber_A',                           v('producer_fax'));
+      setText('Producer_ContactPerson_EmailAddress_A',          v('producer_email'));
+
+      // --- Insured ---
+      setText('NamedInsured_FullName_A',                        v('insured_name'));
+      setText('NamedInsured_CustomerIdentifier_A',              v('insured_customer_id'));
+      setText('NamedInsured_MailingAddress_LineOne_A',          v('insured_addr1'));
+      setText('NamedInsured_MailingAddress_LineTwo_A',          v('insured_addr2'));
+      setText('NamedInsured_MailingAddress_CityName_A',         v('insured_city'));
+      setText('NamedInsured_MailingAddress_StateOrProvinceCode_A', v('insured_state'));
+      setText('NamedInsured_MailingAddress_PostalCode_A',       v('insured_zip'));
+
+      // --- Insurers Affording Coverage (A-F) ---
+      ['a','b','c','d','e','f'].forEach(function(ltr) {
+        var L = ltr.toUpperCase();
+        setText('Insurer_FullName_' + L,  v('insurer_'+ltr+'_name'));
+        setText('Insurer_NAICCode_' + L,  v('insurer_'+ltr+'_naic'));
+      });
+
+      // --- Commercial General Liability ---
+      setCheck('GeneralLiability_CoverageIndicator_A',          chk('gl_present'));
+      setCheck('GeneralLiability_ClaimsMadeIndicator_A',        chk('gl_claims_made'));
+      setCheck('GeneralLiability_OccurrenceIndicator_A',        chk('gl_occurrence'));
+      setCheck('GeneralLiability_AdditionalInsuredIndicator_A', chk('gl_addl_insured'));
+      setCheck('GeneralLiability_SubrogationWaivedIndicator_A', chk('gl_subro_waived'));
+      setText('GeneralLiability_InsurerLetterCode_A',           v('gl_insurer_ltr'));
+      setText('GeneralLiability_PolicyNumberIdentifier_A',      v('gl_policy_number'));
+      setText('GeneralLiability_OtherCoverageDescription_A',    v('gl_other_desc'));
+      setText('GeneralLiability_EffectiveDate_A',               fmtDate(v('gl_effective_date')));
+      setText('GeneralLiability_ExpirationDate_A',              fmtDate(v('gl_expiration_date')));
+      setText('GeneralLiability_EachOccurrence_LimitAmount_A',          v('gl_each_occurrence'));
+      setText('GeneralLiability_FireDamageRentedPremises_LimitAmount_A',v('gl_damage_rented'));
+      setText('GeneralLiability_MedicalExpense_EachPersonLimitAmount_A',v('gl_med_exp'));
+      setText('GeneralLiability_PersonalAndAdvertisingInjury_LimitAmount_A', v('gl_personal_adv'));
+      setText('GeneralLiability_GeneralAggregate_LimitAmount_A',        v('gl_general_aggregate'));
+      setText('GeneralLiability_ProductsAndCompletedOperations_AggregateLimitAmount_A', v('gl_products_aggregate'));
+      setCheck('GeneralLiability_GeneralAggregate_LimitAppliesPerPolicyIndicator_A',   chk('gl_agg_per_policy'));
+      setCheck('GeneralLiability_GeneralAggregate_LimitAppliesPerProjectIndicator_A',  chk('gl_agg_per_project'));
+      setCheck('GeneralLiability_GeneralAggregate_LimitAppliesPerLocationIndicator_A', chk('gl_agg_per_location'));
+
+      // --- Automobile Liability ---
+      setCheck('CommercialAuto_CoverageIndicator_A',          chk('auto_present'));
+      setCheck('CommercialAuto_AnyAutoIndicator_A',           chk('auto_any_auto'));
+      setCheck('CommercialAuto_AllOwnedAutosIndicator_A',     chk('auto_owned'));
+      setCheck('CommercialAuto_ScheduledAutosIndicator_A',    chk('auto_scheduled'));
+      setCheck('CommercialAuto_HiredAutosIndicator_A',        chk('auto_hired'));
+      setCheck('CommercialAuto_NonOwnedAutosIndicator_A',     chk('auto_non_owned'));
+      setCheck('CommercialAuto_AdditionalInsuredIndicator_A', chk('auto_addl_insured'));
+      setCheck('CommercialAuto_SubrogationWaivedIndicator_A', chk('auto_subro_waived'));
+      setText('CommercialAuto_InsurerLetterCode_A',           v('auto_insurer_ltr'));
+      setText('CommercialAuto_PolicyNumberIdentifier_A',      v('auto_policy_number'));
+      setText('CommercialAuto_EffectiveDate_A',               fmtDate(v('auto_effective_date')));
+      setText('CommercialAuto_ExpirationDate_A',              fmtDate(v('auto_expiration_date')));
+      setText('CommercialAuto_CombinedSingleLimit_LimitAmount_A',          v('auto_csl'));
+      setText('CommercialAuto_BodilyInjuryPerPerson_LimitAmount_A',        v('auto_bi_person'));
+      setText('CommercialAuto_BodilyInjuryPerAccident_LimitAmount_A',      v('auto_bi_accident'));
+      setText('CommercialAuto_PropertyDamage_LimitAmount_A',               v('auto_pd'));
+
+      // --- Umbrella / Excess Liability ---
+      setCheck('Umbrella_CoverageIndicator_A',           chk('umb_present'));
+      setCheck('Umbrella_UmbrellaIndicator_A',           chk('umb_umbrella'));
+      setCheck('Umbrella_ExcessIndicator_A',             chk('umb_excess'));
+      setCheck('Umbrella_ClaimsMadeIndicator_A',         chk('umb_claims_made'));
+      setCheck('Umbrella_OccurrenceIndicator_A',         chk('umb_occurrence'));
+      setCheck('Umbrella_AdditionalInsuredIndicator_A',  chk('umb_addl_insured'));
+      setCheck('Umbrella_SubrogationWaivedIndicator_A',  chk('umb_subro_waived'));
+      setText('Umbrella_InsurerLetterCode_A',            v('umb_insurer_ltr'));
+      setText('Umbrella_PolicyNumberIdentifier_A',       v('umb_policy_number'));
+      setText('Umbrella_RetentionAmount_A',              v('umb_retention'));
+      setText('Umbrella_EffectiveDate_A',                fmtDate(v('umb_effective_date')));
+      setText('Umbrella_ExpirationDate_A',               fmtDate(v('umb_expiration_date')));
+      setText('Umbrella_EachOccurrence_LimitAmount_A',   v('umb_each_occurrence'));
+      setText('Umbrella_Aggregate_LimitAmount_A',        v('umb_aggregate'));
+
+      // --- Workers Compensation ---
+      setCheck('WorkersCompensation_CoverageIndicator_A',          chk('wc_present'));
+      setCheck('WorkersCompensation_SubrogationWaivedIndicator_A', chk('wc_subro_waived'));
+      setText('WorkersCompensation_InsurerLetterCode_A',           v('wc_insurer_ltr'));
+      setText('WorkersCompensation_PolicyNumberIdentifier_A',      v('wc_policy_number'));
+      setText('WorkersCompensation_EffectiveDate_A',               fmtDate(v('wc_effective_date')));
+      setText('WorkersCompensation_ExpirationDate_A',              fmtDate(v('wc_expiration_date')));
+      setCheck('WorkersCompensation_ProprietorExcludedIndicator_A',chk('wc_proprietor_excluded'));
+      setText('WorkersCompensation_EachAccident_LimitAmount_A',    v('wc_el_accident'));
+      setText('WorkersCompensation_DiseaseEachEmployee_LimitAmount_A', v('wc_el_disease_ee'));
+      setText('WorkersCompensation_DiseasePolicyLimit_LimitAmount_A',  v('wc_el_disease_policy'));
+      setCheck('WorkersCompensation_PerStatuteIndicator_A',        chk('wc_stat_limits'));
+      setCheck('WorkersCompensation_OtherIndicator_A',             chk('wc_other_limits'));
+      setText('WorkersCompensation_ExcludedDescription_A',         v('wc_excluded_description'));
+
+      // --- Other Coverage ---
+      setCheck('OtherCoverage_CoverageIndicator_A',           chk('other_present'));
+      setCheck('OtherCoverage_AdditionalInsuredIndicator_A',  chk('other_addl_insured'));
+      setCheck('OtherCoverage_SubrogationWaivedIndicator_A',  chk('other_subro_waived'));
+      setText('OtherCoverage_Description_A',                  v('other_description'));
+      setText('OtherCoverage_InsurerLetterCode_A',            v('other_insurer_ltr'));
+      setText('OtherCoverage_PolicyNumberIdentifier_A',       v('other_policy_number'));
+      setText('OtherCoverage_LimitsDescription_A',            v('other_limits'));
+      setText('OtherCoverage_EffectiveDate_A',                fmtDate(v('other_effective_date')));
+      setText('OtherCoverage_ExpirationDate_A',               fmtDate(v('other_expiration_date')));
+
+      // --- Description of Operations / Locations / Vehicles ---
+      setText('Holder_DescriptionOfOperationsLocationsVehicles_A', v('description_of_operations'));
+
+      // --- Certificate Holder ---
+      setText('Holder_FullName_A',                             v('holder_name'));
+      setText('Holder_ContactPerson_FullName_A',               v('holder_contact'));
+      setText('Holder_MailingAddress_LineOne_A',               v('holder_addr1'));
+      setText('Holder_MailingAddress_LineTwo_A',               v('holder_addr2'));
+      setText('Holder_MailingAddress_CityName_A',              v('holder_city'));
+      setText('Holder_MailingAddress_StateOrProvinceCode_A',   v('holder_state'));
+      setText('Holder_MailingAddress_PostalCode_A',            v('holder_zip'));
+
+      // --- Authorized Representative ---
+      setText('Producer_AuthorizedRepresentative_FullName_A',  v('auth_rep_name'));
+      setText('Producer_AuthorizedRepresentative_SignatureDate_A', fmtDate(v('auth_rep_date')));
+
+      return await pdfDoc.save();
+    }
+
+    function _holderSlug() {
+      var el = document.querySelector('[name="insured_name"]');
+      var raw = (el && el.value) || 'form';
+      return raw.replace(/[^a-z0-9]+/gi, '-');
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true; btn.textContent = 'Generating...';
+      try {
+        const pdfBytes = await buildAcord25Pdf();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'acord-25-' + _holderSlug() + '.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Failed to generate PDF: ' + err.message);
+        console.error(err);
+      } finally {
+        btn.disabled = false; btn.textContent = 'Generate PDF';
+      }
+    });
+
+    async function printAcord25(btn) {
+      if (btn) { btn.disabled = true; btn.textContent = 'Preparing...'; }
+      try {
+        const pdfBytes = await buildAcord25Pdf();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const w = window.open(url, '_blank');
+        if (!w) {
+          alert('Popup blocked. Please allow popups for this site to print the ACORD form.');
+          return;
+        }
+        var tries = 0;
+        var iv = setInterval(function() {
+          tries++;
+          try { if (w.document && w.document.readyState === 'complete') { w.focus(); w.print(); clearInterval(iv); } } catch(e) {}
+          if (tries > 20) clearInterval(iv);
+        }, 400);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+      } catch (err) {
+        alert('Failed to prepare form for printing: ' + err.message);
+        console.error(err);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Print'; }
+      }
+    }
+  </script>
+
+  <script>
+    // Auto-redirect to portal at 12:01 AM
+    (function() {
+      var now = new Date();
+      var nextReset = new Date();
+      nextReset.setHours(0, 1, 0, 0);
+      if (nextReset <= now) nextReset.setDate(nextReset.getDate() + 1);
+      setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
+    })();
+  </script>
+
+</body>
+</html>
