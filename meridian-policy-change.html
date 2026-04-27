@@ -838,7 +838,7 @@
 
         <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
 
-        <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
+        <button type="button" class="btn btn-secondary" onclick="printForm(this)">Print</button>
 
         <a href="portal.html" class="btn btn-primary">Home</a>
 
@@ -952,7 +952,7 @@
 
   <script>
 
-  document.getElementById('generateBtn').addEventListener('click', function() {
+  function buildPolicyChangePdf() {
 
     const { jsPDF } = window.jspdf;
 
@@ -1074,9 +1074,40 @@
 
  
 
-    doc.save('policy-change-'+(v('insured')||'form')+'.pdf');
+    return doc;
 
+  }
+
+  function _insuredName() {
+    var el = document.querySelector('[name="insured"]');
+    return (el && el.value) || 'form';
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', function() {
+    buildPolicyChangePdf().save('policy-change-' + _insuredName() + '.pdf');
   });
+
+  function printForm(btn) {
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparing...'; }
+    try {
+      var blob = buildPolicyChangePdf().output('blob');
+      var url = URL.createObjectURL(blob);
+      var w = window.open(url, '_blank');
+      if (!w) { alert('Popup blocked. Please allow popups for this site to print.'); return; }
+      var tries = 0;
+      var iv = setInterval(function() {
+        tries++;
+        try { if (w.document && w.document.readyState === 'complete') { w.focus(); w.print(); clearInterval(iv); } } catch(e) {}
+        if (tries > 20) clearInterval(iv);
+      }, 400);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+    } catch (err) {
+      alert('Failed to prepare for printing: ' + err.message);
+      console.error(err);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Print'; }
+    }
+  }
 
   </script>
 
