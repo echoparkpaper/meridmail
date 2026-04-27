@@ -360,6 +360,7 @@
 
       <div class="actions">
         <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+        <button type="button" class="btn btn-secondary" id="saveArchiveBtn">Save to Archive</button>
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('a25Form').reset()">Clear Form</button>
         <button type="button" class="btn btn-secondary" onclick="printAcord25(this)">Print</button>
         <select class="add-form-select" onchange="if(this.value){addForm(this.value); this.value='';}">
@@ -636,6 +637,8 @@
       setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
     })();
   </script>
+
+  <script src="archive.js"></script>
 
 </body>
 </html>

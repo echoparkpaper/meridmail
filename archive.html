@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archive | Meridian Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:    #2c4a6e;
+      --accent-lt: #e8edf3;
+      --bg:        #f7f5f2;
+      --white:     #ffffff;
+      --rule:      #d4cfc9;
+      --ink:       #1a1a1a;
+      --mid:       #555;
+      --light:     #888;
+      --danger:    #b3261e;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0 0 60px;
+      font-size: 14px;
+    }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--rule); padding: 10px 24px; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .topbar a { color: var(--accent); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+    .site-header {
+      max-width: 960px; margin: 0 auto; padding: 24px 16px 18px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2px solid var(--ink); gap: 16px; flex-wrap: wrap;
+    }
+    .logo-name { font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 500; color: var(--ink); line-height: 1; }
+    .logo-tag { font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--light); font-weight: 300; margin-top: 3px; }
+    .form-title-right { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; font-style: italic; color: var(--accent); text-align: right; }
+    .wrap { max-width: 960px; margin: 24px auto 0; padding: 0 16px; }
+    .toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+    .toolbar input, .toolbar select {
+      padding: 9px 12px; border: 1px solid var(--rule); border-radius: 6px;
+      background: var(--white); font-family: inherit; font-size: 13.5px; color: var(--ink);
+    }
+    .toolbar .grow { flex: 1; min-width: 200px; }
+    .count { color: var(--mid); font-size: 13px; margin-left: auto; }
+    .empty {
+      background: var(--white); border: 1px dashed var(--rule); border-radius: 8px;
+      padding: 60px 24px; text-align: center; color: var(--mid);
+    }
+    .empty h2 { font-family: 'EB Garamond', Georgia, serif; font-style: italic; color: var(--accent); font-size: 22px; margin-bottom: 8px; }
+    .empty p { font-size: 14px; }
+    .row {
+      background: var(--white); border: 1px solid var(--rule); border-radius: 8px;
+      padding: 16px 20px; margin-bottom: 10px;
+      display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center;
+    }
+    .row .meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .row .label-line { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+    .row .form-tag {
+      display: inline-block; background: var(--accent-lt); color: var(--accent);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 3px 8px; border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .row .label {
+      font-size: 15px; font-weight: 500; color: var(--ink);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .row .timestamp { font-size: 12px; color: var(--light); }
+    .row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn {
+      padding: 8px 16px; border-radius: 6px; font-family: inherit; font-size: 13px;
+      font-weight: 500; cursor: pointer; border: none; transition: background 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1e3650; }
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+    .btn-secondary:hover { background: var(--bg); }
+    .btn-danger { background: var(--white); color: var(--danger); border: 1px solid var(--rule); }
+    .btn-danger:hover { background: #fdecec; border-color: var(--danger); }
+    @media (max-width: 600px) {
+      .row { grid-template-columns: 1fr; }
+      .row-actions { justify-content: flex-end; }
+      .site-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="chevron">‹</span>
+    <a href="portal.html">Back to Home</a>
+  </div>
+
+  <div class="site-header">
+    <div>
+      <div class="logo-name">Meridian Insurance</div>
+      <div class="logo-tag">Policy Services Department</div>
+    </div>
+    <div class="form-title-right">Archived Forms</div>
+  </div>
+
+  <div class="wrap">
+    <div class="toolbar">
+      <input type="search" id="searchBox" class="grow" placeholder="Search by label..." />
+      <select id="typeFilter">
+        <option value="">All form types</option>
+      </select>
+      <span class="count" id="count"></span>
+    </div>
+    <div id="list"></div>
+  </div>
+
+  <script src="archive.js"></script>
+  <script>
+    var list = document.getElementById('list');
+    var search = document.getElementById('searchBox');
+    var typeFilter = document.getElementById('typeFilter');
+    var count = document.getElementById('count');
+
+    function fmtDateTime(iso) {
+      try { return new Date(iso).toLocaleString(); } catch(e) { return iso || ''; }
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+    }
+
+    function populateTypeFilter() {
+      var seen = {};
+      EpArchive.list().forEach(function(e) {
+        if (e.form_label && !seen[e.form_label]) {
+          seen[e.form_label] = true;
+          var opt = document.createElement('option');
+          opt.value = e.form_label;
+          opt.textContent = e.form_label;
+          typeFilter.appendChild(opt);
+        }
+      });
+    }
+
+    function render() {
+      var q = (search.value || '').toLowerCase().trim();
+      var t = typeFilter.value;
+      var items = EpArchive.list().filter(function(e) {
+        if (t && e.form_label !== t) return false;
+        if (q && (e.label || '').toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      });
+      count.textContent = items.length + (items.length === 1 ? ' form' : ' forms');
+      if (items.length === 0) {
+        list.innerHTML = '<div class="empty">' +
+          '<h2>No saved forms</h2>' +
+          '<p>Open any form, click <b>Save to Archive</b>, and it will appear here.</p>' +
+          '</div>';
+        return;
+      }
+      list.innerHTML = items.map(function(e) {
+        return '<div class="row" data-id="' + e.id + '">' +
+          '<div class="meta">' +
+            '<div class="label-line">' +
+              '<span class="form-tag">' + escapeHtml(e.form_label || 'Form') + '</span>' +
+              '<span class="label">' + escapeHtml(e.label || 'Untitled') + '</span>' +
+            '</div>' +
+            '<div class="timestamp">Saved ' + escapeHtml(fmtDateTime(e.saved_at)) + '</div>' +
+          '</div>' +
+          '<div class="row-actions">' +
+            '<a class="btn btn-primary" href="' + escapeHtml(e.form_url) + '?archive=' + encodeURIComponent(e.id) + '">Open / Edit</a>' +
+            '<button type="button" class="btn btn-danger" data-action="delete">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    list.addEventListener('click', function(ev) {
+      var btn = ev.target.closest('[data-action="delete"]');
+      if (!btn) return;
+      var row = btn.closest('.row');
+      var id = row && row.getAttribute('data-id');
+      if (!id) return;
+      var entry = EpArchive.get(id);
+      if (!entry) { render(); return; }
+      if (!confirm('Delete archived form "' + (entry.label || 'Untitled') + '"? This cannot be undone.')) return;
+      EpArchive.delete(id);
+      render();
+    });
+
+    search.addEventListener('input', render);
+    typeFilter.addEventListener('change', render);
+
+    populateTypeFilter();
+    render();
+  </script>
+
+</body>
+</html>
