@@ -1136,7 +1136,21 @@
     // edge doesn't overflow. Box auto-sizes to fit every line.
     doc.setFont('helvetica','normal').setFontSize(10);
 
-    var crText = v('change_requested') || '';
+    // jsPDF's standard fonts are Latin-1 (WinAnsi) only; rare Unicode like
+    // U+202F (narrow no-break space, inserted by macOS in screenshot
+    // filenames) renders as widely-spaced glyphs and breaks splitTextToSize.
+    function _scrubLatin1(t) {
+      return String(t == null ? '' : t)
+        .replace(/[\u2010-\u2015]/g, '-')
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+        .replace(/\u2026/g, '...')
+        .replace(/\u2022/g, '-')
+        .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+        .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+    }
+
+    var crText = _scrubLatin1(v('change_requested') || '');
 
     var crLines = crText ? doc.splitTextToSize(crText, CW - 12) : [];
 
@@ -1676,12 +1690,29 @@
         return extractText(file);
       }
 
+      // Strip non-Latin-1 codepoints that jsPDF and pdf-lib (WinAnsi) can't
+      // render. macOS embeds U+202F in screenshot filenames between the time
+      // and AM/PM, which breaks downstream PDF generation.
+      function _normalize(t) {
+        return String(t == null ? '' : t)
+          .replace(/[\u2010-\u2015]/g, '-')
+          .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+          .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+          .replace(/\u2026/g, '...')
+          .replace(/\u2022/g, '-')
+          .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+          .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+      }
+
       // ---- Append helper -------------------------------------------------
       function appendToTarget(summary, file) {
         var stamp = new Date().toLocaleString();
-        var header = '— AI summary of "' + (file.name || 'uploaded document') + '" (' + stamp + ') —';
+        var safeName = _normalize(file.name || 'uploaded document');
+        var safeStamp = _normalize(stamp);
+        var safeSummary = _normalize(summary);
+        var header = '-- AI summary of "' + safeName + '" (' + safeStamp + ') --';
         var separator = target.value.trim() ? '\n\n' : '';
-        target.value = target.value + separator + header + '\n' + summary.trim();
+        target.value = target.value + separator + header + '\n' + safeSummary.trim();
         // Scroll to and focus the field so the user sees the result.
         target.focus();
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
