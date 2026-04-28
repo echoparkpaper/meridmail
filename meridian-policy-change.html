@@ -1264,6 +1264,24 @@
       var name = (file.name || '').toLowerCase();
       var type = file.type || '';
 
+      // pdf-lib's drawText uses WinAnsi by default and fails on any non-Latin-1
+      // character (e.g. narrow no-break space U+202F that macOS puts in
+      // "9.25\u202fAM" filenames, em-dashes, smart quotes, etc.). Normalize
+      // before drawing.
+      function _safe(t) {
+        return String(t == null ? '' : t)
+          // common typographic punctuation -> ASCII
+          .replace(/[\u2010-\u2015]/g, '-')   // hyphens, en/em dashes
+          .replace(/[\u2018\u2019\u201A\u201B]/g, "'") // single quotes
+          .replace(/[\u201C\u201D\u201E\u201F]/g, '"') // double quotes
+          .replace(/\u2026/g, '...')          // ellipsis
+          .replace(/\u2022/g, '-')            // bullet
+          // every flavor of unicode space -> regular space
+          .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+          // strip anything else outside the WinAnsi printable range
+          .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+      }
+
       // PDFs: copy every page from the attachment into the merged doc.
       if (type === 'application/pdf' || name.endsWith('.pdf')) {
         var attachBuf = await file.arrayBuffer();
@@ -1284,7 +1302,7 @@
         var w = img.width * scale, h = img.height * scale;
         var page = merged.addPage([pageW, pageH]);
         var font = await merged.embedFont(StandardFonts.Helvetica);
-        page.drawText('Attached: ' + file.name, {
+        page.drawText(_safe('Attached: ' + file.name), {
           x: margin, y: pageH - margin + 6,
           size: 9, font: font, color: rgb(0.33, 0.33, 0.33)
         });
@@ -1320,6 +1338,19 @@
     }
   }
 
+  // Same sanitizer as in buildFinalPdfBytes — duplicated here because this
+  // helper is a sibling function and doesn't share that closure.
+  function _safeWinAnsi(t) {
+    return String(t == null ? '' : t)
+      .replace(/[\u2010-\u2015]/g, '-')
+      .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+      .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+      .replace(/\u2026/g, '...')
+      .replace(/\u2022/g, '-')
+      .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+      .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+  }
+
   async function _renderTextPages(merged, filename, text) {
     const { StandardFonts, rgb } = window.PDFLib;
     var font = await merged.embedFont(StandardFonts.Helvetica);
@@ -1327,12 +1358,12 @@
     var pageW = 612, pageH = 792, margin = 54;
     var lineH = 13;
     var maxW = pageW - margin * 2;
-    var lines = _wrapText(String(text || '').replace(/\r\n?/g, '\n'), font, 10, maxW);
+    var lines = _wrapText(_safeWinAnsi(String(text || '').replace(/\r\n?/g, '\n')), font, 10, maxW);
     var first = true;
     while (lines.length || first) {
       var page = merged.addPage([pageW, pageH]);
       // header
-      page.drawText('Attached: ' + filename, {
+      page.drawText(_safeWinAnsi('Attached: ' + filename), {
         x: margin, y: pageH - margin + 18,
         size: 11, font: fontBold, color: rgb(0.17, 0.29, 0.43)
       });
