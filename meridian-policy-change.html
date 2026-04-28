@@ -701,6 +701,61 @@
 
           <label>Upload a PDF, image, Word doc, or text file. Click <b>Summarize</b> and the AI summary will be appended to <i>Change Requested</i> below.</label>
 
+          <style>
+            #changeDocDrop {
+              border: 2px dashed var(--rule);
+              border-radius: 8px;
+              padding: 24px 18px;
+              text-align: center;
+              color: var(--mid);
+              background: var(--bg);
+              cursor: pointer;
+              transition: border-color 0.15s, background 0.15s, color 0.15s;
+              font-size: 14px;
+              line-height: 1.5;
+              user-select: none;
+            }
+            #changeDocDrop:hover { border-color: var(--accent); color: var(--ink); }
+            #changeDocDrop.is-dragover {
+              border-color: var(--accent);
+              background: var(--accent-lt);
+              color: var(--accent);
+            }
+            #changeDocDrop .ddrop-primary { font-weight: 500; color: var(--ink); }
+            #changeDocDrop.is-dragover .ddrop-primary { color: var(--accent); }
+            #changeDocDrop .ddrop-link { color: var(--accent); text-decoration: underline; }
+            #changeDocDrop .ddrop-secondary { font-size: 12px; color: var(--light); margin-top: 4px; }
+            #changeDocDrop.has-file {
+              border-style: solid;
+              border-color: var(--accent);
+              background: var(--white);
+              color: var(--ink);
+              text-align: left;
+            }
+            #changeDocDrop .ddrop-clear {
+              float: right;
+              font-size: 12px;
+              color: var(--mid);
+              text-decoration: underline;
+              cursor: pointer;
+              margin-left: 12px;
+            }
+            #changeDocDrop .ddrop-clear:hover { color: var(--accent); }
+            #changeDocFile { display: none; }
+          </style>
+
+          <div id="changeDocDrop" tabindex="0" role="button" aria-label="Upload document by clicking or dragging a file here">
+            <div class="ddrop-empty">
+              <div class="ddrop-primary">Drag a file here, or <span class="ddrop-link">browse</span></div>
+              <div class="ddrop-secondary">PDF, PNG/JPG, DOCX, or TXT</div>
+            </div>
+            <div class="ddrop-filled" style="display:none;">
+              <a class="ddrop-clear" href="#" id="changeDocClear">Clear</a>
+              <div class="ddrop-primary" id="changeDocFileName">filename</div>
+              <div class="ddrop-secondary" id="changeDocFileMeta">type · size</div>
+            </div>
+          </div>
+
           <input type="file" id="changeDocFile" accept=".pdf,.png,.jpg,.jpeg,.docx,.txt,application/pdf,image/png,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" />
 
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px;">
@@ -1170,11 +1225,112 @@
       var btn = document.getElementById('summarizeBtn');
       var status = document.getElementById('summarizeStatus');
       var target = document.getElementById('change_requested');
+      var dropZone = document.getElementById('changeDocDrop');
       if (!fileInput || !btn || !target) return;
 
       function setStatus(msg, isErr) {
         status.textContent = msg || '';
         status.style.color = isErr ? '#b3261e' : 'var(--mid)';
+      }
+
+      // ---- Drag & drop / click-to-browse plumbing -----------------------
+      function fmtBytes(n) {
+        if (n < 1024) return n + ' B';
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+        return (n / (1024 * 1024)).toFixed(1) + ' MB';
+      }
+      function renderDropZone() {
+        if (!dropZone) return;
+        var f = fileInput.files && fileInput.files[0];
+        var empty = dropZone.querySelector('.ddrop-empty');
+        var filled = dropZone.querySelector('.ddrop-filled');
+        if (f) {
+          dropZone.classList.add('has-file');
+          empty.style.display = 'none';
+          filled.style.display = '';
+          document.getElementById('changeDocFileName').textContent = f.name;
+          document.getElementById('changeDocFileMeta').textContent =
+            (f.type || 'unknown type') + ' \u00b7 ' + fmtBytes(f.size);
+        } else {
+          dropZone.classList.remove('has-file');
+          empty.style.display = '';
+          filled.style.display = 'none';
+        }
+      }
+      if (dropZone) {
+        // Click anywhere on the zone (except the explicit Clear link) opens
+        // the native file picker.
+        dropZone.addEventListener('click', function(ev) {
+          if (ev.target.id === 'changeDocClear') return;
+          fileInput.click();
+        });
+        dropZone.addEventListener('keydown', function(ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            fileInput.click();
+          }
+        });
+        // Clear link: reset the input.
+        var clearLink = document.getElementById('changeDocClear');
+        if (clearLink) {
+          clearLink.addEventListener('click', function(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            fileInput.value = '';
+            renderDropZone();
+            setStatus('');
+          });
+        }
+        // Reflect picker selections in the drop-zone preview.
+        fileInput.addEventListener('change', renderDropZone);
+
+        // Drag visuals + drop handler. Use a counter to handle child-element
+        // dragenter/leave bouncing.
+        var dragDepth = 0;
+        ['dragenter', 'dragover'].forEach(function(evt) {
+          dropZone.addEventListener(evt, function(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'copy';
+            if (evt === 'dragenter') dragDepth++;
+            dropZone.classList.add('is-dragover');
+          });
+        });
+        dropZone.addEventListener('dragleave', function(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          dragDepth = Math.max(0, dragDepth - 1);
+          if (dragDepth === 0) dropZone.classList.remove('is-dragover');
+        });
+        dropZone.addEventListener('drop', function(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          dragDepth = 0;
+          dropZone.classList.remove('is-dragover');
+          var dt = ev.dataTransfer;
+          if (!dt || !dt.files || !dt.files.length) return;
+          // Move the dropped file into the <input type=file> via DataTransfer
+          // so existing handlers reading fileInput.files[0] keep working.
+          try {
+            var t = new DataTransfer();
+            t.items.add(dt.files[0]);
+            fileInput.files = t.files;
+          } catch(e) {
+            // Older Safari versions may not allow assigning .files; fall back
+            // to stashing the file on a custom property.
+            fileInput._droppedFile = dt.files[0];
+          }
+          renderDropZone();
+          setStatus('Ready: ' + dt.files[0].name);
+        });
+
+        // Block the page from navigating away when a stray drop misses the
+        // zone (Safari's default behavior on dropping a file is to open it).
+        window.addEventListener('dragover', function(ev) { ev.preventDefault(); });
+        window.addEventListener('drop', function(ev) {
+          if (ev.target && (ev.target === dropZone || dropZone.contains(ev.target))) return;
+          ev.preventDefault();
+        });
       }
 
       // ---- Extractors ----------------------------------------------------
@@ -1273,7 +1429,7 @@
 
       // ---- Click handler -------------------------------------------------
       btn.addEventListener('click', async function() {
-        var file = fileInput.files && fileInput.files[0];
+        var file = (fileInput.files && fileInput.files[0]) || fileInput._droppedFile;
         if (!file) { setStatus('Choose a file first.', true); return; }
         btn.disabled = true;
         var origLabel = btn.textContent;
