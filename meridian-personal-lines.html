@@ -746,7 +746,21 @@
 
             <label>Date of Birth</label>
 
-            <input type="date" name="dob" id="dob" />
+            <div class="dob-group" data-target="dob" style="display:flex;gap:6px;align-items:center;">
+
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Birth month" data-dob-part="m" style="width:3.2em;text-align:center;" />
+
+              <span style="color:var(--mid);">-</span>
+
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="Birth day" data-dob-part="d" style="width:3.2em;text-align:center;" />
+
+              <span style="color:var(--mid);">-</span>
+
+              <input type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="Birth year" data-dob-part="y" style="width:5em;text-align:center;" />
+
+              <input type="hidden" name="dob" id="dob" />
+
+            </div>
 
           </div>
 
@@ -770,7 +784,21 @@
 
             <label>Sec. Insured DOB</label>
 
-            <input type="date" name="sec_dob" id="sec_dob" />
+            <div class="dob-group" data-target="sec_dob" style="display:flex;gap:6px;align-items:center;">
+
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Secondary insured birth month" data-dob-part="m" style="width:3.2em;text-align:center;" />
+
+              <span style="color:var(--mid);">-</span>
+
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="Secondary insured birth day" data-dob-part="d" style="width:3.2em;text-align:center;" />
+
+              <span style="color:var(--mid);">-</span>
+
+              <input type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="Secondary insured birth year" data-dob-part="y" style="width:5em;text-align:center;" />
+
+              <input type="hidden" name="sec_dob" id="sec_dob" />
+
+            </div>
 
           </div>
 
@@ -1096,6 +1124,107 @@
 
 
 
+    // DOB three-box auto-advance: type MM (2 digits) -> jumps to DD, then to
+    // YYYY. Each group has data-target="<hidden field name>" that we keep in
+    // sync as YYYY-MM-DD (the format jsPDF's fmtDate, archive serialize, and
+    // any future prefill all expect).
+
+    document.querySelectorAll('.dob-group').forEach(function(group) {
+
+      var hidden = group.querySelector('input[type="hidden"]');
+
+      var m = group.querySelector('[data-dob-part="m"]');
+
+      var d = group.querySelector('[data-dob-part="d"]');
+
+      var y = group.querySelector('[data-dob-part="y"]');
+
+      function syncHidden() {
+
+        var mm = (m.value || '').padStart(2, '0');
+
+        var dd = (d.value || '').padStart(2, '0');
+
+        var yyyy = (y.value || '').padStart(4, '0');
+
+        if (m.value && d.value && y.value && y.value.length === 4) {
+
+          hidden.value = yyyy + '-' + mm + '-' + dd;
+
+        } else {
+
+          hidden.value = '';
+
+        }
+
+      }
+
+      function attach(el, nextEl, expectedLen) {
+
+        el.addEventListener('input', function() {
+
+          // Strip non-digits as the user types.
+
+          var clean = (el.value || '').replace(/\D/g, '').slice(0, expectedLen);
+
+          if (clean !== el.value) el.value = clean;
+
+          if (el.value.length >= expectedLen && nextEl) {
+
+            nextEl.focus();
+
+            nextEl.select();
+
+          }
+
+          syncHidden();
+
+        });
+
+        el.addEventListener('keydown', function(ev) {
+
+          // Backspace at start of an empty field jumps back to the previous box.
+
+          if (ev.key === 'Backspace' && !el.value && el.previousElementSibling) {
+
+            var prev = el;
+
+            while ((prev = prev.previousElementSibling)) {
+
+              if (prev.matches && prev.matches('input[data-dob-part]')) { prev.focus(); break; }
+
+            }
+
+          }
+
+        });
+
+        el.addEventListener('blur', function() {
+
+          // Pad single-digit MM/DD when the user leaves the field.
+
+          if (el.dataset.dobPart !== 'y' && el.value.length === 1) {
+
+            el.value = '0' + el.value;
+
+            syncHidden();
+
+          }
+
+        });
+
+      }
+
+      attach(m, d, 2);
+
+      attach(d, y, 2);
+
+      attach(y, null, 4);
+
+    });
+
+
+
     // Phone formatting
 
     document.querySelectorAll('input[type="tel"]').forEach(el => {
@@ -1146,9 +1275,57 @@
 
           document.getElementById('effective_date').value = today;
 
+      // Clear the visible MM/DD/YYYY boxes; the hidden dob/sec_dob inputs
+      // are reset by the form .reset() call but the visible boxes have no
+      // name attribute and aren't touched.
+
+      document.querySelectorAll('.dob-group input[data-dob-part]').forEach(function(el) { el.value = ''; });
+
       document.getElementById('successMsg').classList.remove('show');
 
     }
+
+    // Public helper: split a YYYY-MM-DD value into the three visible boxes
+    // for a given dob-group target. Used by archive restore and back-to-spec
+    // restore so the visible inputs reflect the hidden value.
+
+    function _populateDobGroup(targetName) {
+
+      var hidden = document.querySelector('input[type="hidden"][name="' + targetName + '"]');
+
+      var group  = document.querySelector('.dob-group[data-target="' + targetName + '"]');
+
+      if (!hidden || !group || !hidden.value) return;
+
+      var parts = hidden.value.split('-');
+
+      if (parts.length !== 3) return;
+
+      var m = group.querySelector('[data-dob-part="m"]');
+
+      var d = group.querySelector('[data-dob-part="d"]');
+
+      var y = group.querySelector('[data-dob-part="y"]');
+
+      if (m) m.value = parts[1];
+
+      if (d) d.value = parts[2];
+
+      if (y) y.value = parts[0];
+
+    }
+
+    // After any restore (archive or back-from-payment-receipt), repopulate
+
+    // the visible DOB boxes from the hidden field values.
+
+    window.addEventListener('load', function() {
+
+      _populateDobGroup('dob');
+
+      _populateDobGroup('sec_dob');
+
+    });
 
  
 
