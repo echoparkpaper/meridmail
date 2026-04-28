@@ -1132,21 +1132,82 @@
 
     s=y; secTitle('Change Details');
 
-    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,130);
+    // Wrap text at the body font size we actually use (10pt), so the right
+    // edge doesn't overflow. Box auto-sizes to fit every line.
+    doc.setFont('helvetica','normal').setFontSize(10);
 
+    var crText = v('change_requested') || '';
+
+    var crLines = crText ? doc.splitTextToSize(crText, CW - 12) : [];
+
+    var crLineH = 13;                          // matches 10pt helvetica leading
+
+    var crBodyTop = 26;                        // y-offset for first body line below the label
+
+    var crBoxBottom = 12;                      // padding below the last line
+
+    var minRuledLines = 7;                     // keep the original empty-form look
+
+    var ruledLines = Math.max(minRuledLines, crLines.length);
+
+    var crBoxH = crBodyTop + (ruledLines * crLineH) + crBoxBottom - crLineH;
+
+    // Background box
+    doc.setFillColor(255,255,255).setDrawColor(...rule).setLineWidth(0.4).rect(M,y,CW,crBoxH);
+
+    // Field label
     doc.setFont('helvetica','normal').setFontSize(6.5).setTextColor(...mid).text('CHANGE REQUESTED',M+6,y+10);
 
-    var lines=doc.splitTextToSize(v('change_requested'),CW-10);
+    // Body text (drawn line-by-line so each sits on its ruled line)
+    doc.setFontSize(10).setTextColor(...ink);
 
-    doc.setFontSize(10).setTextColor(...ink).text(lines,M+6,y+26);
+    for (var li = 0; li < crLines.length; li++) {
 
+      doc.text(crLines[li], M+6, y + crBodyTop + li * crLineH);
+
+    }
+
+    // Ruled underlines for visual continuity
     doc.setDrawColor(...rule).setLineWidth(0.3);
 
-    for(var i=1;i<=7;i++) doc.line(M+2,y+i*16+5,W-M-2,y+i*16+5);
+    for (var ri = 1; ri <= ruledLines; ri++) {
 
-    y+=135; doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-5); y+=2;
+      doc.line(M+2, y + crBodyTop + (ri - 1) * crLineH + 4, W - M - 2, y + crBodyTop + (ri - 1) * crLineH + 4);
 
- 
+    }
+
+    y += crBoxH + 5;
+
+    doc.setDrawColor(...rule).setLineWidth(0.4).rect(M, s, CW, y - s - 5);
+
+    y += 2;
+
+    // If the auto-sized Change Details pushed us past where Processing can
+    // safely fit (Processing needs ~140pt incl. its outer rect + footer
+    // breathing room), draw the current-page footer and start a new page.
+    var processingNeeded = 24 + 3 * 36 + 12;   // header + 3 rows + outer pad
+
+    if (y + processingNeeded > 740) {
+
+      var footY = 748;
+
+      doc.setDrawColor(...rule).setLineWidth(0.4).line(M, footY, W - M, footY);
+
+      doc.setFont('helvetica','normal').setFontSize(6).setTextColor(...light).text('Meridian Insurance · Policy Services Department · This form is for change request purposes only.', W/2, footY + 8, { align: 'center' });
+
+      doc.addPage();
+
+      y = 36;
+
+      doc.setFont('times','bold').setFontSize(18).setTextColor(...ink).text('Meridian Insurance', M, y);
+
+      doc.setFont('helvetica','normal').setFontSize(7).setTextColor(...light).text('POLICY SERVICES DEPARTMENT', M, y + 12);
+
+      doc.setFont('times','italic').setFontSize(14).setTextColor(...navy).text('Policy Change Form (continued)', W - M, y, { align: 'right' });
+
+      y += 18; doc.setDrawColor(...ink).setLineWidth(1.0).line(M, y, W - M, y); y += 14;
+
+    }
 
     s=y; secTitle('Processing');
 
@@ -1158,7 +1219,7 @@
 
     doc.setDrawColor(...rule).setLineWidth(0.4).rect(M,s,CW,y-s-5);
 
- 
+
 
     y=748; doc.setDrawColor(...rule).setLineWidth(0.4).line(M,y,W-M,y); y+=8;
 
