@@ -641,7 +641,7 @@
         if (!r.ok) throw new Error('Failed to load ACORD 126 template');
         return r.arrayBuffer();
       });
-      const pdfDoc = await PDFDocument.load(existingBytes);
+      const pdfDoc = await PDFDocument.load(existingBytes, { ignoreEncryption: true });
       const form = pdfDoc.getForm();
 
       function setText(name, val) {

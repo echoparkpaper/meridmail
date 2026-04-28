@@ -428,146 +428,177 @@
         if (!r.ok) throw new Error('Failed to load ACORD 25 template — drop acord-25-blank.pdf into the repo.');
         return r.arrayBuffer();
       });
-      const pdfDoc = await PDFDocument.load(existingBytes);
+      // ACORD blanks are sometimes flagged as encrypted (read-only / no
+      // permission to extract). pdf-lib refuses without ignoreEncryption.
+      const pdfDoc = await PDFDocument.load(existingBytes, { ignoreEncryption: true });
       const form = pdfDoc.getForm();
 
+      // Force a small explicit font on every text field so typed values
+      // always sit cleanly inside the box, regardless of what the blank's
+      // default field appearance was set to. Without this, ACORD blanks
+      // can render filled text at 14-18pt which overflows the cells.
       function setText(name, val) {
         if (val === '' || val == null) return;
-        try { form.getTextField(name).setText(String(val)); } catch(e) {}
+        try {
+          var f = form.getTextField(name);
+          f.setText(String(val));
+          try { f.setFontSize(8); } catch(e) {}
+        } catch(e) {}
       }
       function setCheck(name, on) {
         try { const cb = form.getCheckBox(name); if (on) cb.check(); else cb.uncheck(); } catch(e) {}
       }
 
-      // The blank ACORD 25 from ACORD uses XFA-style hierarchical field names
-      // ("F[0].P1[0].FieldName[0]"). pdf-lib needs the fully-qualified path.
-      var P = 'F[0].P1[0].';
-      function yn(b) { return b ? 'Y' : ''; }
+      // The 2016/03 ACORD 25 blank uses unusual field names: most are the
+      // visible labels (PRODUCER, INSURED, COMMERCIAL GENERAL LIABILITY) and
+      // the limit-column boxes are generic fill_NN. We collapse the structured
+      // HTML inputs into the multi-line PRODUCER / INSURED / Certificat Holder
+      // text blocks the PDF expects, and route each fill_NN to the correct
+      // limit by its known on-page coordinates.
+
+      function joinLines() {
+        // Filter out empty parts and join with newlines.
+        var out = [];
+        for (var i = 0; i < arguments.length; i++) {
+          var p = (arguments[i] || '').trim();
+          if (p) out.push(p);
+        }
+        return out.join('\n');
+      }
+      function csz(city, state, zip) {
+        var parts = [];
+        if (city) parts.push(city);
+        if (state) parts.push(state);
+        var line = parts.join(', ');
+        if (zip) line += (line ? ' ' : '') + zip;
+        return line;
+      }
 
       // --- Header / Date ---
-      setText(P + 'Form_CompletionDate_A[0]',                              fmtDate(v('date')));
-      setText(P + 'CertificateOfInsurance_CertificateNumberIdentifier_A[0]', v('customer_id'));
-      setText(P + 'CertificateOfInsurance_RevisionNumberIdentifier_A[0]',  v('revision_number'));
+      setText('Date Top', fmtDate(v('date')));
 
-      // --- Producer ---
-      setText(P + 'Producer_FullName_A[0]',                                v('producer_name'));
-      setText(P + 'Producer_MailingAddress_LineOne_A[0]',                  v('producer_addr1'));
-      setText(P + 'Producer_MailingAddress_LineTwo_A[0]',                  v('producer_addr2'));
-      setText(P + 'Producer_MailingAddress_CityName_A[0]',                 v('producer_city'));
-      setText(P + 'Producer_MailingAddress_StateOrProvinceCode_A[0]',      v('producer_state'));
-      setText(P + 'Producer_MailingAddress_PostalCode_A[0]',               v('producer_zip'));
-      setText(P + 'Producer_ContactPerson_FullName_A[0]',                  v('producer_contact'));
-      setText(P + 'Producer_ContactPerson_PhoneNumber_A[0]',               v('producer_phone'));
-      setText(P + 'Producer_FaxNumber_A[0]',                               v('producer_fax'));
-      setText(P + 'Producer_ContactPerson_EmailAddress_A[0]',              v('producer_email'));
+      // --- Producer (single multi-line block: name + address) ---
+      setText('PRODUCER', joinLines(
+        v('producer_name'),
+        v('producer_addr1'),
+        v('producer_addr2'),
+        csz(v('producer_city'), v('producer_state'), v('producer_zip'))
+      ));
 
-      // --- Insured ---
-      setText(P + 'NamedInsured_FullName_A[0]',                            v('insured_name'));
-      setText(P + 'NamedInsured_MailingAddress_LineOne_A[0]',              v('insured_addr1'));
-      setText(P + 'NamedInsured_MailingAddress_LineTwo_A[0]',              v('insured_addr2'));
-      setText(P + 'NamedInsured_MailingAddress_CityName_A[0]',             v('insured_city'));
-      setText(P + 'NamedInsured_MailingAddress_StateOrProvinceCode_A[0]',  v('insured_state'));
-      setText(P + 'NamedInsured_MailingAddress_PostalCode_A[0]',           v('insured_zip'));
+      // The contact-name / phone / fax / email block on this blank reuses
+      // the PRODUCER multi-line area for layout; Contact Name / Phone / Fax
+      // / Email all flow through field 'PRODUCER' visually. The form does
+      // not expose dedicated AcroForm fields for each, so we don't fill them
+      // separately. Agents who need them in the cert can include them in the
+      // producer address block.
 
-      // --- Insurers Affording Coverage (A-F) ---
-      ['a','b','c','d','e','f'].forEach(function(ltr) {
-        var L = ltr.toUpperCase();
-        setText(P + 'Insurer_FullName_' + L + '[0]',  v('insurer_'+ltr+'_name'));
-        setText(P + 'Insurer_NAICCode_' + L + '[0]',  v('insurer_'+ltr+'_naic'));
+      // --- Insured (single multi-line block) ---
+      setText('INSURED', joinLines(
+        v('insured_name'),
+        v('insured_addr1'),
+        v('insured_addr2'),
+        csz(v('insured_city'), v('insured_state'), v('insured_zip'))
+      ));
+
+      // --- Insurers Affording Coverage (A-E only on this vintage; F is
+      //     present in our HTML form but not in the AcroForm map). Each
+      //     insurer field is a single text holding name + NAIC. ---
+      [['a','A'],['b','B'],['c','C'],['d','D'],['e','E']].forEach(function(p) {
+        var nm = v('insurer_'+p[0]+'_name');
+        var naic = v('insurer_'+p[0]+'_naic');
+        if (nm || naic) {
+          setText('INSURER ' + p[1], nm + (naic ? '   ' + naic : ''));
+        }
       });
 
       // --- Commercial General Liability ---
-      setCheck(P + 'GeneralLiability_CoverageIndicator_A[0]',                chk('gl_present'));
-      setCheck(P + 'GeneralLiability_ClaimsMadeIndicator_A[0]',              chk('gl_claims_made'));
-      setCheck(P + 'GeneralLiability_OccurrenceIndicator_A[0]',              chk('gl_occurrence'));
-      setText (P + 'GeneralLiability_InsurerLetterCode_A[0]',                v('gl_insurer_ltr'));
-      setText (P + 'CertificateOfInsurance_GeneralLiability_AdditionalInsuredCode_A[0]', yn(chk('gl_addl_insured')));
-      setText (P + 'Policy_GeneralLiability_SubrogationWaivedCode_A[0]',     yn(chk('gl_subro_waived')));
-      setText (P + 'Policy_GeneralLiability_PolicyNumberIdentifier_A[0]',    v('gl_policy_number'));
-      setText (P + 'Policy_GeneralLiability_EffectiveDate_A[0]',             fmtDate(v('gl_effective_date')));
-      setText (P + 'Policy_GeneralLiability_ExpirationDate_A[0]',            fmtDate(v('gl_expiration_date')));
-      setText (P + 'GeneralLiability_EachOccurrence_LimitAmount_A[0]',                            v('gl_each_occurrence'));
-      setText (P + 'GeneralLiability_FireDamageRentedPremises_EachOccurrenceLimitAmount_A[0]',    v('gl_damage_rented'));
-      setText (P + 'GeneralLiability_MedicalExpense_EachPersonLimitAmount_A[0]',                  v('gl_med_exp'));
-      setText (P + 'GeneralLiability_PersonalAndAdvertisingInjury_LimitAmount_A[0]',              v('gl_personal_adv'));
-      setText (P + 'GeneralLiability_GeneralAggregate_LimitAmount_A[0]',                          v('gl_general_aggregate'));
-      setText (P + 'GeneralLiability_ProductsAndCompletedOperations_AggregateLimitAmount_A[0]',   v('gl_products_aggregate'));
-      setCheck(P + 'GeneralLiability_GeneralAggregate_LimitAppliesPerPolicyIndicator_A[0]',   chk('gl_agg_per_policy'));
-      setCheck(P + 'GeneralLiability_GeneralAggregate_LimitAppliesPerProjectIndicator_A[0]',  chk('gl_agg_per_project'));
-      setCheck(P + 'GeneralLiability_GeneralAggregate_LimitAppliesPerLocationIndicator_A[0]', chk('gl_agg_per_location'));
-      // Optional "Other" GL coverage description (free text)
-      setText (P + 'GeneralLiability_OtherCoverageDescription_A[0]',                          v('gl_other_desc'));
+      setCheck('GL CGL', chk('gl_present'));
+      setText('INSR LTRRow1',  v('gl_insurer_ltr'));
+      setText('ADDL INSRDRow1', yn(chk('gl_addl_insured')));
+      setText('Row1',           yn(chk('gl_subro_waived')));
+      setText('POLICY NUMBERRow1', v('gl_policy_number'));
+      setText('CLAIMS MADE 1',  fmtDate(v('gl_effective_date')));
+      setText('CLAIMS MADE 2',  fmtDate(v('gl_expiration_date')));
+      // Aggregate-applies-per checkboxes
+      setCheck('Check Box1', chk('gl_claims_made'));
+      setCheck('Check Box2', chk('gl_occurrence'));
+      // Limit dollars (right column, top to bottom)
+      setText('fill_46', v('gl_each_occurrence'));
+      setText('fill_47', v('gl_damage_rented'));
+      setText('fill_48', v('gl_med_exp'));
+      setText('fill_49', v('gl_personal_adv'));
+      setText('fill_50', v('gl_general_aggregate'));
+      setText('fill_51', v('gl_products_aggregate'));
+      // Aggregate applies per: Policy / Project / Location indicators
+      setCheck('Check Box3', chk('gl_agg_per_policy'));
+      setCheck('Check Box4', chk('gl_agg_per_project'));
+      // (No dedicated checkbox name for "Location" on this blank; the
+      // visible LOC button maps to the GL row's per-policy/per-project
+      // pair plus the OTHER write-in row covered by 'PRODUCTS  COMPOP
+      // AGGRow1' below.)
+      setText('PRODUCTS  COMPOP AGGRow1', chk('gl_agg_per_location') ? 'LOCATION' : '');
+      setText('GeneralLiability_OtherCoverageDescription_A', v('gl_other_desc'));
 
       // --- Automobile Liability ---
-      // (No "CoverageIndicator" on this blank; row is implicit when policy data is present.)
-      setCheck(P + 'Vehicle_AnyAutoIndicator_A[0]',          chk('auto_any_auto'));
-      setCheck(P + 'Vehicle_AllOwnedAutosIndicator_A[0]',    chk('auto_owned'));
-      setCheck(P + 'Vehicle_ScheduledAutosIndicator_A[0]',   chk('auto_scheduled'));
-      setCheck(P + 'Vehicle_HiredAutosIndicator_A[0]',       chk('auto_hired'));
-      setCheck(P + 'Vehicle_NonOwnedAutosIndicator_A[0]',    chk('auto_non_owned'));
-      setText (P + 'Vehicle_InsurerLetterCode_A[0]',         v('auto_insurer_ltr'));
-      setText (P + 'CertificateOfInsurance_AutomobileLiability_AdditionalInsuredCode_A[0]', yn(chk('auto_addl_insured')));
-      setText (P + 'Policy_AutomobileLiability_SubrogationWaivedCode_A[0]', yn(chk('auto_subro_waived')));
-      setText (P + 'Policy_AutomobileLiability_PolicyNumberIdentifier_A[0]', v('auto_policy_number'));
-      setText (P + 'Policy_AutomobileLiability_EffectiveDate_A[0]',          fmtDate(v('auto_effective_date')));
-      setText (P + 'Policy_AutomobileLiability_ExpirationDate_A[0]',         fmtDate(v('auto_expiration_date')));
-      setText (P + 'Vehicle_CombinedSingleLimit_EachAccidentAmount_A[0]',    v('auto_csl'));
-      setText (P + 'Vehicle_BodilyInjury_PerPersonLimitAmount_A[0]',         v('auto_bi_person'));
-      setText (P + 'Vehicle_BodilyInjury_PerAccidentLimitAmount_A[0]',       v('auto_bi_accident'));
-      setText (P + 'Vehicle_PropertyDamage_PerAccidentLimitAmount_A[0]',     v('auto_pd'));
+      setCheck('Auto Liability Any Auto', chk('auto_any_auto'));
+      setCheck('All Owned Autos',         chk('auto_owned'));
+      setCheck('Scheduled Autos',         chk('auto_scheduled'));
+      setCheck('Hired Autos',             chk('auto_hired'));
+      setCheck('Non-Owned Autos',         chk('auto_non_owned'));
+      setText('INSR LTRRow2',  v('auto_insurer_ltr'));
+      setText('ADDL INSRDRow2', yn(chk('auto_addl_insured')));
+      setText('POLICY NUMBERRow2', v('auto_policy_number'));
+      setText('COMBINED SINGLE LIMIT Effective Date',  fmtDate(v('auto_effective_date')));
+      setText('COMBINED SINGLE LIMIT Expiration Date', fmtDate(v('auto_expiration_date')));
+      // Auto limit dollars
+      setText('BODILY INJURY Per person',   v('auto_bi_person'));
+      setText('fill_54',                     v('auto_csl'));
+      setText('BODILY INJURY Per accident', v('auto_bi_accident'));
+      setText('fill_56',                     v('auto_pd'));
 
       // --- Umbrella / Excess Liability ---
-      setCheck(P + 'Policy_PolicyType_UmbrellaIndicator_A[0]',     chk('umb_umbrella'));
-      setCheck(P + 'Policy_PolicyType_ExcessIndicator_A[0]',       chk('umb_excess'));
-      setCheck(P + 'ExcessUmbrella_OccurrenceIndicator_A[0]',      chk('umb_occurrence'));
-      setCheck(P + 'ExcessUmbrella_ClaimsMadeIndicator_A[0]',      chk('umb_claims_made'));
-      setText (P + 'ExcessUmbrella_InsurerLetterCode_A[0]',        v('umb_insurer_ltr'));
-      setText (P + 'CertificateOfInsurance_ExcessLiability_AdditionalInsuredCode_A[0]', yn(chk('umb_addl_insured')));
-      setText (P + 'Policy_ExcessLiability_SubrogationWaivedCode_A[0]',  yn(chk('umb_subro_waived')));
-      setText (P + 'Policy_ExcessLiability_PolicyNumberIdentifier_A[0]', v('umb_policy_number'));
-      setText (P + 'Policy_ExcessLiability_EffectiveDate_A[0]',          fmtDate(v('umb_effective_date')));
-      setText (P + 'Policy_ExcessLiability_ExpirationDate_A[0]',         fmtDate(v('umb_expiration_date')));
-      setText (P + 'ExcessUmbrella_Umbrella_DeductibleOrRetentionAmount_A[0]', v('umb_retention'));
-      setText (P + 'ExcessUmbrella_Umbrella_EachOccurrenceAmount_A[0]',       v('umb_each_occurrence'));
-      setText (P + 'ExcessUmbrella_Umbrella_AggregateAmount_A[0]',            v('umb_aggregate'));
+      setCheck('Excess Umbrella Occur',                        chk('umb_occurrence'));
+      setCheck('Excess Umbrella LiabilityDeductible',          chk('umb_excess'));
+      setCheck('Excess Umbrella Liability Retention',          chk('umb_umbrella'));
+      setText('INSR LTRRow4',     v('umb_insurer_ltr'));
+      setText('ADDL INSRDRow4',   yn(chk('umb_addl_insured')));
+      setText('POLICY NUMBERRow4', v('umb_policy_number'));
+      setText('POLICY EFFECTIVE DATE MMDDYYRow3', fmtDate(v('umb_effective_date')));
+      setText('POLICY EXPIRATION DATE MMDDYYRow3', fmtDate(v('umb_expiration_date')));
+      setText('EACH OCCURRENCE_2', v('umb_retention'));
+      setText('fill_60',           v('umb_each_occurrence'));
+      setText('fill_61',           v('umb_aggregate'));
 
       // --- Workers Compensation ---
-      setText (P + 'WorkersCompensationEmployersLiability_InsurerLetterCode_A[0]',       v('wc_insurer_ltr'));
-      setText (P + 'WorkersCompensationEmployersLiability_AnyPersonsExcludedIndicator_A[0]', yn(chk('wc_proprietor_excluded')));
-      setText (P + 'Policy_WorkersCompensation_SubrogationWaivedCode_A[0]',              yn(chk('wc_subro_waived')));
-      setText (P + 'Policy_WorkersCompensationAndEmployersLiability_PolicyNumberIdentifier_A[0]', v('wc_policy_number'));
-      setText (P + 'Policy_WorkersCompensationAndEmployersLiability_EffectiveDate_A[0]',          fmtDate(v('wc_effective_date')));
-      setText (P + 'Policy_WorkersCompensationAndEmployersLiability_ExpirationDate_A[0]',         fmtDate(v('wc_expiration_date')));
-      setCheck(P + 'WorkersCompensationEmployersLiability_WorkersCompensationStatutoryLimitIndicator_A[0]', chk('wc_stat_limits'));
-      setCheck(P + 'WorkersCompensationEmployersLiability_OtherCoverageIndicator_A[0]',                     chk('wc_other_limits'));
-      setText (P + 'WorkersCompensationEmployersLiability_OtherCoverageDescription_A[0]',                   v('wc_excluded_description'));
-      setText (P + 'WorkersCompensationEmployersLiability_EmployersLiability_EachAccidentLimitAmount_A[0]',     v('wc_el_accident'));
-      setText (P + 'WorkersCompensationEmployersLiability_EmployersLiability_DiseaseEachEmployeeLimitAmount_A[0]', v('wc_el_disease_ee'));
-      setText (P + 'WorkersCompensationEmployersLiability_EmployersLiability_DiseasePolicyLimitAmount_A[0]',      v('wc_el_disease_policy'));
+      setText('INSR LTRRow5', v('wc_insurer_ltr'));
+      setText('POLICY NUMBERANY PROPRIETORPARTNEREXECUTIVE OFFICERMEMBER EXCLUDED WORKERS COMPENSATION AND EMPLOYERS LIABILITY If yes describe under SPECIAL PROVISIONS below', v('wc_policy_number'));
+      setText('POLICY EFFECTIVE DATE MMDDYYANY PROPRIETORPARTNEREXECUTIVE OFFICERMEMBER EXCLUDED WORKERS COMPENSATION AND EMPLOYERS LIABILITY If yes describe under SPECIAL PROVISIONS below', fmtDate(v('wc_effective_date')));
+      setText('POLICY EXPIRATION DATE MMDDYYANY PROPRIETORPARTNEREXECUTIVE OFFICERMEMBER EXCLUDED WORKERS COMPENSATION AND EMPLOYERS LIABILITY If yes describe under SPECIAL PROVISIONS below', fmtDate(v('wc_expiration_date')));
+      setText('Row1_2', yn(chk('wc_proprietor_excluded')));
+      setText('WC STATU TORY LIMITS', chk('wc_stat_limits') ? 'X' : '');
+      setText('fill_63',                v('wc_el_accident'));
+      setText('EL DISEASE  EA EMPLOYEE', v('wc_el_disease_ee'));
+      setText('fill_65',                v('wc_el_disease_policy'));
 
-      // --- Other Coverage ---
-      setText (P + 'OtherPolicy_InsurerLetterCode_A[0]',           v('other_insurer_ltr'));
-      setText (P + 'OtherPolicy_OtherPolicyDescription_A[0]',      v('other_description'));
-      setText (P + 'CertificateOfInsurance_OtherPolicy_AdditionalInsuredCode_A[0]', yn(chk('other_addl_insured')));
-      setText (P + 'OtherPolicy_SubrogationWaivedCode_A[0]',       yn(chk('other_subro_waived')));
-      setText (P + 'OtherPolicy_PolicyNumberIdentifier_A[0]',      v('other_policy_number'));
-      setText (P + 'OtherPolicy_PolicyEffectiveDate_A[0]',         fmtDate(v('other_effective_date')));
-      setText (P + 'OtherPolicy_PolicyExpirationDate_A[0]',        fmtDate(v('other_expiration_date')));
-      setText (P + 'OtherPolicy_CoverageCode_A[0]',                v('other_limits'));
+      // --- Other (single-row at bottom) ---
+      setText('INSR LTRRow6',                 v('other_insurer_ltr'));
+      setText('POLICY NUMBEROTHER',           v('other_policy_number'));
+      setText('POLICY EFFECTIVE DATE MMDDYYOTHER', fmtDate(v('other_effective_date')));
+      setText('POLICY EXPIRATION DATE MMDDYYOTHER', fmtDate(v('other_expiration_date')));
 
       // --- Description of Operations / Locations / Vehicles ---
-      setText (P + 'CertificateOfLiabilityInsurance_ACORDForm_RemarkText_A[0]', v('description_of_operations'));
+      setText('DESCRIPTION OF OPERATIONS  LOCATIONS  VEHICLES  EXCLUSIONS ADDED BY ENDORSEMENT  SPECIAL PROVISIONS', v('description_of_operations'));
 
-      // --- Certificate Holder ---
-      setText (P + 'CertificateHolder_FullName_A[0]',                          v('holder_name'));
-      setText (P + 'CertificateHolder_MailingAddress_LineOne_A[0]',            v('holder_addr1'));
-      setText (P + 'CertificateHolder_MailingAddress_LineTwo_A[0]',            v('holder_addr2'));
-      setText (P + 'CertificateHolder_MailingAddress_CityName_A[0]',           v('holder_city'));
-      setText (P + 'CertificateHolder_MailingAddress_StateOrProvinceCode_A[0]', v('holder_state'));
-      setText (P + 'CertificateHolder_MailingAddress_PostalCode_A[0]',         v('holder_zip'));
+      // --- Certificate Holder (single multi-line block) ---
+      setText('Certificat Holder', joinLines(
+        v('holder_name'),
+        v('holder_addr1'),
+        v('holder_addr2'),
+        csz(v('holder_city'), v('holder_state'), v('holder_zip'))
+      ));
 
       // --- Authorized Representative ---
-      setText (P + 'Producer_AuthorizedRepresentative_Signature_A[0]',         v('auth_rep_name'));
+      setText('AUTHORIZED REPRESENTATIVE', v('auth_rep_name'));
 
       return await pdfDoc.save();
     }
