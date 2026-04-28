@@ -443,6 +443,8 @@
   <script src=https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js></script>
   <!-- pdf-lib: merges attached PDFs / appends image pages onto the jsPDF output -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- heic2any: converts iPhone HEIC/HEIF photos to JPEG so Claude vision can read them -->
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 
   <!-- Document extraction libraries (loaded lazily by the Summarize handler) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -701,7 +703,7 @@
 
         <div class="field" style="gap:10px;">
 
-          <label>Upload a PDF, image, Word doc, or text file. Click <b>Summarize</b> and the AI summary will be appended to <i>Change Requested</i> below.</label>
+          <label>Upload a PDF, image (PNG/JPG/HEIC/WebP), Word doc, text file, or email. Click <b>Summarize</b> and the AI summary will be appended to <i>Change Requested</i> below.</label>
 
           <style>
             #changeDocDrop {
@@ -749,7 +751,7 @@
           <div id="changeDocDrop" tabindex="0" role="button" aria-label="Upload document by clicking or dragging a file here">
             <div class="ddrop-empty">
               <div class="ddrop-primary">Drag a file here, or <span class="ddrop-link">browse</span></div>
-              <div class="ddrop-secondary">PDF, PNG/JPG, DOCX, or TXT</div>
+              <div class="ddrop-secondary">PDF, PNG/JPG/HEIC/WebP, DOCX, TXT, or EML</div>
             </div>
             <div class="ddrop-filled" style="display:none;">
               <a class="ddrop-clear" href="#" id="changeDocClear">Clear</a>
@@ -758,7 +760,7 @@
             </div>
           </div>
 
-          <input type="file" id="changeDocFile" accept=".pdf,.png,.jpg,.jpeg,.docx,.txt,application/pdf,image/png,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" />
+          <input type="file" id="changeDocFile" accept=".pdf,.png,.jpg,.jpeg,.heic,.heif,.webp,.docx,.txt,.eml,.msg,application/pdf,image/png,image/jpeg,image/heic,image/heif,image/webp,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,message/rfc822,application/vnd.ms-outlook" />
 
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px;">
 
@@ -1296,6 +1298,32 @@
           .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
       }
 
+      // Helper: re-encode any image File/Blob as JPEG via canvas (works for
+      // HEIC after heic2any, WebP, GIF, BMP, etc. — anything the browser can
+      // paint). pdf-lib only embeds PNG and JPEG natively.
+      async function _toEmbeddableJpegBuf(srcFile) {
+        var imgUrl = URL.createObjectURL(srcFile);
+        try {
+          var img = new Image();
+          await new Promise(function(res, rej) {
+            img.onload = res;
+            img.onerror = function() { rej(new Error('Browser could not decode ' + srcFile.name)); };
+            img.src = imgUrl;
+          });
+          var canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          var ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          var blob = await new Promise(function(res) { canvas.toBlob(res, 'image/jpeg', 0.9); });
+          return await blob.arrayBuffer();
+        } finally {
+          URL.revokeObjectURL(imgUrl);
+        }
+      }
+
       // PDFs: copy every page from the attachment into the merged doc.
       if (type === 'application/pdf' || name.endsWith('.pdf')) {
         var attachBuf = await file.arrayBuffer();
@@ -1304,9 +1332,23 @@
         pages.forEach(function(p) { merged.addPage(p); });
       }
       // Images: embed and add as a full-page image (Letter size, fit-contain).
-      else if (type.indexOf('image/') === 0 || /\.(png|jpe?g)$/.test(name)) {
-        var imgBuf = await file.arrayBuffer();
+      else if (type.indexOf('image/') === 0 || /\.(png|jpe?g|heic|heif|webp|gif|bmp)$/.test(name)) {
+        var imgBuf;
         var isPng = type === 'image/png' || /\.png$/.test(name);
+        var isJpg = type === 'image/jpeg' || /\.(jpe?g)$/.test(name);
+        if (isPng || isJpg) {
+          imgBuf = await file.arrayBuffer();
+        } else {
+          // HEIC was already converted to JPEG by the summarize handler in the
+          // common path, but if we got a raw HEIC here, run conversion now.
+          var srcForEmbed = file;
+          if (/heic|heif/.test(type) || /\.(heic|heif)$/.test(name)) {
+            if (!window.__epConvertHeicToJpeg) throw new Error('HEIC converter not available.');
+            srcForEmbed = await window.__epConvertHeicToJpeg(file);
+          }
+          imgBuf = await _toEmbeddableJpegBuf(srcForEmbed);
+          isPng = false;
+        }
         var img = isPng ? await merged.embedPng(imgBuf) : await merged.embedJpg(imgBuf);
         var pageW = 612, pageH = 792;          // US Letter @ 72dpi
         var margin = 36;
@@ -1326,7 +1368,7 @@
           width: w, height: h
         });
       }
-      // .docx and .txt: extract text and lay it out across as many pages as needed.
+      // .docx — extract text and lay it out across pages.
       else if (type.indexOf('officedocument.wordprocessingml') > -1 || name.endsWith('.docx')) {
         var docxText = '';
         if (window.mammoth) {
@@ -1335,6 +1377,16 @@
           docxText = (r && r.value) || '';
         }
         await _renderTextPages(merged, file.name, docxText || '[Word document attached — text could not be extracted]');
+      }
+      // .eml — render the parsed email (headers + body) as text pages.
+      else if (type === 'message/rfc822' || name.endsWith('.eml')) {
+        var emlText = window.__epExtractEml ? await window.__epExtractEml(file) : await file.text();
+        await _renderTextPages(merged, file.name, emlText || '[Email attached — body could not be extracted]');
+      }
+      // .msg — best-effort ASCII extraction from the binary blob.
+      else if (type === 'application/vnd.ms-outlook' || name.endsWith('.msg')) {
+        var msgText = window.__epExtractMsg ? await window.__epExtractMsg(file) : '[Outlook .msg]';
+        await _renderTextPages(merged, file.name, msgText);
       }
       else if (type === 'text/plain' || name.endsWith('.txt')) {
         var txt = await file.text();
@@ -1674,10 +1726,92 @@
         return (await file.text()).trim();
       }
 
+      // Expose extractor / converter helpers to the outer (PDF-merge) script.
+      // Function declarations below are hoisted, so these references are valid
+      // even though they appear before the `function ...` lines.
+      window.__epExtractEml = extractEml;
+      window.__epExtractMsg = extractMsg;
+      window.__epConvertHeicToJpeg = convertHeicToJpeg;
+
+      // RFC 822 .eml: keep the headers we care about (From/To/Cc/Subject/Date)
+      // and append the body. Strips MIME boundaries and base64 attachments.
+      async function extractEml(file) {
+        var raw = await file.text();
+        // Split header block from body (first blank line)
+        var splitIdx = raw.search(/\r?\n\r?\n/);
+        var header = splitIdx > -1 ? raw.slice(0, splitIdx) : raw;
+        var body = splitIdx > -1 ? raw.slice(splitIdx).replace(/^\s+/, '') : '';
+        var keep = ['from','to','cc','subject','date'];
+        var hdrLines = header.split(/\r?\n/);
+        var picked = [];
+        // Unfold continuation lines (RFC 822: lines starting with whitespace
+        // continue the previous header).
+        var unfolded = [];
+        hdrLines.forEach(function(l) {
+          if (/^\s/.test(l) && unfolded.length) unfolded[unfolded.length-1] += ' ' + l.trim();
+          else unfolded.push(l);
+        });
+        unfolded.forEach(function(l) {
+          var m = l.match(/^([A-Za-z-]+):\s*(.*)$/);
+          if (m && keep.indexOf(m[1].toLowerCase()) > -1) {
+            picked.push(m[1] + ': ' + m[2]);
+          }
+        });
+        // Try to find a text/plain part in a multipart body; otherwise use the
+        // raw body. Strip obvious MIME framing and quoted-printable artifacts.
+        var plain = body;
+        var mp = body.match(/Content-Type:\s*text\/plain[\s\S]*?(?:\r?\n\r?\n)([\s\S]*?)(?=\r?\n--|\Z)/i);
+        if (mp) plain = mp[1];
+        plain = plain
+          .replace(/=\r?\n/g, '')             // soft line breaks
+          .replace(/=([0-9A-F]{2})/g, function(_, h) { return String.fromCharCode(parseInt(h, 16)); })
+          .replace(/^--[^\n]+$/gm, '')        // mime boundaries
+          .replace(/Content-(Type|Transfer-Encoding|Disposition):[^\n]*/gi, '')
+          .replace(/\r/g, '')
+          .trim();
+        return (picked.join('\n') + '\n\n' + plain).trim();
+      }
+
+      // .msg (Outlook) is a Compound File Binary Format blob — we can't parse
+      // it without a heavy library. Read what we can as raw text and let
+      // Claude handle whatever ASCII it sees; warn the agent.
+      async function extractMsg(file) {
+        var buf = await file.arrayBuffer();
+        var view = new Uint8Array(buf);
+        // Pull every printable ASCII run >= 4 chars; that surfaces subject /
+        // sender / body fragments from the binary.
+        var out = [];
+        var run = '';
+        for (var i = 0; i < view.length; i++) {
+          var c = view[i];
+          if ((c >= 0x20 && c <= 0x7E) || c === 0x0A || c === 0x0D) run += String.fromCharCode(c);
+          else { if (run.length >= 4) out.push(run); run = ''; }
+        }
+        if (run.length >= 4) out.push(run);
+        return ('[Outlook .msg attachment - extracted text fragments may be incomplete]\n\n' + out.join('\n')).trim();
+      }
+
       function isImage(file) {
         var name = (file.name || '').toLowerCase();
         var type = file.type || '';
-        return type.indexOf('image/') === 0 || /\.(png|jpe?g|gif|webp)$/.test(name);
+        return type.indexOf('image/') === 0 || /\.(png|jpe?g|gif|webp|heic|heif)$/.test(name);
+      }
+
+      function isHeic(file) {
+        var name = (file.name || '').toLowerCase();
+        var type = file.type || '';
+        return /heic|heif/.test(type) || /\.(heic|heif)$/.test(name);
+      }
+
+      // Convert HEIC/HEIF Blob to a JPEG File using heic2any. Browsers can't
+      // decode HEIC natively (Safari is partial, Chrome/Firefox not at all),
+      // so we always normalize before sending to Claude vision.
+      async function convertHeicToJpeg(file) {
+        if (!window.heic2any) throw new Error('HEIC converter failed to load.');
+        var blob = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
+        // heic2any returns Blob (single page) or Blob[] (multi-frame); take first.
+        if (Array.isArray(blob)) blob = blob[0];
+        return new File([blob], (file.name || 'photo').replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
       }
 
       async function extractTextFromFile(file) {
@@ -1685,6 +1819,8 @@
         var type = file.type || '';
         if (type === 'application/pdf' || name.endsWith('.pdf')) return extractPdf(file);
         if (type.indexOf('officedocument.wordprocessingml') > -1 || name.endsWith('.docx')) return extractDocx(file);
+        if (type === 'message/rfc822' || name.endsWith('.eml')) return extractEml(file);
+        if (type === 'application/vnd.ms-outlook' || name.endsWith('.msg')) return extractMsg(file);
         if (type === 'text/plain' || name.endsWith('.txt')) return extractText(file);
         // Fallback: try plain text.
         return extractText(file);
@@ -1728,16 +1864,24 @@
         try {
           var body;
           if (isImage(file)) {
+            // HEIC/HEIF: convert to JPEG first — Claude vision doesn't accept
+            // HEIC, and browsers can't decode it natively for the upload pipe.
+            if (isHeic(file)) {
+              setStatus('Converting HEIC photo "' + file.name + '" to JPEG…');
+              file = await convertHeicToJpeg(file);
+            }
             // Image path: send straight to backend → Claude vision.
             setStatus('Reading image "' + file.name + '"…');
             var b64 = await readImageBase64(file);
             var mt = file.type || 'image/png';
-            // Normalize mime type for jpg.
-            if (!/^image\//.test(mt)) {
+            // Normalize mime type when the browser didn't set one or set
+            // something Claude vision can't accept.
+            if (!/^image\/(png|jpeg|gif|webp)$/.test(mt)) {
               if (/\.png$/i.test(file.name)) mt = 'image/png';
               else if (/\.(jpe?g)$/i.test(file.name)) mt = 'image/jpeg';
               else if (/\.gif$/i.test(file.name)) mt = 'image/gif';
               else if (/\.webp$/i.test(file.name)) mt = 'image/webp';
+              else mt = 'image/jpeg';
             }
             setStatus('Sending image to the summarizer…');
             body = JSON.stringify({ image_base64: b64, mime_type: mt, filename: file.name });
