@@ -292,6 +292,23 @@
 
     input::placeholder { color: var(--light); }
 
+    /* DOB three-box group: wider boxes so MM/DD/YYYY placeholders are
+       fully visible, and a darker placeholder color since these abbreviated
+       hints need to read at small sizes. */
+    .dob-group input[data-dob-part] {
+      padding-left: 8px;
+      padding-right: 8px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.5px;
+    }
+    .dob-group input[data-dob-part="m"],
+    .dob-group input[data-dob-part="d"] { width: 4.2em; }
+    .dob-group input[data-dob-part="y"] { width: 6em; }
+    .dob-group input[data-dob-part]::placeholder {
+      color: #6b7280;
+      letter-spacing: 1px;
+    }
+
     select {
 
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -748,15 +765,15 @@
 
             <div class="dob-group" data-target="dob" style="display:flex;gap:6px;align-items:center;">
 
-              <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Birth month" data-dob-part="m" style="width:3.2em;text-align:center;" />
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Birth month" data-dob-part="m" style="text-align:center;" />
 
               <span style="color:var(--mid);">-</span>
 
-              <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="Birth day" data-dob-part="d" style="width:3.2em;text-align:center;" />
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="Birth day" data-dob-part="d" style="text-align:center;" />
 
               <span style="color:var(--mid);">-</span>
 
-              <input type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="Birth year" data-dob-part="y" style="width:5em;text-align:center;" />
+              <input type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="Birth year" data-dob-part="y" style="text-align:center;" />
 
               <input type="hidden" name="dob" id="dob" />
 
@@ -786,15 +803,15 @@
 
             <div class="dob-group" data-target="sec_dob" style="display:flex;gap:6px;align-items:center;">
 
-              <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Secondary insured birth month" data-dob-part="m" style="width:3.2em;text-align:center;" />
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Secondary insured birth month" data-dob-part="m" style="text-align:center;" />
 
               <span style="color:var(--mid);">-</span>
 
-              <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="Secondary insured birth day" data-dob-part="d" style="width:3.2em;text-align:center;" />
+              <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="Secondary insured birth day" data-dob-part="d" style="text-align:center;" />
 
               <span style="color:var(--mid);">-</span>
 
-              <input type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="Secondary insured birth year" data-dob-part="y" style="width:5em;text-align:center;" />
+              <input type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" aria-label="Secondary insured birth year" data-dob-part="y" style="text-align:center;" />
 
               <input type="hidden" name="sec_dob" id="sec_dob" />
 
