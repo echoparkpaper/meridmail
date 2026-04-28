@@ -442,6 +442,17 @@
 
   <script src=https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js></script>
 
+  <!-- Document extraction libraries (loaded lazily by the Summarize handler) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
+
 </head>
 
 <body>
@@ -680,6 +691,30 @@
 
  
 
+      <!-- Attach Document (auto-summarize) -->
+
+      <div class="card">
+
+        <div class="card-title">Attach Document &amp; Summarize</div>
+
+        <div class="field" style="gap:10px;">
+
+          <label>Upload a PDF, image, Word doc, or text file. Click <b>Summarize</b> and the AI summary will be appended to <i>Change Requested</i> below.</label>
+
+          <input type="file" id="changeDocFile" accept=".pdf,.png,.jpg,.jpeg,.docx,.txt,application/pdf,image/png,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" />
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px;">
+
+            <button type="button" class="btn btn-primary" id="summarizeBtn">Summarize</button>
+
+            <span id="summarizeStatus" style="font-size:13px;color:var(--mid);"></span>
+
+          </div>
+
+        </div>
+
+      </div>
+
       <!-- Change Details -->
 
       <div class="card">
@@ -690,7 +725,7 @@
 
           <label>Change Requested</label>
 
-          <textarea name="change_requested"></textarea>
+          <textarea name="change_requested" id="change_requested" style="min-height:160px;"></textarea>
 
         </div>
 
@@ -1118,6 +1153,145 @@
       nextReset.setHours(0, 1, 0, 0);
       if (nextReset <= now) nextReset.setDate(nextReset.getDate() + 1);
       setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
+    })();
+  </script>
+
+  <!-- Summarize uploaded change document via /api/summarize backend -->
+  <script>
+    (function() {
+      // Configure where the summarize API lives. In production both the
+      // static site and the API are deployed as separate Render services
+      // sharing the same project; the API URL is hardcoded here. For local
+      // dev, set window.__EP_SUMMARIZE_API__ before this script runs.
+      var API_URL = (window.__EP_SUMMARIZE_API__ ||
+        'https://meridmail-summarize-api.onrender.com') + '/api/summarize';
+
+      var fileInput = document.getElementById('changeDocFile');
+      var btn = document.getElementById('summarizeBtn');
+      var status = document.getElementById('summarizeStatus');
+      var target = document.getElementById('change_requested');
+      if (!fileInput || !btn || !target) return;
+
+      function setStatus(msg, isErr) {
+        status.textContent = msg || '';
+        status.style.color = isErr ? '#b3261e' : 'var(--mid)';
+      }
+
+      // ---- Extractors ----------------------------------------------------
+      async function extractPdf(file) {
+        if (!window.pdfjsLib) throw new Error('PDF library failed to load.');
+        var buf = await file.arrayBuffer();
+        var pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+        var pages = [];
+        for (var i = 1; i <= pdf.numPages; i++) {
+          var page = await pdf.getPage(i);
+          var content = await page.getTextContent();
+          pages.push(content.items.map(function(it) { return it.str; }).join(' '));
+        }
+        var text = pages.join('\n\n').trim();
+        // Many declaration pages are scanned, no embedded text — fall back
+        // to OCR if pdf.js returned essentially nothing.
+        if (text.length < 40) {
+          setStatus('PDF has no embedded text — running OCR (this may take a minute)…');
+          text = await ocrPdfPages(pdf);
+        }
+        return text;
+      }
+
+      async function ocrPdfPages(pdf) {
+        if (!window.Tesseract) throw new Error('OCR library failed to load.');
+        var out = [];
+        var maxPages = Math.min(pdf.numPages, 8); // cap to keep it fast
+        for (var i = 1; i <= maxPages; i++) {
+          var page = await pdf.getPage(i);
+          var viewport = page.getViewport({ scale: 2 });
+          var canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          var ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          var result = await window.Tesseract.recognize(canvas, 'eng');
+          out.push((result && result.data && result.data.text) || '');
+        }
+        return out.join('\n\n').trim();
+      }
+
+      async function extractImage(file) {
+        if (!window.Tesseract) throw new Error('OCR library failed to load.');
+        setStatus('Running OCR on image…');
+        var result = await window.Tesseract.recognize(file, 'eng');
+        return ((result && result.data && result.data.text) || '').trim();
+      }
+
+      async function extractDocx(file) {
+        if (!window.mammoth) throw new Error('Word library failed to load.');
+        var buf = await file.arrayBuffer();
+        var result = await window.mammoth.extractRawText({ arrayBuffer: buf });
+        return (result && result.value || '').trim();
+      }
+
+      async function extractText(file) {
+        return (await file.text()).trim();
+      }
+
+      async function extractFromFile(file) {
+        var name = (file.name || '').toLowerCase();
+        var type = file.type || '';
+        if (type === 'application/pdf' || name.endsWith('.pdf')) return extractPdf(file);
+        if (type.indexOf('image/') === 0 || /\.(png|jpe?g)$/.test(name)) return extractImage(file);
+        if (type.indexOf('officedocument.wordprocessingml') > -1 || name.endsWith('.docx')) return extractDocx(file);
+        if (type === 'text/plain' || name.endsWith('.txt')) return extractText(file);
+        // Fallback: try plain text.
+        return extractText(file);
+      }
+
+      // ---- Append helper -------------------------------------------------
+      function appendToTarget(summary, file) {
+        var stamp = new Date().toLocaleString();
+        var header = '— AI summary of "' + (file.name || 'uploaded document') + '" (' + stamp + ') —';
+        var separator = target.value.trim() ? '\n\n' : '';
+        target.value = target.value + separator + header + '\n' + summary.trim();
+        // Scroll to and focus the field so the user sees the result.
+        target.focus();
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // ---- Click handler -------------------------------------------------
+      btn.addEventListener('click', async function() {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) { setStatus('Choose a file first.', true); return; }
+        btn.disabled = true;
+        var origLabel = btn.textContent;
+        btn.textContent = 'Working…';
+        setStatus('Extracting text from "' + file.name + '"…');
+        try {
+          var text = await extractFromFile(file);
+          if (!text || text.length < 5) {
+            throw new Error('Could not extract any text from the document.');
+          }
+          setStatus('Sending ' + text.length + ' chars to the summarizer…');
+          var resp = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text, filename: file.name })
+          });
+          if (!resp.ok) {
+            var errBody = '';
+            try { errBody = (await resp.json()).error || ''; } catch(e) {}
+            throw new Error('Summarizer returned ' + resp.status + (errBody ? ': ' + errBody : ''));
+          }
+          var data = await resp.json();
+          if (!data.summary) throw new Error('Empty summary returned.');
+          appendToTarget(data.summary, file);
+          setStatus('Done — summary appended to Change Requested.');
+        } catch (err) {
+          console.error('summarize failed:', err);
+          setStatus('Failed: ' + err.message, true);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = origLabel;
+        }
+      });
     })();
   </script>
 

@@ -7,3 +7,18 @@ services:
       - type: rewrite
         source: /*
         destination: /portal.html
+
+  - type: web
+    name: meridmail-summarize-api
+    runtime: node
+    rootDir: summarize-api
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGIN
+        value: https://meridmail.onrender.com
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-4-6

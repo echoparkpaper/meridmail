@@ -1,0 +1,18 @@
+{
+  "name": "meridmail-summarize-api",
+  "version": "1.0.0",
+  "description": "Tiny proxy that calls the Anthropic API to summarize uploaded policy-change documents.",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "express": "^4.21.2"
+  }
+}
