@@ -1216,11 +1216,21 @@
         return out.join('\n\n').trim();
       }
 
-      async function extractImage(file) {
-        if (!window.Tesseract) throw new Error('OCR library failed to load.');
-        setStatus('Running OCR on image…');
-        var result = await window.Tesseract.recognize(file, 'eng');
-        return ((result && result.data && result.data.text) || '').trim();
+      // Read the raw image as base64 — it goes to the backend which sends it
+      // straight to Claude's vision capability. More accurate than browser
+      // OCR and avoids Tesseract's brittle WASM/worker download path.
+      async function readImageBase64(file) {
+        return new Promise(function(resolve, reject) {
+          var reader = new FileReader();
+          reader.onerror = function() { reject(new Error('Failed to read image file.')); };
+          reader.onload = function() {
+            var result = reader.result || '';
+            // Strip the "data:image/...;base64," prefix.
+            var idx = result.indexOf(',');
+            resolve(idx > -1 ? result.slice(idx + 1) : result);
+          };
+          reader.readAsDataURL(file);
+        });
       }
 
       async function extractDocx(file) {
@@ -1234,11 +1244,16 @@
         return (await file.text()).trim();
       }
 
-      async function extractFromFile(file) {
+      function isImage(file) {
+        var name = (file.name || '').toLowerCase();
+        var type = file.type || '';
+        return type.indexOf('image/') === 0 || /\.(png|jpe?g|gif|webp)$/.test(name);
+      }
+
+      async function extractTextFromFile(file) {
         var name = (file.name || '').toLowerCase();
         var type = file.type || '';
         if (type === 'application/pdf' || name.endsWith('.pdf')) return extractPdf(file);
-        if (type.indexOf('image/') === 0 || /\.(png|jpe?g)$/.test(name)) return extractImage(file);
         if (type.indexOf('officedocument.wordprocessingml') > -1 || name.endsWith('.docx')) return extractDocx(file);
         if (type === 'text/plain' || name.endsWith('.txt')) return extractText(file);
         // Fallback: try plain text.
@@ -1263,17 +1278,36 @@
         btn.disabled = true;
         var origLabel = btn.textContent;
         btn.textContent = 'Working…';
-        setStatus('Extracting text from "' + file.name + '"…');
         try {
-          var text = await extractFromFile(file);
-          if (!text || text.length < 5) {
-            throw new Error('Could not extract any text from the document.');
+          var body;
+          if (isImage(file)) {
+            // Image path: send straight to backend → Claude vision.
+            setStatus('Reading image "' + file.name + '"…');
+            var b64 = await readImageBase64(file);
+            var mt = file.type || 'image/png';
+            // Normalize mime type for jpg.
+            if (!/^image\//.test(mt)) {
+              if (/\.png$/i.test(file.name)) mt = 'image/png';
+              else if (/\.(jpe?g)$/i.test(file.name)) mt = 'image/jpeg';
+              else if (/\.gif$/i.test(file.name)) mt = 'image/gif';
+              else if (/\.webp$/i.test(file.name)) mt = 'image/webp';
+            }
+            setStatus('Sending image to the summarizer…');
+            body = JSON.stringify({ image_base64: b64, mime_type: mt, filename: file.name });
+          } else {
+            setStatus('Extracting text from "' + file.name + '"…');
+            var text = await extractTextFromFile(file);
+            if (!text || text.length < 5) {
+              throw new Error('Could not extract any text from the document.');
+            }
+            setStatus('Sending ' + text.length + ' chars to the summarizer…');
+            body = JSON.stringify({ text: text, filename: file.name });
           }
-          setStatus('Sending ' + text.length + ' chars to the summarizer…');
+
           var resp = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: text, filename: file.name })
+            body: body
           });
           if (!resp.ok) {
             var errBody = '';

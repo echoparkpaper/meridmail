@@ -68,17 +68,47 @@ app.post('/api/summarize', async (req, res) => {
     if (!client) {
       return res.status(500).json({ error: 'Server is missing ANTHROPIC_API_KEY.' });
     }
-    const { text, filename } = req.body || {};
-    if (!text || typeof text !== 'string') {
-      return res.status(400).json({ error: 'Missing "text" string in body.' });
-    }
-    // Cap input to keep cost predictable.
-    const MAX_CHARS = 60000;
-    const trimmed = text.length > MAX_CHARS ? text.slice(0, MAX_CHARS) + '\n\n[truncated]' : text;
+    const { text, filename, image_base64, mime_type } = req.body || {};
 
-    const userContent =
-      (filename ? `Source filename: ${filename}\n\n` : '') +
-      'Document contents:\n\n' + trimmed;
+    // Build the user content: either text-only, image-only (Claude vision),
+    // or both (e.g., a scanned PDF where we extracted what we could plus
+    // sent the first page as an image).
+    let userContent;
+    let inputSize;
+
+    if (image_base64) {
+      const allowed = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+      const mt = mime_type || 'image/png';
+      if (!allowed.includes(mt)) {
+        return res.status(400).json({ error: `Unsupported image mime_type: ${mt}` });
+      }
+      // Cap base64 size at ~5MB encoded (~3.7MB raw) to keep cost predictable.
+      if (image_base64.length > 5_000_000) {
+        return res.status(413).json({ error: 'Image too large (limit ~5MB).' });
+      }
+      const blocks = [
+        {
+          type: 'image',
+          source: { type: 'base64', media_type: mt, data: image_base64 }
+        },
+        {
+          type: 'text',
+          text: (filename ? `Source filename: ${filename}\n\n` : '') +
+                'The attached image is an insurance document. Summarize the changes per your instructions.'
+        }
+      ];
+      userContent = blocks;
+      inputSize = image_base64.length;
+    } else if (text && typeof text === 'string') {
+      const MAX_CHARS = 60000;
+      const trimmed = text.length > MAX_CHARS ? text.slice(0, MAX_CHARS) + '\n\n[truncated]' : text;
+      userContent =
+        (filename ? `Source filename: ${filename}\n\n` : '') +
+        'Document contents:\n\n' + trimmed;
+      inputSize = trimmed.length;
+    } else {
+      return res.status(400).json({ error: 'Body must include "text" or "image_base64".' });
+    }
 
     const msg = await client.messages.create({
       model: MODEL,
@@ -96,7 +126,7 @@ app.post('/api/summarize', async (req, res) => {
     if (!summary) {
       return res.status(502).json({ error: 'Empty summary from model.' });
     }
-    res.json({ summary, model: msg.model, input_chars: trimmed.length });
+    res.json({ summary, model: msg.model, input_size: inputSize });
   } catch (err) {
     console.error('[summarize-api] error:', err);
     const status = err?.status && Number.isInteger(err.status) ? err.status : 500;
