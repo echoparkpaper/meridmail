@@ -441,6 +441,8 @@
  
 
   <script src=https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js></script>
+  <!-- pdf-lib: merges attached PDFs / appends image pages onto the jsPDF output -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
   <!-- Document extraction libraries (loaded lazily by the Summarize handler) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1173,14 +1175,180 @@
     return (el && el.value) || 'form';
   }
 
-  document.getElementById('generateBtn').addEventListener('click', function() {
-    buildPolicyChangePdf().save('policy-change-' + _insuredName() + '.pdf');
+  // Returns the attached document, if any. Drag-and-drop falls back to a
+  // _droppedFile property when older Safari blocks .files assignment.
+  function _attachedDoc() {
+    var fi = document.getElementById('changeDocFile');
+    if (!fi) return null;
+    return (fi.files && fi.files[0]) || fi._droppedFile || null;
+  }
+
+  // Builds the policy-change PDF, then merges the attached document onto the
+  // end as additional pages. Returns the final pdf-lib bytes (Uint8Array).
+  // If no attachment, returns the raw jsPDF bytes unchanged.
+  async function buildFinalPdfBytes() {
+    var jsPdfDoc = buildPolicyChangePdf();
+    var formBytes = jsPdfDoc.output('arraybuffer');
+    var file = _attachedDoc();
+    if (!file) {
+      return new Uint8Array(formBytes);
+    }
+    if (!window.PDFLib) {
+      console.warn('pdf-lib not loaded; returning form-only PDF.');
+      return new Uint8Array(formBytes);
+    }
+    try {
+      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      var merged = await PDFDocument.load(formBytes);
+      var name = (file.name || '').toLowerCase();
+      var type = file.type || '';
+
+      // PDFs: copy every page from the attachment into the merged doc.
+      if (type === 'application/pdf' || name.endsWith('.pdf')) {
+        var attachBuf = await file.arrayBuffer();
+        var attachDoc = await PDFDocument.load(attachBuf, { ignoreEncryption: true });
+        var pages = await merged.copyPages(attachDoc, attachDoc.getPageIndices());
+        pages.forEach(function(p) { merged.addPage(p); });
+      }
+      // Images: embed and add as a full-page image (Letter size, fit-contain).
+      else if (type.indexOf('image/') === 0 || /\.(png|jpe?g)$/.test(name)) {
+        var imgBuf = await file.arrayBuffer();
+        var isPng = type === 'image/png' || /\.png$/.test(name);
+        var img = isPng ? await merged.embedPng(imgBuf) : await merged.embedJpg(imgBuf);
+        var pageW = 612, pageH = 792;          // US Letter @ 72dpi
+        var margin = 36;
+        var maxW = pageW - margin * 2;
+        var maxH = pageH - margin * 2 - 30;    // leave room for caption
+        var scale = Math.min(maxW / img.width, maxH / img.height, 1);
+        var w = img.width * scale, h = img.height * scale;
+        var page = merged.addPage([pageW, pageH]);
+        var font = await merged.embedFont(StandardFonts.Helvetica);
+        page.drawText('Attached: ' + file.name, {
+          x: margin, y: pageH - margin + 6,
+          size: 9, font: font, color: rgb(0.33, 0.33, 0.33)
+        });
+        page.drawImage(img, {
+          x: margin + (maxW - w) / 2,
+          y: margin + (maxH - h) / 2 + 30,
+          width: w, height: h
+        });
+      }
+      // .docx and .txt: extract text and lay it out across as many pages as needed.
+      else if (type.indexOf('officedocument.wordprocessingml') > -1 || name.endsWith('.docx')) {
+        var docxText = '';
+        if (window.mammoth) {
+          var ab = await file.arrayBuffer();
+          var r = await window.mammoth.extractRawText({ arrayBuffer: ab });
+          docxText = (r && r.value) || '';
+        }
+        await _renderTextPages(merged, file.name, docxText || '[Word document attached — text could not be extracted]');
+      }
+      else if (type === 'text/plain' || name.endsWith('.txt')) {
+        var txt = await file.text();
+        await _renderTextPages(merged, file.name, txt);
+      }
+      // Anything else: drop a stub page noting the attachment exists.
+      else {
+        await _renderTextPages(merged, file.name, '[Attached file format not embedded inline. Original file: ' + file.name + ']');
+      }
+
+      return await merged.save();
+    } catch (err) {
+      console.error('Failed to merge attachment, falling back to form-only PDF:', err);
+      return new Uint8Array(formBytes);
+    }
+  }
+
+  async function _renderTextPages(merged, filename, text) {
+    const { StandardFonts, rgb } = window.PDFLib;
+    var font = await merged.embedFont(StandardFonts.Helvetica);
+    var fontBold = await merged.embedFont(StandardFonts.HelveticaBold);
+    var pageW = 612, pageH = 792, margin = 54;
+    var lineH = 13;
+    var maxW = pageW - margin * 2;
+    var lines = _wrapText(String(text || '').replace(/\r\n?/g, '\n'), font, 10, maxW);
+    var first = true;
+    while (lines.length || first) {
+      var page = merged.addPage([pageW, pageH]);
+      // header
+      page.drawText('Attached: ' + filename, {
+        x: margin, y: pageH - margin + 18,
+        size: 11, font: fontBold, color: rgb(0.17, 0.29, 0.43)
+      });
+      page.drawLine({
+        start: { x: margin, y: pageH - margin + 12 },
+        end:   { x: pageW - margin, y: pageH - margin + 12 },
+        thickness: 0.6, color: rgb(0.83, 0.81, 0.79)
+      });
+      // body
+      var y = pageH - margin;
+      var perPage = Math.floor((y - margin) / lineH);
+      var slice = lines.splice(0, perPage);
+      for (var i = 0; i < slice.length; i++) {
+        page.drawText(slice[i], {
+          x: margin, y: y - (i + 1) * lineH,
+          size: 10, font: font, color: rgb(0.1, 0.1, 0.1)
+        });
+      }
+      first = false;
+      if (!lines.length) break;
+    }
+  }
+
+  function _wrapText(text, font, size, maxWidth) {
+    var out = [];
+    var paragraphs = text.split('\n');
+    for (var p = 0; p < paragraphs.length; p++) {
+      var words = paragraphs[p].split(/\s+/);
+      var line = '';
+      for (var w = 0; w < words.length; w++) {
+        var word = words[w];
+        if (!word) continue;
+        var test = line ? line + ' ' + word : word;
+        var width;
+        try { width = font.widthOfTextAtSize(test, size); }
+        catch(e) { width = test.length * size * 0.55; }
+        if (width > maxWidth && line) {
+          out.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      }
+      out.push(line);
+    }
+    return out;
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', async function() {
+    var btn = this;
+    btn.disabled = true;
+    var orig = btn.textContent;
+    btn.textContent = 'Generating…';
+    try {
+      var bytes = await buildFinalPdfBytes();
+      var blob = new Blob([bytes], { type: 'application/pdf' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'policy-change-' + _insuredName() + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 30000);
+    } catch (err) {
+      alert('Failed to generate PDF: ' + err.message);
+      console.error(err);
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
   });
 
-  function printForm(btn) {
+  async function printForm(btn) {
     if (btn) { btn.disabled = true; btn.textContent = 'Preparing...'; }
     try {
-      var blob = buildPolicyChangePdf().output('blob');
+      var bytes = await buildFinalPdfBytes();
+      var blob = new Blob([bytes], { type: 'application/pdf' });
       var url = URL.createObjectURL(blob);
       var w = window.open(url, '_blank');
       if (!w) { alert('Popup blocked. Please allow popups for this site to print.'); return; }
