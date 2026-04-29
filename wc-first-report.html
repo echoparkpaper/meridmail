@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WC First Report of Injury or Illness | Meridian Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #2c4a6e; --accent-lt: #e8edf3; --bg: #f7f5f2;
+      --white: #ffffff; --rule: #d4cfc9; --ink: #1a1a1a;
+      --mid: #555; --light: #888;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--ink); min-height: 100vh;
+      padding: 0 0 60px; font-size: 14px;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--rule); padding: 10px 24px; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .topbar a { color: var(--accent); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+    .site-header {
+      max-width: 860px; margin: 0 auto; padding: 24px 16px 18px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2px solid var(--ink); gap: 16px; flex-wrap: wrap;
+    }
+    .logo-name { font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 500; color: var(--ink); line-height: 1; }
+    .logo-tag { font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--light); font-weight: 300; margin-top: 3px; }
+    .form-title-right { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; font-style: italic; color: var(--accent); text-align: right; }
+    .form-wrap { max-width: 860px; margin: 24px auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 0 24px 24px; overflow: hidden; }
+    .card-title {
+      font-size: 12px; font-weight: 600; color: #ffffff; background: var(--accent);
+      padding: 10px 24px; margin: 0 -24px 22px -24px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px 12px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+    input[type="text"], input[type="date"], input[type="time"], input[type="number"], input[type="tel"], select, textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px;
+      font-family: inherit; font-size: 13.5px; color: var(--ink); background: var(--white);
+      transition: border-color 0.15s; appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+    }
+    input::placeholder { color: var(--light); }
+    textarea { min-height: 80px; resize: vertical; }
+    .radio-group, .check-group { display: flex; gap: 16px; padding-top: 4px; flex-wrap: wrap; }
+    .radio-opt, .check-opt { display: flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+    .radio-opt input, .check-opt input { accent-color: var(--accent); cursor: pointer; }
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 22px; border-radius: 6px; font-family: inherit; font-size: 14px;
+      font-weight: 500; cursor: pointer; border: none; transition: background 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1e3650; }
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+    .btn-secondary:hover { background: var(--bg); }
+    .subhead { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin: 18px 0 8px; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .site-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="chevron">‹</span>
+    <a href="portal.html">Back to Home</a>
+  </div>
+
+  <div class="site-header">
+    <div>
+      <div class="logo-name">Meridian Insurance</div>
+      <div class="logo-tag">Policy Services Department</div>
+    </div>
+    <div class="form-title-right">WC First Report of Injury or Illness</div>
+  </div>
+
+  <div class="form-wrap">
+    <form id="wcfForm" novalidate>
+
+      <!-- General -->
+      <div class="card">
+        <div class="card-title">General</div>
+        <div class="grid-2">
+          <div class="field"><label>Employer Name</label><input type="text" name="emp_name" /></div>
+          <div class="field"><label>Carrier/Admin Claim Number</label><input type="text" name="claim_number" /></div>
+          <div class="field"><label>Employer Address Line 1</label><input type="text" name="emp_addr1" /></div>
+          <div class="field"><label>OSHA Log Number</label><input type="text" name="osha_log" /></div>
+          <div class="field"><label>Employer Address Line 2</label><input type="text" name="emp_addr2" /></div>
+          <div class="field"><label>Report Purpose Code</label><input type="text" name="report_purpose_code" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="emp_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="emp_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="emp_zip" maxlength="10" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Jurisdiction</label><input type="text" name="jurisdiction" /></div>
+          <div class="field"><label>Jurisdiction Claim Number</label><input type="text" name="jurisdiction_claim" /></div>
+          <div class="field"><label>Insured Report Number</label><input type="text" name="insured_report" /></div>
+        </div>
+        <div class="subhead">Location (if different from above)</div>
+        <div class="grid-2">
+          <div class="field"><label>Location Address</label><input type="text" name="loc_addr" /></div>
+          <div class="field"><label>Location Number</label><input type="text" name="loc_number" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Industry Code</label><input type="text" name="industry_code" /></div>
+          <div class="field"><label>Employer FEIN</label><input type="text" name="emp_fein" /></div>
+          <div class="field"><label>Phone Number</label><input type="tel" name="emp_phone" /></div>
+        </div>
+      </div>
+
+      <!-- Carrier / Claims Administrator -->
+      <div class="card">
+        <div class="card-title">Carrier / Claims Administrator</div>
+        <div class="grid-2">
+          <div class="field"><label>Carrier (Name, Address &amp; Phone)</label><textarea name="carrier_block" placeholder="Up to 3 lines"></textarea></div>
+          <div class="field"><label>Claims Administrator (Name, Address &amp; Phone)</label><textarea name="admin_block" placeholder="Up to 3 lines"></textarea></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Policy Period — From</label><input type="date" name="policy_from" /></div>
+          <div class="field"><label>Policy Period — To</label><input type="date" name="policy_to" /></div>
+          <div class="field" style="justify-content:flex-end;">
+            <label class="check-opt"><input type="checkbox" name="self_insurance" /> Self-Insurance</label>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Carrier FEIN</label><input type="text" name="carrier_fein" /></div>
+          <div class="field"><label>Policy / Self-Insured Number</label><input type="text" name="policy_number" /></div>
+          <div class="field"><label>Administrator FEIN</label><input type="text" name="admin_fein" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Agent Name and Code Number</label><input type="text" name="agent_name_code" /></div>
+        </div>
+      </div>
+
+      <!-- Employee / Wage -->
+      <div class="card">
+        <div class="card-title">Employee &amp; Wage</div>
+        <div class="grid-2">
+          <div class="field"><label>Employee Name (Last, First, Middle)</label><input type="text" name="employee_name" /></div>
+          <div class="field"><label>Date of Birth</label><input type="date" name="dob" /></div>
+          <div class="field"><label>Address Line 1</label><input type="text" name="emp_home_addr1" /></div>
+          <div class="field"><label>Social Security Number</label><input type="text" name="ssn" placeholder="XXX-XX-XXXX" /></div>
+          <div class="field"><label>Address Line 2</label><input type="text" name="emp_home_addr2" /></div>
+          <div class="field"><label>Date Hired</label><input type="date" name="date_hired" /></div>
+        </div>
+        <div class="grid-4" style="margin-top:18px;">
+          <div class="field"><label>City</label><input type="text" name="emp_home_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="emp_home_state" maxlength="2" /></div>
+          <div class="field"><label>ZIP</label><input type="text" name="emp_home_zip" maxlength="10" /></div>
+          <div class="field"><label>State of Hire</label><input type="text" name="state_of_hire" maxlength="2" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field">
+            <label>Sex</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="sex" value="male" /> Male</label>
+              <label class="radio-opt"><input type="radio" name="sex" value="female" /> Female</label>
+              <label class="radio-opt"><input type="radio" name="sex" value="unknown" /> Unknown</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Marital Status</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="marital" value="single" /> Single</label>
+              <label class="radio-opt"><input type="radio" name="marital" value="married" /> Married</label>
+              <label class="radio-opt"><input type="radio" name="marital" value="separated" /> Separated</label>
+              <label class="radio-opt"><input type="radio" name="marital" value="unknown" /> Unknown</label>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Occupation / Job Title</label><input type="text" name="occupation" /></div>
+          <div class="field"><label>Employment Status</label><input type="text" name="employment_status" /></div>
+          <div class="field"><label>NCCI Class Code</label><input type="text" name="ncci_class" /></div>
+          <div class="field">
+            <label>Claimant May Need an Interpreter</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="interpreter" value="yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="interpreter" value="no" /> No</label>
+            </div>
+          </div>
+          <div class="field"><label>Language</label><input type="text" name="language" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Employee Phone</label><input type="tel" name="employee_phone" /></div>
+          <div class="field"><label>Number of Dependents</label><input type="number" name="dependents" min="0" /></div>
+        </div>
+
+        <div class="subhead">Wage</div>
+        <div class="grid-3">
+          <div class="field"><label>Rate</label><input type="text" name="rate" placeholder="$" /></div>
+          <div class="field">
+            <label>Per</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="rate_per" value="day" /> Day</label>
+              <label class="radio-opt"><input type="radio" name="rate_per" value="week" /> Week</label>
+              <label class="radio-opt"><input type="radio" name="rate_per" value="month" /> Month</label>
+              <label class="radio-opt"><input type="radio" name="rate_per" value="other" /> Other</label>
+            </div>
+          </div>
+          <div class="field"><label>Number of Days Worked / Week</label><input type="number" name="days_per_week" min="0" max="7" step="0.5" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field">
+            <label>Full Pay For Day of Injury</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="full_pay_day_injury" value="yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="full_pay_day_injury" value="no" /> No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Did Salary Continue?</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="salary_continue" value="yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="salary_continue" value="no" /> No</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Occurrence / Treatment -->
+      <div class="card">
+        <div class="card-title">Occurrence &amp; Treatment</div>
+        <div class="grid-3">
+          <div class="field"><label>Time Employee Began Work</label><input type="text" name="time_began_work" placeholder="HH:MM" /></div>
+          <div class="field">
+            <label>AM / PM</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="time_began_ampm" value="AM" /> AM</label>
+              <label class="radio-opt"><input type="radio" name="time_began_ampm" value="PM" /> PM</label>
+            </div>
+          </div>
+          <div class="field"><label>Date of Injury / Illness</label><input type="date" name="date_injury" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Time of Occurrence</label><input type="text" name="time_occurrence" placeholder="HH:MM" /></div>
+          <div class="field">
+            <label>AM / PM</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="time_occurrence_ampm" value="AM" /> AM</label>
+              <label class="radio-opt"><input type="radio" name="time_occurrence_ampm" value="PM" /> PM</label>
+            </div>
+          </div>
+          <div class="field"><label>Last Work Date</label><input type="date" name="last_work_date" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Date Employer Notified</label><input type="date" name="date_notified" /></div>
+          <div class="field"><label>Date Disability Began</label><input type="date" name="date_disability" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Contact Name / Phone</label><input type="text" name="contact_name_phone" /></div>
+          <div class="field"><label>Type of Injury / Illness</label><input type="text" name="type_injury" /></div>
+          <div class="field"><label>Part of Body Affected</label><input type="text" name="body_part" /></div>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field">
+            <label>Did Injury Occur on Employer's Premises?</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="on_premises" value="yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="on_premises" value="no" /> No</label>
+            </div>
+          </div>
+          <div class="field"><label>Type of Injury / Illness Code</label><input type="text" name="type_injury_code" /></div>
+          <div class="field"><label>Part of Body Affected Code</label><input type="text" name="body_part_code" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Department or Location Where Accident Occurred</label><textarea name="dept_location" style="min-height:60px;"></textarea></div>
+          <div class="field"><label>All Equipment, Materials, or Chemicals in Use</label><textarea name="equipment" style="min-height:60px;"></textarea></div>
+          <div class="field"><label>Specific Activity Employee Was Engaged In</label><textarea name="specific_activity" style="min-height:60px;"></textarea></div>
+          <div class="field"><label>Work Process Employee Was Engaged In</label><textarea name="work_process" style="min-height:60px;"></textarea></div>
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label>How Injury / Illness Occurred (sequence of events, objects/substances that caused harm)</label>
+          <textarea name="how_occurred" style="min-height:120px;"></textarea>
+        </div>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="field"><label>Cause of Injury Code</label><input type="text" name="cause_code" /></div>
+          <div class="field"><label>Date Returned to Work</label><input type="date" name="date_returned" /></div>
+          <div class="field"><label>If Fatal, Date of Death</label><input type="date" name="date_death" /></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field">
+            <label>Were Safeguards or Safety Equipment Provided?</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="safeguards" value="yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="safeguards" value="no" /> No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Were They Used?</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="safeguards_used" value="yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="safeguards_used" value="no" /> No</label>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="field"><label>Physician / Health Care Provider (Name &amp; Address)</label><textarea name="physician" style="min-height:70px;"></textarea></div>
+          <div class="field"><label>Hospital (Name &amp; Address)</label><textarea name="hospital" style="min-height:70px;"></textarea></div>
+        </div>
+        <div class="subhead">Initial Treatment</div>
+        <div class="check-group">
+          <label class="check-opt"><input type="checkbox" name="treat_none" /> No Medical Treatment</label>
+          <label class="check-opt"><input type="checkbox" name="treat_minor_employer" /> Minor: By Employer</label>
+          <label class="check-opt"><input type="checkbox" name="treat_minor_clinic" /> Minor: Clinic / Hospital</label>
+          <label class="check-opt"><input type="checkbox" name="treat_emergency" /> Emergency Care</label>
+          <label class="check-opt"><input type="checkbox" name="treat_hospitalized" /> Hospitalized – 24 hrs</label>
+          <label class="check-opt"><input type="checkbox" name="treat_future_major" /> Future Major Medical / Lost Time Anticipated</label>
+        </div>
+      </div>
+
+      <!-- Other -->
+      <div class="card">
+        <div class="card-title">Other</div>
+        <div class="field">
+          <label>Witnesses (Name &amp; Phone Number)</label>
+          <textarea name="witnesses" style="min-height:80px;"></textarea>
+        </div>
+        <div class="grid-4" style="margin-top:18px;">
+          <div class="field"><label>Date Administrator Notified</label><input type="date" name="date_admin_notified" /></div>
+          <div class="field"><label>Date Prepared</label><input type="date" name="date_prepared" /></div>
+          <div class="field"><label>Preparer's Name &amp; Title</label><input type="text" name="preparer" /></div>
+          <div class="field"><label>Phone Number</label><input type="tel" name="preparer_phone" /></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+        <button type="button" class="btn btn-secondary" id="saveArchiveBtn">Save to Archive</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('wcfForm').reset()">Clear Form</button>
+        <button type="button" class="btn btn-secondary" onclick="printForm(this)">Print</button>
+        <a href="portal.html" class="btn btn-primary">Home</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    function _scrub(t) {
+      return String(t == null ? '' : t)
+        .replace(/[\u2010-\u2015]/g, '-')
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+        .replace(/\u2026/g, '...')
+        .replace(/\u2022/g, '-')
+        .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+        .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+    }
+
+    function _fmtDate(s) {
+      if (!s) return '';
+      var p = s.split('-');
+      return p.length === 3 ? (p[1] + '/' + p[2] + '/' + p[0]) : s;
+    }
+
+    async function buildFirstReportPdf() {
+      function v(n) { var e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+      function radio(n) { var e=document.querySelector('[name="'+n+'"]:checked'); return e?e.value:''; }
+      function chk(n) { var e=document.querySelector('[name="'+n+'"]'); return !!(e&&e.checked); }
+
+      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      const existingBytes = await fetch('wc-first-report-blank.pdf').then(r => {
+        if (!r.ok) throw new Error('Failed to load First Report template.');
+        return r.arrayBuffer();
+      });
+      const pdfDoc = await PDFDocument.load(existingBytes, { ignoreEncryption: true });
+      const page = pdfDoc.getPage(0);
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      // Default text size for cell values; small enough to fit in tight cells.
+      var SIZE = 8;
+      function txt(s, x, y, size) {
+        if (!s && s !== 0) return;
+        page.drawText(_scrub(s), { x: x, y: y, size: size || SIZE, font: font, color: rgb(0,0,0) });
+      }
+      function check(x, y) {
+        // Draws an X glyph centered roughly on (x, y).
+        page.drawText('X', { x: x, y: y, size: 9, font: font, color: rgb(0,0,0) });
+      }
+      function csz(c, s, z) {
+        var line = '';
+        if (c) line += c;
+        if (s) line += (line ? ', ' : '') + s;
+        if (z) line += (line ? '  ' : '') + z;
+        return line;
+      }
+      function ssize(s, max) {
+        // Truncate cell content that's too long for its column.
+        return s && s.length > max ? s.slice(0, max - 1) + '\u2026' : s;
+      }
+
+      // ===== GENERAL =====
+      // Employer (multi-line block: name + 2 addr lines + city/state/zip)
+      txt(v('emp_name'),                                        37, 723);
+      txt(v('emp_addr1'),                                       37, 712);
+      txt(v('emp_addr2'),                                       37, 701);
+      txt(csz(v('emp_city'), v('emp_state'), v('emp_zip')),     37, 690);
+
+      txt(v('claim_number'),         255, 723);
+      txt(v('osha_log'),             397, 723);
+      txt(v('report_purpose_code'),  487, 723);
+
+      txt(v('jurisdiction'),         255, 702);
+      txt(v('jurisdiction_claim'),   397, 702);
+
+      txt(v('insured_report'),       255, 684);
+
+      txt(v('loc_addr'),             255, 666);
+      txt(v('loc_number'),           487, 666);
+
+      txt(v('industry_code'),         37, 649);
+      txt(v('emp_fein'),             119, 649);
+      txt(v('emp_phone'),            487, 649);
+
+      // ===== CARRIER / CLAIMS ADMINISTRATOR =====
+      // Carrier block - 3 lines starting at y=620
+      var carrierLines = (v('carrier_block') || '').split(/\r?\n/);
+      [620, 609, 598].forEach(function(y, i) { txt(carrierLines[i], 44, y); });
+      // Claims admin block
+      var adminLines = (v('admin_block') || '').split(/\r?\n/);
+      [620, 609, 598].forEach(function(y, i) { txt(adminLines[i], 329, y); });
+
+      txt(_fmtDate(v('policy_from')), 297, 622);
+      txt(_fmtDate(v('policy_to')),   297, 610);
+      if (chk('self_insurance')) check(316, 591);
+
+      txt(v('carrier_fein'),          44, 572);
+      txt(v('policy_number'),        255, 572);
+      txt(v('admin_fein'),           487, 572);
+
+      txt(v('agent_name_code'),       44, 553);
+
+      // ===== EMPLOYEE / WAGE =====
+      // Employee multi-line: name + addr1 + addr2 + city/state/zip
+      txt(v('employee_name'),                                                          37, 522);
+      txt(v('emp_home_addr1'),                                                         37, 511);
+      txt(v('emp_home_addr2'),                                                         37, 500);
+      txt(csz(v('emp_home_city'), v('emp_home_state'), v('emp_home_zip')),             37, 489);
+
+      txt(_fmtDate(v('dob')),        255, 522);
+      txt(v('ssn'),                  344, 522);
+      txt(_fmtDate(v('date_hired')), 465, 522);
+      txt(v('state_of_hire'),        514, 522);
+
+      // Sex checkboxes (Male y=503, Female y=489, Unknown y=473)
+      if (radio('sex') === 'male')    check(285, 502);
+      if (radio('sex') === 'female')  check(285, 488);
+      if (radio('sex') === 'unknown') check(285, 472);
+
+      // Marital status checkboxes
+      if (radio('marital') === 'single')    check(385, 502);
+      if (radio('marital') === 'married')   check(385, 481);
+      if (radio('marital') === 'separated') check(385, 466);
+      if (radio('marital') === 'unknown')   check(385, 452);
+
+      txt(v('occupation'),         485, 502);
+      txt(v('employment_status'), 485, 482);
+      txt(v('ncci_class'),         485, 462);
+
+      // Interpreter Y/N at y=476
+      if (radio('interpreter') === 'yes') check(177, 475);
+      if (radio('interpreter') === 'no')  check(207, 475);
+      txt(v('language'),            85, 466);
+
+      txt(v('employee_phone'),      37, 446);
+      txt(v('dependents'),         235, 446);
+
+      // ===== WAGE row =====
+      txt(v('rate'),                70, 437);
+      // Per (Day/Week/Month/Other) — labels at x=150, 191; checkboxes just before
+      if (radio('rate_per') === 'day')   check(140, 433);
+      if (radio('rate_per') === 'week')  check(140, 423);
+      if (radio('rate_per') === 'month') check(180, 433);
+      if (radio('rate_per') === 'other') check(180, 423);
+      txt(v('days_per_week'),      370, 437);
+      // Full Pay Y/N
+      if (radio('full_pay_day_injury') === 'yes') check(508, 437);
+      if (radio('full_pay_day_injury') === 'no')  check(545, 437);
+      // Did Salary Continue Y/N
+      if (radio('salary_continue') === 'yes') check(508, 425);
+      if (radio('salary_continue') === 'no')  check(545, 425);
+
+      // ===== OCCURRENCE / TREATMENT =====
+      txt(v('time_began_work'),    37, 388);
+      if (radio('time_began_ampm') === 'AM') check(120, 397);
+      if (radio('time_began_ampm') === 'PM') check(120, 387);
+      txt(_fmtDate(v('date_injury')), 146, 388);
+      txt(v('time_occurrence'),       225, 388);
+      if (radio('time_occurrence_ampm') === 'AM') check(298, 397);
+      if (radio('time_occurrence_ampm') === 'PM') check(298, 387);
+      txt(_fmtDate(v('last_work_date')),    335, 388);
+      txt(_fmtDate(v('date_notified')),     432, 388);
+      txt(_fmtDate(v('date_disability')),   518, 388);
+
+      txt(v('contact_name_phone'),    37, 365);
+      txt(v('type_injury'),          288, 365);
+      txt(v('body_part'),            432, 365);
+
+      // Did Injury Occur on Premises?
+      if (radio('on_premises') === 'yes') check(73, 345);
+      if (radio('on_premises') === 'no')  check(108, 345);
+      txt(v('type_injury_code'),    288, 343);
+      txt(v('body_part_code'),      432, 343);
+
+      // Department / Equipment / Activity / Work Process — multi-line cells
+      txt(ssize(v('dept_location'), 60),    37, 320);
+      txt(ssize(v('equipment'),     60),   306, 320);
+      txt(ssize(v('specific_activity'), 60), 37, 296);
+      txt(ssize(v('work_process'),  60),   307, 296);
+      txt(v('cause_code'),          493, 285);
+
+      // How Injury Occurred — large multi-line text area, 3-4 lines starting y=270
+      var howLines = (v('how_occurred') || '').split(/\r?\n/);
+      var wrapped = [];
+      howLines.forEach(function(l) {
+        l = l || '';
+        while (l.length > 110) { wrapped.push(l.slice(0, 110)); l = l.slice(110); }
+        wrapped.push(l);
+      });
+      [273, 263, 253].forEach(function(y, i) { txt(wrapped[i], 37, y); });
+
+      txt(_fmtDate(v('date_returned')),   37, 256);
+      txt(_fmtDate(v('date_death')),     188, 256);
+
+      // Safeguards Y/N
+      if (radio('safeguards') === 'yes') check(471, 268);
+      if (radio('safeguards') === 'no')  check(508, 268);
+      // Were They Used Y/N
+      if (radio('safeguards_used') === 'yes') check(471, 258);
+      if (radio('safeguards_used') === 'no')  check(508, 258);
+
+      // Physician multi-line
+      var physicianLines = (v('physician') || '').split(/\r?\n/);
+      [233, 222, 211].forEach(function(y, i) { txt(physicianLines[i], 37, y); });
+      var hospitalLines = (v('hospital') || '').split(/\r?\n/);
+      [233, 222, 211].forEach(function(y, i) { txt(hospitalLines[i], 291, y); });
+
+      // Initial Treatment checkboxes — boxes are at x≈459, vertically aligned
+      if (chk('treat_none'))            check(459, 239);
+      if (chk('treat_minor_employer'))  check(459, 232);
+      if (chk('treat_minor_clinic'))    check(459, 224);
+      if (chk('treat_emergency'))       check(459, 217);
+      if (chk('treat_hospitalized'))    check(459, 210);
+      if (chk('treat_future_major'))    check(459, 203);
+
+      // ===== OTHER =====
+      var witnessLines = (v('witnesses') || '').split(/\r?\n/);
+      [170, 160].forEach(function(y, i) { txt(witnessLines[i], 37, y); });
+
+      txt(_fmtDate(v('date_admin_notified')),   37, 148);
+      txt(_fmtDate(v('date_prepared')),        156, 148);
+      txt(v('preparer'),                       237, 148);
+      txt(v('preparer_phone'),                 493, 148);
+
+      return await pdfDoc.save();
+    }
+
+    function _slug(s) { return String(s || 'form').replace(/[^a-z0-9]+/gi, '-'); }
+
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+      var btn = this;
+      btn.disabled = true; var orig = btn.textContent; btn.textContent = 'Generating...';
+      try {
+        var bytes = await buildFirstReportPdf();
+        var blob = new Blob([bytes], { type: 'application/pdf' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'wc-first-report-' + _slug(document.querySelector('[name="employee_name"]').value || document.querySelector('[name="emp_name"]').value) + '.pdf';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 30000);
+      } catch (err) {
+        alert('Failed to generate PDF: ' + err.message); console.error(err);
+      } finally {
+        btn.disabled = false; btn.textContent = orig;
+      }
+    });
+
+    async function printForm(btn) {
+      if (btn) { btn.disabled = true; btn.textContent = 'Preparing...'; }
+      try {
+        var bytes = await buildFirstReportPdf();
+        var blob = new Blob([bytes], { type: 'application/pdf' });
+        var url = URL.createObjectURL(blob);
+        var w = window.open(url, '_blank');
+        if (!w) { alert('Popup blocked. Please allow popups for this site to print.'); return; }
+        var tries = 0;
+        var iv = setInterval(function() {
+          tries++;
+          try { if (w.document && w.document.readyState === 'complete') { w.focus(); w.print(); clearInterval(iv); } } catch(e) {}
+          if (tries > 20) clearInterval(iv);
+        }, 400);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+      } catch (err) {
+        alert('Failed to prepare for printing: ' + err.message); console.error(err);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Print'; }
+      }
+    }
+  </script>
+
+  <script>
+    (function() {
+      var now = new Date();
+      var nextReset = new Date();
+      nextReset.setHours(0, 1, 0, 0);
+      if (nextReset <= now) nextReset.setDate(nextReset.getDate() + 1);
+      setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
+    })();
+  </script>
+
+  <script src="archive.js"></script>
+
+</body>
+</html>

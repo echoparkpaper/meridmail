@@ -78,6 +78,11 @@
       form_id: 'wcsForm',
       form_label: 'WC Scheduled Waiver',
       label_field: 'named_insured'
+    },
+    'wc-first-report.html': {
+      form_id: 'wcfForm',
+      form_label: 'WC First Report of Injury',
+      label_field: 'employee_name'
     }
   };
 
