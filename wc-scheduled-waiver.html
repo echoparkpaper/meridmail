@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WC Scheduled Waiver of Subrogation Questionnaire | Meridian Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:    #2c4a6e;
+      --accent-lt: #e8edf3;
+      --bg:        #f7f5f2;
+      --white:     #ffffff;
+      --rule:      #d4cfc9;
+      --ink:       #1a1a1a;
+      --mid:       #555;
+      --light:     #888;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--ink); min-height: 100vh;
+      padding: 0 0 60px; font-size: 14px;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--rule); padding: 10px 24px; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .topbar a { color: var(--accent); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+    .site-header {
+      max-width: 860px; margin: 0 auto; padding: 24px 16px 18px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2px solid var(--ink); gap: 16px; flex-wrap: wrap;
+    }
+    .logo-name { font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 500; color: var(--ink); line-height: 1; }
+    .logo-tag { font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--light); font-weight: 300; margin-top: 3px; }
+    .form-title-right { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; font-style: italic; color: var(--accent); text-align: right; }
+    .form-wrap { max-width: 860px; margin: 24px auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 0 24px 24px; overflow: hidden; }
+    .card-title {
+      font-size: 12px; font-weight: 600; color: #ffffff; background: var(--accent);
+      padding: 10px 24px; margin: 0 -24px 22px -24px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 16px; }
+    .grid-4 { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 18px 12px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+    input[type="text"], input[type="date"], select, textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px;
+      font-family: inherit; font-size: 13.5px; color: var(--ink); background: var(--white);
+      transition: border-color 0.15s; appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+    }
+    input::placeholder { color: var(--light); }
+    textarea { min-height: 100px; resize: vertical; }
+    .subhead { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin: 8px 0 6px; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 22px; border-radius: 6px; font-family: inherit; font-size: 14px;
+      font-weight: 500; cursor: pointer; border: none; transition: background 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1e3650; }
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+    .btn-secondary:hover { background: var(--bg); }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .site-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="chevron">‹</span>
+    <a href="portal.html">Back to Home</a>
+  </div>
+
+  <div class="site-header">
+    <div>
+      <div class="logo-name">Meridian Insurance</div>
+      <div class="logo-tag">Policy Services Department</div>
+    </div>
+    <div class="form-title-right">WC Scheduled Waiver of Subrogation</div>
+  </div>
+
+  <div class="form-wrap">
+    <form id="wcsForm" novalidate>
+
+      <!-- Header -->
+      <div class="card">
+        <div class="card-title">Policy Information</div>
+        <div class="grid-2">
+          <div class="field"><label>Named Insured</label><input type="text" name="named_insured" /></div>
+          <div class="field"><label>Policy Number</label><input type="text" name="policy_number" /></div>
+        </div>
+      </div>
+
+      <!-- Q1 Entity -->
+      <div class="card">
+        <div class="card-title">1. Entity Requesting the Waiver</div>
+        <div class="field">
+          <label>Name of Entity</label>
+          <input type="text" name="entity_name" />
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label>Street Address</label>
+          <input type="text" name="entity_street" />
+        </div>
+        <div class="grid-3" style="margin-top:14px;">
+          <div class="field"><label>City</label><input type="text" name="entity_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="entity_state" maxlength="2" /></div>
+          <div class="field"><label>Zip Code</label><input type="text" name="entity_zip" maxlength="10" /></div>
+        </div>
+      </div>
+
+      <!-- Q2 Description -->
+      <div class="card">
+        <div class="card-title">2. Job Description</div>
+        <div class="field">
+          <label>Describe the job and what the insured will be doing on the job. If the insured is a subcontractor, describe the project that the general contractor is doing, followed by a description of the specific work that the insured performs for the general contractor.</label>
+          <textarea name="q2_description" style="min-height:120px;" placeholder="Up to ~4 lines fit cleanly on the printed form."></textarea>
+        </div>
+      </div>
+
+      <!-- Q3 Jobs (5 rows) -->
+      <div class="card">
+        <div class="card-title">3. Jobs (Up to 5)</div>
+        <p style="font-size:13px; color:var(--mid); margin-bottom:8px;">Leave any unused job rows blank.</p>
+        <!-- Job 1 -->
+        <div class="subhead">Job 1</div>
+        <div class="field"><label>Job 1 Name</label><input type="text" name="job1_name" /></div>
+        <div class="field" style="margin-top:10px;"><label>Street Address</label><input type="text" name="job1_street" /></div>
+        <div class="grid-3" style="margin-top:10px;">
+          <div class="field"><label>City</label><input type="text" name="job1_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="job1_state" maxlength="2" /></div>
+          <div class="field"><label>Zip Code</label><input type="text" name="job1_zip" maxlength="10" /></div>
+        </div>
+        <!-- Job 2 -->
+        <div class="subhead" style="margin-top:18px;">Job 2</div>
+        <div class="field"><label>Job 2 Name</label><input type="text" name="job2_name" /></div>
+        <div class="field" style="margin-top:10px;"><label>Street Address</label><input type="text" name="job2_street" /></div>
+        <div class="grid-3" style="margin-top:10px;">
+          <div class="field"><label>City</label><input type="text" name="job2_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="job2_state" maxlength="2" /></div>
+          <div class="field"><label>Zip Code</label><input type="text" name="job2_zip" maxlength="10" /></div>
+        </div>
+        <!-- Job 3 -->
+        <div class="subhead" style="margin-top:18px;">Job 3</div>
+        <div class="field"><label>Job 3 Name</label><input type="text" name="job3_name" /></div>
+        <div class="field" style="margin-top:10px;"><label>Street Address</label><input type="text" name="job3_street" /></div>
+        <div class="grid-3" style="margin-top:10px;">
+          <div class="field"><label>City</label><input type="text" name="job3_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="job3_state" maxlength="2" /></div>
+          <div class="field"><label>Zip Code</label><input type="text" name="job3_zip" maxlength="10" /></div>
+        </div>
+        <!-- Job 4 -->
+        <div class="subhead" style="margin-top:18px;">Job 4</div>
+        <div class="field"><label>Job 4 Name</label><input type="text" name="job4_name" /></div>
+        <div class="field" style="margin-top:10px;"><label>Street Address</label><input type="text" name="job4_street" /></div>
+        <div class="grid-3" style="margin-top:10px;">
+          <div class="field"><label>City</label><input type="text" name="job4_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="job4_state" maxlength="2" /></div>
+          <div class="field"><label>Zip Code</label><input type="text" name="job4_zip" maxlength="10" /></div>
+        </div>
+        <!-- Job 5 -->
+        <div class="subhead" style="margin-top:18px;">Job 5</div>
+        <div class="field"><label>Job 5 Name</label><input type="text" name="job5_name" /></div>
+        <div class="field" style="margin-top:10px;"><label>Street Address</label><input type="text" name="job5_street" /></div>
+        <div class="grid-3" style="margin-top:10px;">
+          <div class="field"><label>City</label><input type="text" name="job5_city" /></div>
+          <div class="field"><label>State</label><input type="text" name="job5_state" maxlength="2" /></div>
+          <div class="field"><label>Zip Code</label><input type="text" name="job5_zip" maxlength="10" /></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+        <button type="button" class="btn btn-secondary" id="saveArchiveBtn">Save to Archive</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('wcsForm').reset()">Clear Form</button>
+        <button type="button" class="btn btn-secondary" onclick="printForm(this)">Print</button>
+        <a href="portal.html" class="btn btn-primary">Home</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    function _scrub(t) {
+      return String(t == null ? '' : t)
+        .replace(/[\u2010-\u2015]/g, '-')
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+        .replace(/\u2026/g, '...')
+        .replace(/\u2022/g, '-')
+        .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+        .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+    }
+
+    async function buildScheduledWaiverPdf() {
+      function v(n) { var e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+
+      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      const existingBytes = await fetch('wc-scheduled-waiver-blank.pdf').then(r => {
+        if (!r.ok) throw new Error('Failed to load WC Scheduled Waiver template.');
+        return r.arrayBuffer();
+      });
+      const pdfDoc = await PDFDocument.load(existingBytes, { ignoreEncryption: true });
+      const page = pdfDoc.getPage(0);
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      function txt(s, x, y, size) {
+        if (!s) return;
+        page.drawText(_scrub(s), { x: x, y: y, size: size || 10, font: font, color: rgb(0,0,0) });
+      }
+      function csComma(city, state) {
+        var c = (city || '').trim(), s = (state || '').trim();
+        return c && s ? c + ', ' + s : (c || s);
+      }
+
+      // --- Header ---
+      txt(v('named_insured'),   115, 678);
+      txt(v('policy_number'),   475, 678);
+
+      // --- Q1 Entity ---
+      txt(v('entity_name'),     130, 622);
+      txt(v('entity_street'),   135, 610);
+      txt(csComma(v('entity_city'), v('entity_state')), 120, 599);
+      txt(v('entity_zip'),      485, 599);
+
+      // --- Q2 Description (4 underlines) ---
+      var q2 = (v('q2_description') || '').split(/\r?\n/);
+      var wrapped = [];
+      q2.forEach(function(l) {
+        l = l || '';
+        while (l.length > 110) { wrapped.push(l.slice(0, 110)); l = l.slice(110); }
+        wrapped.push(l);
+      });
+      var q2Ys = [543, 531, 519, 508];
+      for (var i = 0; i < q2Ys.length && i < wrapped.length; i++) txt(wrapped[i], 75, q2Ys[i]);
+
+      // --- Q3 Jobs 1-5: each has Name / Street / City+State / Zip ---
+      // Y positions per job (top of underlines), bumped +3 for baseline.
+      var jobs = [
+        { n: 1, nameY: 462, streetY: 450, csY: 439 },
+        { n: 2, nameY: 417, streetY: 405, csY: 393 },
+        { n: 3, nameY: 372, streetY: 359, csY: 348 },
+        { n: 4, nameY: 326, streetY: 314, csY: 303 },
+        { n: 5, nameY: 281, streetY: 269, csY: 258 }
+      ];
+      jobs.forEach(function(j) {
+        txt(v('job'+j.n+'_name'),    115, j.nameY);
+        txt(v('job'+j.n+'_street'),  130, j.streetY);
+        txt(csComma(v('job'+j.n+'_city'), v('job'+j.n+'_state')), 120, j.csY);
+        txt(v('job'+j.n+'_zip'),     485, j.csY);
+      });
+
+      return await pdfDoc.save();
+    }
+
+    function _slug(s) { return String(s || 'form').replace(/[^a-z0-9]+/gi, '-'); }
+
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+      var btn = this;
+      btn.disabled = true; var orig = btn.textContent; btn.textContent = 'Generating...';
+      try {
+        var bytes = await buildScheduledWaiverPdf();
+        var blob = new Blob([bytes], { type: 'application/pdf' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'wc-scheduled-waiver-' + _slug(document.querySelector('[name="named_insured"]').value) + '.pdf';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 30000);
+      } catch (err) {
+        alert('Failed to generate PDF: ' + err.message); console.error(err);
+      } finally {
+        btn.disabled = false; btn.textContent = orig;
+      }
+    });
+
+    async function printForm(btn) {
+      if (btn) { btn.disabled = true; btn.textContent = 'Preparing...'; }
+      try {
+        var bytes = await buildScheduledWaiverPdf();
+        var blob = new Blob([bytes], { type: 'application/pdf' });
+        var url = URL.createObjectURL(blob);
+        var w = window.open(url, '_blank');
+        if (!w) { alert('Popup blocked. Please allow popups for this site to print.'); return; }
+        var tries = 0;
+        var iv = setInterval(function() {
+          tries++;
+          try { if (w.document && w.document.readyState === 'complete') { w.focus(); w.print(); clearInterval(iv); } } catch(e) {}
+          if (tries > 20) clearInterval(iv);
+        }, 400);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+      } catch (err) {
+        alert('Failed to prepare for printing: ' + err.message); console.error(err);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Print'; }
+      }
+    }
+  </script>
+
+  <script>
+    (function() {
+      var now = new Date();
+      var nextReset = new Date();
+      nextReset.setHours(0, 1, 0, 0);
+      if (nextReset <= now) nextReset.setDate(nextReset.getDate() + 1);
+      setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
+    })();
+  </script>
+
+  <script src="archive.js"></script>
+
+</body>
+</html>

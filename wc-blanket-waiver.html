@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WC Blanket Waiver of Subrogation Questionnaire | Meridian Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:    #2c4a6e;
+      --accent-lt: #e8edf3;
+      --bg:        #f7f5f2;
+      --white:     #ffffff;
+      --rule:      #d4cfc9;
+      --ink:       #1a1a1a;
+      --mid:       #555;
+      --light:     #888;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--ink); min-height: 100vh;
+      padding: 0 0 60px; font-size: 14px;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--rule); padding: 10px 24px; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .topbar a { color: var(--accent); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+    .topbar .chevron { color: var(--accent); font-size: 14px; }
+    .site-header {
+      max-width: 860px; margin: 0 auto; padding: 24px 16px 18px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2px solid var(--ink); gap: 16px; flex-wrap: wrap;
+    }
+    .logo-name { font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 500; color: var(--ink); line-height: 1; }
+    .logo-tag { font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--light); font-weight: 300; margin-top: 3px; }
+    .form-title-right { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; font-style: italic; color: var(--accent); text-align: right; }
+    .form-wrap { max-width: 860px; margin: 24px auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 0 24px 24px; overflow: hidden; }
+    .card-title {
+      font-size: 12px; font-weight: 600; color: #ffffff; background: var(--accent);
+      padding: 10px 24px; margin: 0 -24px 22px -24px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 13px; font-weight: 400; color: var(--mid); }
+    input[type="text"], input[type="date"], select, textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px;
+      font-family: inherit; font-size: 13.5px; color: var(--ink); background: var(--white);
+      transition: border-color 0.15s; appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(44,74,110,0.12);
+    }
+    input::placeholder { color: var(--light); }
+    textarea { min-height: 120px; resize: vertical; }
+    .radio-group { display: flex; gap: 16px; padding-top: 4px; }
+    .radio-opt { display: flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+    .radio-opt input[type="radio"] { accent-color: var(--accent); cursor: pointer; }
+    .actions { display: flex; gap: 10px; padding: 4px 0 0; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 22px; border-radius: 6px; font-family: inherit; font-size: 14px;
+      font-weight: 500; cursor: pointer; border: none; transition: background 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1e3650; }
+    .btn-secondary { background: var(--white); color: var(--mid); border: 1px solid var(--rule); }
+    .btn-secondary:hover { background: var(--bg); }
+    @media (max-width: 600px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .site-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="chevron">‹</span>
+    <a href="portal.html">Back to Home</a>
+  </div>
+
+  <div class="site-header">
+    <div>
+      <div class="logo-name">Meridian Insurance</div>
+      <div class="logo-tag">Policy Services Department</div>
+    </div>
+    <div class="form-title-right">WC Blanket Waiver of Subrogation</div>
+  </div>
+
+  <div class="form-wrap">
+    <form id="wcbForm" novalidate>
+
+      <!-- Header -->
+      <div class="card">
+        <div class="card-title">Policy Information</div>
+        <div class="grid-2">
+          <div class="field"><label>Policy Number</label><input type="text" name="policy_number" /></div>
+          <div class="field"><label>Named Insured</label><input type="text" name="named_insured" /></div>
+        </div>
+      </div>
+
+      <!-- Q1 -->
+      <div class="card">
+        <div class="card-title">1. Typical Job Description</div>
+        <div class="field">
+          <label>Describe a typical job and what the insured will be doing on the job. If the insured is a subcontractor, describe the project that the general contractor is typically doing, followed by a description of the specific work that the insured usually performs for the general contractor.</label>
+          <textarea name="q1_description" style="min-height:160px;" placeholder="Up to ~6 lines fit cleanly on the printed form."></textarea>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="card">
+        <div class="card-title">2. Locations of the Last Few Jobs</div>
+        <div class="field">
+          <label>Up to 2 lines fit cleanly on the printed form.</label>
+          <textarea name="q2_locations" style="min-height:80px;" placeholder="e.g., Provo, UT&#10;Salt Lake City, UT"></textarea>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="card">
+        <div class="card-title">3. Out-of-State Travel</div>
+        <div class="field">
+          <label>Does the insured anticipate traveling out of the state for a job?</label>
+          <div class="radio-group">
+            <label class="radio-opt"><input type="radio" name="q3_travel" value="yes" /> Yes</label>
+            <label class="radio-opt"><input type="radio" name="q3_travel" value="no" checked /> No</label>
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label>If yes, where?</label>
+          <input type="text" name="q3_where" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="generateBtn">Generate PDF</button>
+        <button type="button" class="btn btn-secondary" id="saveArchiveBtn">Save to Archive</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('wcbForm').reset()">Clear Form</button>
+        <button type="button" class="btn btn-secondary" onclick="printForm(this)">Print</button>
+        <a href="portal.html" class="btn btn-primary">Home</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    // Scrub anything outside Latin-1 so pdf-lib's WinAnsi font doesn't choke.
+    function _scrub(t) {
+      return String(t == null ? '' : t)
+        .replace(/[\u2010-\u2015]/g, '-')
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+        .replace(/\u2026/g, '...')
+        .replace(/\u2022/g, '-')
+        .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+        .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+    }
+
+    async function buildBlanketWaiverPdf() {
+      function v(n) { var e=document.querySelector('[name="'+n+'"]'); return e?e.value:''; }
+      function radio(n) { var e=document.querySelector('[name="'+n+'"]:checked'); return e?e.value:''; }
+
+      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      const existingBytes = await fetch('wc-blanket-waiver-blank.pdf').then(r => {
+        if (!r.ok) throw new Error('Failed to load WC Blanket Waiver template.');
+        return r.arrayBuffer();
+      });
+      const pdfDoc = await PDFDocument.load(existingBytes, { ignoreEncryption: true });
+      const page = pdfDoc.getPage(0);
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      function txt(s, x, y, size) {
+        if (!s) return;
+        page.drawText(_scrub(s), { x: x, y: y, size: size || 10, font: font, color: rgb(0,0,0) });
+      }
+
+      // --- Header: Policy / Named Insured ---
+      txt(v('policy_number'), 150, 663);
+      txt(v('named_insured'), 154, 640);
+
+      // --- Q1: 6 underlines for description (y top-down) ---
+      var q1Ys = [571, 559, 548, 536, 525, 513];
+      var q1Lines = (v('q1_description') || '').split(/\r?\n/);
+      // If user typed long lines without manual breaks, soft-wrap each at ~85 chars.
+      var wrapped = [];
+      q1Lines.forEach(function(l) {
+        l = l || '';
+        while (l.length > 95) { wrapped.push(l.slice(0, 95)); l = l.slice(95); }
+        wrapped.push(l);
+      });
+      for (var i = 0; i < q1Ys.length && i < wrapped.length; i++) txt(wrapped[i], 75, q1Ys[i]);
+
+      // --- Q2: 2 location lines. Line 1 starts after "jobs:" label at x=240. Line 2 starts at x=98. ---
+      var q2Lines = (v('q2_locations') || '').split(/\r?\n/);
+      if (q2Lines[0]) txt(q2Lines[0], 240, 491);
+      if (q2Lines[1]) txt(q2Lines[1], 98, 479);
+
+      // --- Q3: Yes/No checkboxes + "where" detail ---
+      if (radio('q3_travel') === 'yes') txt('X', 397, 455, 11);
+      else if (radio('q3_travel') === 'no') txt('X', 442, 455, 11);
+      txt(v('q3_where'), 158, 433);
+
+      return await pdfDoc.save();
+    }
+
+    function _slug(s) { return String(s || 'form').replace(/[^a-z0-9]+/gi, '-'); }
+
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+      var btn = this;
+      btn.disabled = true; var orig = btn.textContent; btn.textContent = 'Generating...';
+      try {
+        var bytes = await buildBlanketWaiverPdf();
+        var blob = new Blob([bytes], { type: 'application/pdf' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'wc-blanket-waiver-' + _slug(document.querySelector('[name="named_insured"]').value) + '.pdf';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 30000);
+      } catch (err) {
+        alert('Failed to generate PDF: ' + err.message); console.error(err);
+      } finally {
+        btn.disabled = false; btn.textContent = orig;
+      }
+    });
+
+    async function printForm(btn) {
+      if (btn) { btn.disabled = true; btn.textContent = 'Preparing...'; }
+      try {
+        var bytes = await buildBlanketWaiverPdf();
+        var blob = new Blob([bytes], { type: 'application/pdf' });
+        var url = URL.createObjectURL(blob);
+        var w = window.open(url, '_blank');
+        if (!w) { alert('Popup blocked. Please allow popups for this site to print.'); return; }
+        var tries = 0;
+        var iv = setInterval(function() {
+          tries++;
+          try { if (w.document && w.document.readyState === 'complete') { w.focus(); w.print(); clearInterval(iv); } } catch(e) {}
+          if (tries > 20) clearInterval(iv);
+        }, 400);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+      } catch (err) {
+        alert('Failed to prepare for printing: ' + err.message); console.error(err);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Print'; }
+      }
+    }
+  </script>
+
+  <script>
+    // Auto-redirect to portal at 12:01 AM
+    (function() {
+      var now = new Date();
+      var nextReset = new Date();
+      nextReset.setHours(0, 1, 0, 0);
+      if (nextReset <= now) nextReset.setDate(nextReset.getDate() + 1);
+      setTimeout(function() { window.location.href = 'portal.html'; }, nextReset - now);
+    })();
+  </script>
+
+  <script src="archive.js"></script>
+
+</body>
+</html>

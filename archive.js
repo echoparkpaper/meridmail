@@ -68,6 +68,16 @@
       form_id: 'a25Form',
       form_label: 'ACORD 25',
       label_field: 'insured_name'
+    },
+    'wc-blanket-waiver.html': {
+      form_id: 'wcbForm',
+      form_label: 'WC Blanket Waiver',
+      label_field: 'named_insured'
+    },
+    'wc-scheduled-waiver.html': {
+      form_id: 'wcsForm',
+      form_label: 'WC Scheduled Waiver',
+      label_field: 'named_insured'
     }
   };
 
