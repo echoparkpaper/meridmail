@@ -1110,7 +1110,8 @@
 
     document.getElementById('pay_date').value = today;
 
-    document.getElementById('date_received').value = today;
+    // Date Received By Accounting is filled by another team member later;
+    // intentionally left blank on a fresh form.
 
  
 
@@ -1138,7 +1139,7 @@
 
       document.getElementById('pay_date').value = today;
 
-      document.getElementById('date_received').value = today;
+      // Date Received By Accounting stays blank on Clear Form too.
 
       document.getElementById('total_payment').value = '';
 
@@ -1146,9 +1147,8 @@
 
       document.getElementById('abrSection').style.display = 'none';
 
-      document.getElementById('abr_entered_date').value = today;
-
-      document.getElementById('abr_commission_paid_date').value = today;
+      // Date Received By Accounting and ABR dates are filled by another team
+      // member later, so they stay blank on a fresh form.
 
     }
 
@@ -1186,11 +1186,8 @@
 
  
 
-    // Set ABR dates to today on load
-
-    document.getElementById('abr_entered_date').value = today;
-
-    document.getElementById('abr_commission_paid_date').value = today;
+    // ABR dates intentionally left blank on load — filled in by another
+    // team member at a later step in the workflow.
 
  
 
