@@ -16,7 +16,9 @@ import express from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 
 const app = express();
-app.use(express.json({ limit: '8mb' }));
+// 30mb covers typical .eml emails with multiple PDF + image attachments
+// after base64 inflation. Anthropic's input cap will still apply downstream.
+app.use(express.json({ limit: '30mb' }));
 
 const PORT = process.env.PORT || 3000;
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
@@ -68,46 +70,78 @@ app.post('/api/summarize', async (req, res) => {
     if (!client) {
       return res.status(500).json({ error: 'Server is missing ANTHROPIC_API_KEY.' });
     }
-    const { text, filename, image_base64, mime_type } = req.body || {};
+    const { text, filename, image_base64, mime_type, content } = req.body || {};
 
-    // Build the user content: either text-only, image-only (Claude vision),
-    // or both (e.g., a scanned PDF where we extracted what we could plus
-    // sent the first page as an image).
+    // Build the user content. Three modes:
+    //   1. content: pre-built array of {type:'text', text} | {type:'image', base64, mime_type}
+    //      blocks (used when an .eml has attachments and we want to include
+    //      the email body, each attachment's extracted text, and any image
+    //      attachments in a single Claude call).
+    //   2. image_base64: single image (legacy single-image path).
+    //   3. text: plain text body (legacy text path).
     let userContent;
-    let inputSize;
+    let inputSize = 0;
 
-    if (image_base64) {
-      const allowed = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+    const ALLOWED_IMG = new Set(['image/png', 'image/jpeg', 'image/gif', 'image/webp']);
+    const TOTAL_BYTES_CAP = 25_000_000;   // ~25MB raw bytes across all parts
+    const MAX_TEXT_CHARS = 60000;
+
+    function trimText(s) {
+      return s.length > MAX_TEXT_CHARS ? s.slice(0, MAX_TEXT_CHARS) + '\n\n[truncated]' : s;
+    }
+
+    if (Array.isArray(content) && content.length > 0) {
+      // Multi-block path: validate, normalize, sum sizes.
+      const blocks = [];
+      let runningBytes = 0;
+      for (const item of content) {
+        if (!item || !item.type) continue;
+        if (item.type === 'text' && typeof item.text === 'string' && item.text.trim()) {
+          const t = trimText(item.text);
+          blocks.push({ type: 'text', text: t });
+          runningBytes += t.length;
+        } else if (item.type === 'image' && item.base64) {
+          const mt = item.mime_type || 'image/png';
+          if (!ALLOWED_IMG.has(mt)) continue;
+          // approximate raw bytes from base64 length
+          runningBytes += Math.floor(item.base64.length * 0.75);
+          if (runningBytes > TOTAL_BYTES_CAP) break;
+          blocks.push({ type: 'image', source: { type: 'base64', media_type: mt, data: item.base64 } });
+        }
+      }
+      if (blocks.length === 0) {
+        return res.status(400).json({ error: 'No valid blocks in content array.' });
+      }
+      // Append a guidance block at the end so Claude knows the task.
+      blocks.push({
+        type: 'text',
+        text: (filename ? `Source filename: ${filename}\n` : '') +
+              'The blocks above are an insurance-related communication and any of its attachments. Summarize the changes per your instructions, drawing on every block.'
+      });
+      userContent = blocks;
+      inputSize = runningBytes;
+    } else if (image_base64) {
       const mt = mime_type || 'image/png';
-      if (!allowed.includes(mt)) {
+      if (!ALLOWED_IMG.has(mt)) {
         return res.status(400).json({ error: `Unsupported image mime_type: ${mt}` });
       }
-      // Cap base64 size at ~5MB encoded (~3.7MB raw) to keep cost predictable.
       if (image_base64.length > 5_000_000) {
         return res.status(413).json({ error: 'Image too large (limit ~5MB).' });
       }
-      const blocks = [
-        {
-          type: 'image',
-          source: { type: 'base64', media_type: mt, data: image_base64 }
-        },
-        {
-          type: 'text',
-          text: (filename ? `Source filename: ${filename}\n\n` : '') +
-                'The attached image is an insurance document. Summarize the changes per your instructions.'
-        }
+      userContent = [
+        { type: 'image', source: { type: 'base64', media_type: mt, data: image_base64 } },
+        { type: 'text', text: (filename ? `Source filename: ${filename}\n\n` : '') +
+                              'The attached image is an insurance document. Summarize the changes per your instructions.' }
       ];
-      userContent = blocks;
       inputSize = image_base64.length;
     } else if (text && typeof text === 'string') {
-      const MAX_CHARS = 60000;
-      const trimmed = text.length > MAX_CHARS ? text.slice(0, MAX_CHARS) + '\n\n[truncated]' : text;
+      const trimmed = trimText(text);
       userContent =
         (filename ? `Source filename: ${filename}\n\n` : '') +
         'Document contents:\n\n' + trimmed;
       inputSize = trimmed.length;
     } else {
-      return res.status(400).json({ error: 'Body must include "text" or "image_base64".' });
+      return res.status(400).json({ error: 'Body must include "text", "image_base64", or "content".' });
     }
 
     const msg = await client.messages.create({

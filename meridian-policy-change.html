@@ -1324,78 +1324,118 @@
         }
       }
 
-      // PDFs: copy every page from the attachment into the merged doc.
-      if (type === 'application/pdf' || name.endsWith('.pdf')) {
-        var attachBuf = await file.arrayBuffer();
-        var attachDoc = await PDFDocument.load(attachBuf, { ignoreEncryption: true });
-        var pages = await merged.copyPages(attachDoc, attachDoc.getPageIndices());
-        pages.forEach(function(p) { merged.addPage(p); });
-      }
-      // Images: embed and add as a full-page image (Letter size, fit-contain).
-      else if (type.indexOf('image/') === 0 || /\.(png|jpe?g|heic|heif|webp|gif|bmp)$/.test(name)) {
-        var imgBuf;
-        var isPng = type === 'image/png' || /\.png$/.test(name);
-        var isJpg = type === 'image/jpeg' || /\.(jpe?g)$/.test(name);
-        if (isPng || isJpg) {
-          imgBuf = await file.arrayBuffer();
-        } else {
-          // HEIC was already converted to JPEG by the summarize handler in the
-          // common path, but if we got a raw HEIC here, run conversion now.
-          var srcForEmbed = file;
-          if (/heic|heif/.test(type) || /\.(heic|heif)$/.test(name)) {
-            if (!window.__epConvertHeicToJpeg) throw new Error('HEIC converter not available.');
-            srcForEmbed = await window.__epConvertHeicToJpeg(file);
+      // Recursive merge: append one source file as new pages onto `merged`.
+      // For .eml the email body is rendered as text pages first, then each
+      // embedded attachment is appended via the same helper, so a nested
+      // PDF or image inside an email becomes its own page(s) in the output.
+      async function mergeOneInto(srcFile, label) {
+        var srcName = (srcFile.name || '').toLowerCase();
+        var srcType = srcFile.type || '';
+        var caption = (label || 'Attached') + ': ' + srcFile.name;
+
+        // PDFs: copy every page verbatim.
+        if (srcType === 'application/pdf' || srcName.endsWith('.pdf')) {
+          var attachBuf = await srcFile.arrayBuffer();
+          var attachDoc = await PDFDocument.load(attachBuf, { ignoreEncryption: true });
+          var pages = await merged.copyPages(attachDoc, attachDoc.getPageIndices());
+          pages.forEach(function(p) { merged.addPage(p); });
+          return;
+        }
+        // Images: embed and add as a full-page image.
+        if (srcType.indexOf('image/') === 0 || /\.(png|jpe?g|heic|heif|webp|gif|bmp)$/.test(srcName)) {
+          var imgBuf;
+          var isPng = srcType === 'image/png' || /\.png$/.test(srcName);
+          var isJpg = srcType === 'image/jpeg' || /\.(jpe?g)$/.test(srcName);
+          if (isPng || isJpg) {
+            imgBuf = await srcFile.arrayBuffer();
+          } else {
+            var srcForEmbed = srcFile;
+            if (/heic|heif/.test(srcType) || /\.(heic|heif)$/.test(srcName)) {
+              if (!window.__epConvertHeicToJpeg) throw new Error('HEIC converter not available.');
+              srcForEmbed = await window.__epConvertHeicToJpeg(srcFile);
+            }
+            imgBuf = await _toEmbeddableJpegBuf(srcForEmbed);
+            isPng = false;
           }
-          imgBuf = await _toEmbeddableJpegBuf(srcForEmbed);
-          isPng = false;
+          var img = isPng ? await merged.embedPng(imgBuf) : await merged.embedJpg(imgBuf);
+          var pageW = 612, pageH = 792, margin = 36;
+          var maxW = pageW - margin * 2;
+          var maxH = pageH - margin * 2 - 30;
+          var scale = Math.min(maxW / img.width, maxH / img.height, 1);
+          var w = img.width * scale, h = img.height * scale;
+          var page = merged.addPage([pageW, pageH]);
+          var font = await merged.embedFont(StandardFonts.Helvetica);
+          page.drawText(_safe(caption), {
+            x: margin, y: pageH - margin + 6,
+            size: 9, font: font, color: rgb(0.33, 0.33, 0.33)
+          });
+          page.drawImage(img, {
+            x: margin + (maxW - w) / 2,
+            y: margin + (maxH - h) / 2 + 30,
+            width: w, height: h
+          });
+          return;
         }
-        var img = isPng ? await merged.embedPng(imgBuf) : await merged.embedJpg(imgBuf);
-        var pageW = 612, pageH = 792;          // US Letter @ 72dpi
-        var margin = 36;
-        var maxW = pageW - margin * 2;
-        var maxH = pageH - margin * 2 - 30;    // leave room for caption
-        var scale = Math.min(maxW / img.width, maxH / img.height, 1);
-        var w = img.width * scale, h = img.height * scale;
-        var page = merged.addPage([pageW, pageH]);
-        var font = await merged.embedFont(StandardFonts.Helvetica);
-        page.drawText(_safe('Attached: ' + file.name), {
-          x: margin, y: pageH - margin + 6,
-          size: 9, font: font, color: rgb(0.33, 0.33, 0.33)
-        });
-        page.drawImage(img, {
-          x: margin + (maxW - w) / 2,
-          y: margin + (maxH - h) / 2 + 30,
-          width: w, height: h
-        });
-      }
-      // .docx — extract text and lay it out across pages.
-      else if (type.indexOf('officedocument.wordprocessingml') > -1 || name.endsWith('.docx')) {
-        var docxText = '';
-        if (window.mammoth) {
-          var ab = await file.arrayBuffer();
-          var r = await window.mammoth.extractRawText({ arrayBuffer: ab });
-          docxText = (r && r.value) || '';
+        // .docx
+        if (srcType.indexOf('officedocument.wordprocessingml') > -1 || srcName.endsWith('.docx')) {
+          var docxText = '';
+          if (window.mammoth) {
+            var ab = await srcFile.arrayBuffer();
+            var r = await window.mammoth.extractRawText({ arrayBuffer: ab });
+            docxText = (r && r.value) || '';
+          }
+          await _renderTextPages(merged, caption, docxText || '[Word document attached \u2014 text could not be extracted]');
+          return;
         }
-        await _renderTextPages(merged, file.name, docxText || '[Word document attached — text could not be extracted]');
+        // .eml — render email body as text pages, then recurse into each attachment.
+        if (srcType === 'message/rfc822' || srcName.endsWith('.eml')) {
+          if (window.__epParseEmlMime) {
+            var parsed = await window.__epParseEmlMime(srcFile);
+            var emailText = (parsed.headersText ? parsed.headersText + '\n\n' : '') +
+                            (parsed.bodyText || '');
+            if (parsed.attachments.length) {
+              emailText += '\n\nAttachments included on the following pages:\n' +
+                parsed.attachments.map(function(a, i) {
+                  return '  ' + (i+1) + '. ' + a.filename + '  (' + a.mimeType + ')';
+                }).join('\n');
+            }
+            await _renderTextPages(merged, caption, emailText || '[Email attached \u2014 body could not be extracted]');
+            // Recurse: each parsed attachment becomes its own page(s).
+            for (var i = 0; i < parsed.attachments.length; i++) {
+              var att = parsed.attachments[i];
+              try {
+                await mergeOneInto(att.file, 'Email Attachment ' + (i+1));
+              } catch (e) {
+                console.warn('attachment merge failed:', att.filename, e);
+                await _renderTextPages(merged, 'Email Attachment ' + (i+1) + ': ' + att.filename,
+                  '[Could not embed this attachment: ' + (e && e.message ? e.message : 'unknown error') + ']');
+              }
+            }
+            return;
+          }
+          // Fallback if parser isn't available
+          var emlText = window.__epExtractEml ? await window.__epExtractEml(srcFile) : await srcFile.text();
+          await _renderTextPages(merged, caption, emlText || '[Email attached \u2014 body could not be extracted]');
+          return;
+        }
+        // .msg — best-effort
+        if (srcType === 'application/vnd.ms-outlook' || srcName.endsWith('.msg')) {
+          var msgText = window.__epExtractMsg ? await window.__epExtractMsg(srcFile) : '[Outlook .msg]';
+          await _renderTextPages(merged, caption, msgText);
+          return;
+        }
+        // .txt
+        if (srcType === 'text/plain' || srcName.endsWith('.txt')) {
+          var txt = await srcFile.text();
+          await _renderTextPages(merged, caption, txt);
+          return;
+        }
+        // Fallback: stub
+        await _renderTextPages(merged, caption,
+          '[Attached file format not embedded inline. Original file: ' + srcFile.name + ']');
       }
-      // .eml — render the parsed email (headers + body) as text pages.
-      else if (type === 'message/rfc822' || name.endsWith('.eml')) {
-        var emlText = window.__epExtractEml ? await window.__epExtractEml(file) : await file.text();
-        await _renderTextPages(merged, file.name, emlText || '[Email attached — body could not be extracted]');
-      }
-      // .msg — best-effort ASCII extraction from the binary blob.
-      else if (type === 'application/vnd.ms-outlook' || name.endsWith('.msg')) {
-        var msgText = window.__epExtractMsg ? await window.__epExtractMsg(file) : '[Outlook .msg]';
-        await _renderTextPages(merged, file.name, msgText);
-      }
-      else if (type === 'text/plain' || name.endsWith('.txt')) {
-        var txt = await file.text();
-        await _renderTextPages(merged, file.name, txt);
-      }
-      // Anything else: drop a stub page noting the attachment exists.
-      else {
-        await _renderTextPages(merged, file.name, '[Attached file format not embedded inline. Original file: ' + file.name + ']');
-      }
+
+      await mergeOneInto(file, 'Attached');
 
       return await merged.save();
     } catch (err) {
@@ -1732,44 +1772,174 @@
       window.__epExtractEml = extractEml;
       window.__epExtractMsg = extractMsg;
       window.__epConvertHeicToJpeg = convertHeicToJpeg;
+      window.__epParseEmlMime = parseEmlMime;
+      window.__epExtractTextFromFile = extractTextFromFile;
+      window.__epIsImage = isImage;
 
-      // RFC 822 .eml: keep the headers we care about (From/To/Cc/Subject/Date)
-      // and append the body. Strips MIME boundaries and base64 attachments.
-      async function extractEml(file) {
+      // ---- EML / MIME parsing ------------------------------------------
+      // Full multipart parser that returns:
+      //   { headersText, bodyText, attachments: [{ filename, mimeType, blob }] }
+      //
+      // bodyText is the best text/plain or text/html (stripped) representation
+      // of the message body. attachments is every part with Content-Disposition:
+      // attachment OR a non-text Content-Type with a filename, returned as
+      // browser File/Blob objects ready to feed back into the same extractor
+      // pipeline (so a PDF attachment goes through pdf.js, an image attachment
+      // goes to Claude vision, etc.).
+      async function parseEmlMime(file) {
         var raw = await file.text();
-        // Split header block from body (first blank line)
-        var splitIdx = raw.search(/\r?\n\r?\n/);
-        var header = splitIdx > -1 ? raw.slice(0, splitIdx) : raw;
-        var body = splitIdx > -1 ? raw.slice(splitIdx).replace(/^\s+/, '') : '';
-        var keep = ['from','to','cc','subject','date'];
-        var hdrLines = header.split(/\r?\n/);
-        var picked = [];
-        // Unfold continuation lines (RFC 822: lines starting with whitespace
-        // continue the previous header).
-        var unfolded = [];
-        hdrLines.forEach(function(l) {
-          if (/^\s/.test(l) && unfolded.length) unfolded[unfolded.length-1] += ' ' + l.trim();
-          else unfolded.push(l);
-        });
-        unfolded.forEach(function(l) {
-          var m = l.match(/^([A-Za-z-]+):\s*(.*)$/);
-          if (m && keep.indexOf(m[1].toLowerCase()) > -1) {
-            picked.push(m[1] + ': ' + m[2]);
+        var result = { headersText: '', bodyText: '', attachments: [] };
+
+        function unfold(headerBlock) {
+          var lines = headerBlock.split(/\r?\n/);
+          var out = [];
+          lines.forEach(function(l) {
+            if (/^[ \t]/.test(l) && out.length) out[out.length-1] += ' ' + l.trim();
+            else out.push(l);
+          });
+          return out;
+        }
+        function parseHeaders(headerBlock) {
+          var hdrs = {};
+          unfold(headerBlock).forEach(function(l) {
+            var m = l.match(/^([A-Za-z-]+):\s*(.*)$/);
+            if (m) hdrs[m[1].toLowerCase()] = m[2];
+          });
+          return hdrs;
+        }
+        function decodeQP(s) {
+          return s.replace(/=\r?\n/g, '')
+                  .replace(/=([0-9A-Fa-f]{2})/g, function(_, h) { return String.fromCharCode(parseInt(h, 16)); });
+        }
+        function decodeBase64(s) {
+          var clean = s.replace(/[\r\n\s]/g, '');
+          var bin = '';
+          try { bin = atob(clean); } catch(e) { return null; }
+          var arr = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+          return arr;
+        }
+        function stripHtml(html) {
+          return html
+            .replace(/<style[\s\S]*?<\/style>/gi, '')
+            .replace(/<script[\s\S]*?<\/script>/gi, '')
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<\/p>/gi, '\n\n')
+            .replace(/<[^>]+>/g, '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#(\d+);/g, function(_, n) { return String.fromCharCode(parseInt(n, 10)); })
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+        }
+        function extractFilename(disposition, contentType) {
+          var m = (disposition || '').match(/filename\s*=\s*"?([^";]+)"?/i);
+          if (!m) m = (contentType || '').match(/name\s*=\s*"?([^";]+)"?/i);
+          return m ? m[1].trim() : null;
+        }
+        function getBoundary(contentType) {
+          var m = (contentType || '').match(/boundary\s*=\s*"?([^";\s]+)"?/i);
+          return m ? m[1] : null;
+        }
+
+        // ---- Recursive descent through MIME parts -----------------------
+        function walkPart(rawPart) {
+          var splitIdx = rawPart.search(/\r?\n\r?\n/);
+          if (splitIdx === -1) return;
+          var hdrs = parseHeaders(rawPart.slice(0, splitIdx));
+          var body = rawPart.slice(splitIdx).replace(/^\r?\n\r?\n/, '');
+          var ct = (hdrs['content-type'] || 'text/plain').toLowerCase();
+          var enc = (hdrs['content-transfer-encoding'] || '7bit').toLowerCase();
+          var disp = hdrs['content-disposition'] || '';
+          var boundary = getBoundary(hdrs['content-type'] || '');
+          var filename = extractFilename(disp, hdrs['content-type']);
+
+          if (boundary) {
+            // multipart/* — split children by boundary line and recurse
+            var sep = '--' + boundary;
+            var parts = body.split(new RegExp('\\r?\\n?' + sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))).slice(1);
+            // Trailing part is the closing boundary "--<boundary>--"
+            parts.forEach(function(p) {
+              var trimmed = p.replace(/^\r?\n/, '');
+              if (trimmed.startsWith('--') || trimmed.length < 4) return;
+              walkPart(trimmed);
+            });
+            return;
           }
-        });
-        // Try to find a text/plain part in a multipart body; otherwise use the
-        // raw body. Strip obvious MIME framing and quoted-printable artifacts.
-        var plain = body;
-        var mp = body.match(/Content-Type:\s*text\/plain[\s\S]*?(?:\r?\n\r?\n)([\s\S]*?)(?=\r?\n--|\Z)/i);
-        if (mp) plain = mp[1];
-        plain = plain
-          .replace(/=\r?\n/g, '')             // soft line breaks
-          .replace(/=([0-9A-F]{2})/g, function(_, h) { return String.fromCharCode(parseInt(h, 16)); })
-          .replace(/^--[^\n]+$/gm, '')        // mime boundaries
-          .replace(/Content-(Type|Transfer-Encoding|Disposition):[^\n]*/gi, '')
-          .replace(/\r/g, '')
-          .trim();
-        return (picked.join('\n') + '\n\n' + plain).trim();
+
+          // Leaf part
+          var mimeType = ct.split(';')[0].trim();
+          var isAttachment = /attachment/i.test(disp) || (filename && !/^text\/(plain|html)$/i.test(mimeType));
+
+          if (isAttachment && filename) {
+            var bytes;
+            if (enc === 'base64') {
+              bytes = decodeBase64(body);
+            } else if (enc === 'quoted-printable') {
+              var decoded = decodeQP(body);
+              bytes = new Uint8Array(decoded.length);
+              for (var j = 0; j < decoded.length; j++) bytes[j] = decoded.charCodeAt(j) & 0xff;
+            } else {
+              // 7bit/8bit/binary — best effort
+              bytes = new Uint8Array(body.length);
+              for (var k = 0; k < body.length; k++) bytes[k] = body.charCodeAt(k) & 0xff;
+            }
+            if (bytes && bytes.length > 0) {
+              var blob = new Blob([bytes], { type: mimeType });
+              // Wrap as a File so downstream code that reads .name still works.
+              var attFile = new File([blob], filename, { type: mimeType });
+              result.attachments.push({ filename: filename, mimeType: mimeType, file: attFile });
+            }
+            return;
+          }
+
+          // Inline text part — accumulate into bodyText
+          var decoded;
+          if (enc === 'base64') {
+            var decBytes = decodeBase64(body);
+            decoded = decBytes ? new TextDecoder('utf-8', { fatal: false }).decode(decBytes) : body;
+          } else if (enc === 'quoted-printable') {
+            decoded = decodeQP(body);
+          } else {
+            decoded = body;
+          }
+          if (mimeType === 'text/html') {
+            // Prefer text/plain when both are present (alternative parts).
+            if (!result._hasPlain) result.bodyText += stripHtml(decoded) + '\n';
+          } else {
+            result._hasPlain = true;
+            result.bodyText += decoded.replace(/\r/g, '') + '\n';
+          }
+        }
+
+        walkPart(raw);
+
+        // Header summary (top-level headers only).
+        var topSplit = raw.search(/\r?\n\r?\n/);
+        var topHdrs = parseHeaders(topSplit > -1 ? raw.slice(0, topSplit) : raw);
+        var keep = ['from','to','cc','subject','date'];
+        result.headersText = keep
+          .filter(function(k) { return topHdrs[k]; })
+          .map(function(k) { return k.charAt(0).toUpperCase() + k.slice(1) + ': ' + topHdrs[k]; })
+          .join('\n');
+        result.bodyText = (result.bodyText || '').trim();
+        return result;
+      }
+
+      // Backwards-compatible wrapper: returns a flattened text-only summary
+      // string for callers that just need the email rendered as text. Email
+      // attachments are listed by name at the end.
+      async function extractEml(file) {
+        var parsed = await parseEmlMime(file);
+        var out = parsed.headersText + '\n\n' + parsed.bodyText;
+        if (parsed.attachments.length) {
+          out += '\n\n--- Attachments ---\n' +
+            parsed.attachments.map(function(a) { return '- ' + a.filename + '  (' + a.mimeType + ')'; }).join('\n');
+        }
+        return out.trim();
       }
 
       // .msg (Outlook) is a Compound File Binary Format blob — we can't parse
@@ -1855,6 +2025,67 @@
       }
 
       // ---- Click handler -------------------------------------------------
+      // ---- Helper: turn one file into an array of summarize content blocks
+      // (text + image). Recurses into .eml attachments so nested PDFs/images/
+      // text bodies all become first-class content blocks for Claude.
+      async function fileToContentBlocks(f, depthLabel) {
+        var blocks = [];
+        var label = depthLabel || 'Document';
+        var name = (f.name || '').toLowerCase();
+        var type = f.type || '';
+
+        // EML: parse, extract body text + recurse into attachments.
+        if (type === 'message/rfc822' || name.endsWith('.eml')) {
+          var parsed = await parseEmlMime(f);
+          var emailText = (parsed.headersText ? parsed.headersText + '\n\n' : '') +
+                          (parsed.bodyText || '');
+          if (emailText.trim()) {
+            blocks.push({ type: 'text', text: '=== ' + label + ': ' + f.name + ' ===\n' + emailText });
+          }
+          for (var i = 0; i < parsed.attachments.length; i++) {
+            var att = parsed.attachments[i];
+            setStatus('Processing attachment ' + (i+1) + '/' + parsed.attachments.length + ': ' + att.filename + '…');
+            var nested = await fileToContentBlocks(att.file, 'Attachment');
+            blocks = blocks.concat(nested);
+          }
+          return blocks;
+        }
+
+        // Image (including HEIC after conversion): vision block.
+        if (isImage(f)) {
+          var imgFile = f;
+          if (isHeic(imgFile)) {
+            setStatus('Converting HEIC photo "' + imgFile.name + '" to JPEG…');
+            imgFile = await convertHeicToJpeg(imgFile);
+          }
+          var b64 = await readImageBase64(imgFile);
+          var mt = imgFile.type || '';
+          if (!/^image\/(png|jpeg|gif|webp)$/.test(mt)) {
+            if (/\.png$/i.test(imgFile.name)) mt = 'image/png';
+            else if (/\.(jpe?g)$/i.test(imgFile.name)) mt = 'image/jpeg';
+            else if (/\.gif$/i.test(imgFile.name)) mt = 'image/gif';
+            else if (/\.webp$/i.test(imgFile.name)) mt = 'image/webp';
+            else mt = 'image/jpeg';
+          }
+          blocks.push({ type: 'text', text: '=== ' + label + ' (image): ' + imgFile.name + ' ===' });
+          blocks.push({ type: 'image', base64: b64, mime_type: mt });
+          return blocks;
+        }
+
+        // Everything else: text extraction (PDF, DOCX, TXT, MSG, fallback).
+        try {
+          var text = await extractTextFromFile(f);
+          if (text && text.trim().length >= 5) {
+            blocks.push({ type: 'text', text: '=== ' + label + ': ' + f.name + ' ===\n' + text });
+          } else {
+            blocks.push({ type: 'text', text: '=== ' + label + ': ' + f.name + ' === [empty / no extractable text]' });
+          }
+        } catch(e) {
+          blocks.push({ type: 'text', text: '=== ' + label + ': ' + f.name + ' === [extraction failed: ' + e.message + ']' });
+        }
+        return blocks;
+      }
+
       btn.addEventListener('click', async function() {
         var file = (fileInput.files && fileInput.files[0]) || fileInput._droppedFile;
         if (!file) { setStatus('Choose a file first.', true); return; }
@@ -1862,39 +2093,30 @@
         var origLabel = btn.textContent;
         btn.textContent = 'Working…';
         try {
+          setStatus('Reading "' + file.name + '"…');
+          var blocks = await fileToContentBlocks(file, 'Document');
+          if (!blocks.length) throw new Error('Nothing extractable in the dropped file.');
+
+          // For simple single-text or single-image cases, fall through to the
+          // legacy keys for older backends; otherwise send the multi-block
+          // content array.
           var body;
-          if (isImage(file)) {
-            // HEIC/HEIF: convert to JPEG first — Claude vision doesn't accept
-            // HEIC, and browsers can't decode it natively for the upload pipe.
-            if (isHeic(file)) {
-              setStatus('Converting HEIC photo "' + file.name + '" to JPEG…');
-              file = await convertHeicToJpeg(file);
-            }
-            // Image path: send straight to backend → Claude vision.
-            setStatus('Reading image "' + file.name + '"…');
-            var b64 = await readImageBase64(file);
-            var mt = file.type || 'image/png';
-            // Normalize mime type when the browser didn't set one or set
-            // something Claude vision can't accept.
-            if (!/^image\/(png|jpeg|gif|webp)$/.test(mt)) {
-              if (/\.png$/i.test(file.name)) mt = 'image/png';
-              else if (/\.(jpe?g)$/i.test(file.name)) mt = 'image/jpeg';
-              else if (/\.gif$/i.test(file.name)) mt = 'image/gif';
-              else if (/\.webp$/i.test(file.name)) mt = 'image/webp';
-              else mt = 'image/jpeg';
-            }
-            setStatus('Sending image to the summarizer…');
-            body = JSON.stringify({ image_base64: b64, mime_type: mt, filename: file.name });
+          var imageCount = blocks.filter(function(b) { return b.type === 'image'; }).length;
+          var textCount  = blocks.filter(function(b) { return b.type === 'text'; }).length;
+          if (textCount === 1 && imageCount === 0) {
+            body = JSON.stringify({ text: blocks[0].text, filename: file.name });
+          } else if (textCount <= 1 && imageCount === 1) {
+            // Single image with at most one descriptor — use legacy image_base64
+            // path so older deploys still work.
+            var imgBlock = blocks.find(function(b) { return b.type === 'image'; });
+            body = JSON.stringify({ image_base64: imgBlock.base64, mime_type: imgBlock.mime_type, filename: file.name });
           } else {
-            setStatus('Extracting text from "' + file.name + '"…');
-            var text = await extractTextFromFile(file);
-            if (!text || text.length < 5) {
-              throw new Error('Could not extract any text from the document.');
-            }
-            setStatus('Sending ' + text.length + ' chars to the summarizer…');
-            body = JSON.stringify({ text: text, filename: file.name });
+            body = JSON.stringify({ content: blocks, filename: file.name });
           }
 
+          setStatus('Sending ' + blocks.length + ' block' + (blocks.length === 1 ? '' : 's') +
+                    (imageCount ? ' (' + imageCount + ' image' + (imageCount === 1 ? '' : 's') + ')' : '') +
+                    ' to the summarizer…');
           var resp = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
