@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meridian — moved</title>
-<meta http-equiv="refresh" content="0; url=https://mymeridianworkspace.com/forms/portal.html">
-<link rel="canonical" href="https://mymeridianworkspace.com/forms/portal.html">
+<meta http-equiv="refresh" content="0; url=https://mymeridianworkspace.com/index.html">
+<link rel="canonical" href="https://mymeridianworkspace.com/index.html">
 <script>
   // Redirect synchronously in <head> so the body never paints in the
   // common case. The meta-refresh below is the no-JS fallback.
-  try { window.location.replace('https://mymeridianworkspace.com/forms/portal.html'); } catch (e) {}
+  try { window.location.replace('https://mymeridianworkspace.com/index.html'); } catch (e) {}
 </script>
 <style>
   :root{
@@ -20,8 +20,6 @@
     --mono:'DM Mono','SF Mono',Menlo,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  /* Hide the body by default — only show it if both JS and meta-refresh
-     somehow fail to navigate within ~600ms (e.g. extreme network blocks). */
   body{visibility:hidden;background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;}
   body.show{visibility:visible;}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:48px 44px;max-width:480px;width:100%;box-shadow:0 4px 24px rgba(30,58,95,0.06);text-align:center;}
@@ -37,19 +35,14 @@
 <div class="card">
   <div class="logo">Meridian Insurance</div>
   <div class="sub">Workspace has moved</div>
-  <p>This page has moved to the <strong>Meridian Agency Workspace</strong>.</p>
+  <p>This page is part of the <strong>Meridian Agency Workspace</strong>, our staff sign-in.</p>
   <p>You'll be redirected automatically. If nothing happens in a few seconds, click below.</p>
-  <a class="btn" href="https://mymeridianworkspace.com/forms/portal.html">Open Meridian Workspace</a>
+  <a class="btn" href="https://mymeridianworkspace.com/index.html">Open Meridian Workspace</a>
   <div class="small">mymeridianworkspace.com</div>
 </div>
 <script>
-  // Belt-and-suspenders: if for some reason neither the head-script nor
-  // the meta-refresh has navigated us away after 600ms, reveal the body
-  // so the user sees the click-here button.
   setTimeout(function(){ document.body.classList.add('show'); }, 600);
-  // And keep trying to redirect (some browsers honor the second call
-  // even if the first was blocked by an extension).
-  try { window.location.replace('https://mymeridianworkspace.com/forms/portal.html'); } catch (e) {}
+  try { window.location.replace('https://mymeridianworkspace.com/index.html'); } catch (e) {}
 </script>
 </body>
 </html>
