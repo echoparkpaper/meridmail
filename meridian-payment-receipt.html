@@ -6,6 +6,11 @@
 <title>Meridian — moved</title>
 <meta http-equiv="refresh" content="0; url=https://mymeridianworkspace.com/forms/portal.html">
 <link rel="canonical" href="https://mymeridianworkspace.com/forms/portal.html">
+<script>
+  // Redirect synchronously in <head> so the body never paints in the
+  // common case. The meta-refresh below is the no-JS fallback.
+  try { window.location.replace('https://mymeridianworkspace.com/forms/portal.html'); } catch (e) {}
+</script>
 <style>
   :root{
     --bg:#f7f5f2; --surface:#ffffff; --border:#e6e0d6;
@@ -15,7 +20,10 @@
     --mono:'DM Mono','SF Mono',Menlo,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;}
+  /* Hide the body by default — only show it if both JS and meta-refresh
+     somehow fail to navigate within ~600ms (e.g. extreme network blocks). */
+  body{visibility:hidden;background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;}
+  body.show{visibility:visible;}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:48px 44px;max-width:480px;width:100%;box-shadow:0 4px 24px rgba(30,58,95,0.06);text-align:center;}
   .logo{font-family:var(--serif);font-size:28px;font-weight:500;color:var(--accent);margin-bottom:8px;}
   .sub{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.22em;margin-bottom:32px;}
@@ -35,7 +43,13 @@
   <div class="small">mymeridianworkspace.com</div>
 </div>
 <script>
-  setTimeout(function(){ window.location.replace('https://mymeridianworkspace.com/forms/portal.html'); }, 100);
+  // Belt-and-suspenders: if for some reason neither the head-script nor
+  // the meta-refresh has navigated us away after 600ms, reveal the body
+  // so the user sees the click-here button.
+  setTimeout(function(){ document.body.classList.add('show'); }, 600);
+  // And keep trying to redirect (some browsers honor the second call
+  // even if the first was blocked by an extension).
+  try { window.location.replace('https://mymeridianworkspace.com/forms/portal.html'); } catch (e) {}
 </script>
 </body>
 </html>
